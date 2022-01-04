@@ -1,6 +1,6 @@
+import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-from tkinter.ttk import *
 import PIL
 from PIL import ImageTk,Image
 from tkinter import messagebox
@@ -8,20 +8,19 @@ from tkcalendar import *
 #import sqlite3
 from tinydb import TinyDB, Query,where
 from tinydb.operations import delete
+from model.player import Player
 
-class PlayerManager:
-	def __init__(self,root):
-		self.root = root		
-		#self.playerFrameManager()
 
-	def playerFrameManager(self):
 
-		# Create a Treeview Frame
-		frame = Frame(self.root)
-		frame.pack(pady=20)
-
-		tree_frame = ttk.Treeview(frame)
-
+class PlayerWindow:
+	def __init__(self):
+		#self.player = Player(first_name,last_name,birth_date,gender,classement)
+		pass		
+		
+		
+	def playerView(self,playerFrame):
+		playerFrame.pack(pady=20)
+		tree_frame = ttk.Treeview(playerFrame)
 
 		# ===========================Style & frames=============================
 		style = ttk.Style()
@@ -33,16 +32,16 @@ class PlayerManager:
 			foreground="black",
 			rowheight=25,
 			fieldbackground="white"
-			)
+		)
 		# Change selected color
-		style.map("Treeview",background=[("selected","blue")])
+		style.map("Treeview",background=[("selected","white")])
 
 		# Create a Treeview Scrollbar
-		tree_scroll = Scrollbar(frame)
+		tree_scroll = Scrollbar(playerFrame)
 		tree_scroll.pack(side=RIGHT,fill=Y)
 
 		# Configure the Scrollbar
-		tree_frame = ttk.Treeview(frame,yscrollcommand=tree_scroll.set,select="extended")
+		tree_frame = ttk.Treeview(playerFrame,yscrollcommand=tree_scroll.set,select="extended")
 		tree_frame.pack(pady=20)
 		tree_scroll.config(command=tree_frame.yview)
 
@@ -55,12 +54,12 @@ class PlayerManager:
 
 		# ==========================Database============================
 		serialized_player = {}
+		#serialized_player = Player.serialize_player(self)
 
-		db = TinyDB('data/db_player.json')	
+		db = TinyDB('data/db_tournaments.json')	
 		players_table = db.table('players')
 
 		# ===========================Fcts ==============================
-
 		def add_Entries():		
 			global count	
 			
@@ -160,8 +159,10 @@ class PlayerManager:
 		# Update records: delete all & rewrite ?
 		def update_one_record():
 			x = tree_frame.selection()[0]	
-			records = players_table.all()
+			#records = players_table.all()
 			#n = len(players_table)
+			#selected = tree_frame.focus()
+			#temp = tree_frame(selected,'values')
 			
 			players_table.insert({									
 					'first_name': f_nameBox.get(),
@@ -176,11 +177,13 @@ class PlayerManager:
 
 			# refresh my_tree
 			tree_frame.delete(x)
+			#dt=date()
+			#str=dt.strftime("%d-%B-%Y")
 			if count % 2 == 0:
 				tree_frame.insert(parent="",index=x,iid=x,text="",values=(						
 					f_nameBox.get(),
 					l_nameBox.get(),			
-					date_Box.get_date(),
+					date_Box.get(),
 					gender.get(),				
 					class_spinBox.get()),
 					tags=('evenrow',)
@@ -190,7 +193,7 @@ class PlayerManager:
 				tree_frame.insert(parent="",index=x,iid=x,text="",values=(			
 					f_nameBox.get(),
 					l_nameBox.get(),			
-					date_Box.get_date(),
+					date_Box.get(),
 					gender.get(),				
 					class_spinBox.get()),
 					tags=('oddrow',)
@@ -220,13 +223,11 @@ class PlayerManager:
 			
 			class_spinBox.insert(0,values[4])
 
-		def cleanWindow():			
-			frame.destroy()
+		def quitPlayerWindow():			
+			player_frame.destroy()
 
-		# =====================Fill the Treeview======================
-		#def displayPlayers()
-
-		#display_dataPlayers()
+		# =====================Fill the Treeview======================		
+		
 		# Format columns
 		tree_frame.column("#0",width=0,stretch=NO)
 		tree_frame.column("first_name",anchor=W,width=130)
@@ -241,11 +242,11 @@ class PlayerManager:
 		tree_frame.heading("last_name",text="Prénom",anchor=W)
 		tree_frame.heading("birth_date",text="Date de naissance",anchor=CENTER)
 		tree_frame.heading("gender",text="Sexe H/F",anchor=CENTER)
-		tree_frame.heading("classement",text="Classement",anchor=CENTER)
+		tree_frame.heading("classement",text="Elo",anchor=CENTER)
 
 		# ================Add Management Entries Boxes=================
-		data_frame = LabelFrame(frame,text="Management Joueurs")
-		data_frame.pack(fill="x",padx=70)
+		data_frame = LabelFrame(playerFrame,text="Management Joueurs")
+		data_frame.pack(fill="x",padx=20,pady=20)
 
 		# Labels
 		f_name_label = Label(data_frame,text="Nom")
@@ -258,7 +259,7 @@ class PlayerManager:
 		gender_labelH.grid(row=0,column=4,padx=20,pady=10)
 		gender_labelF = Label(data_frame,text="")
 		gender_labelF.grid(row=0,column=5,padx=0,pady=10)
-		class_label = Label(data_frame,text="Classement")
+		class_label = Label(data_frame,text="Elo")
 		class_label.grid(row=0,column=6,padx=5,pady=10)
 		 
 
@@ -267,7 +268,7 @@ class PlayerManager:
 		f_nameBox.grid(row=1,column=1,padx=10,pady=10)
 		l_nameBox = Entry(data_frame,width=25)
 		l_nameBox.grid(row=1,column=2,padx=10,pady=10)
-		date_Box = DateEntry(data_frame,width=15)
+		date_Box = DateEntry(data_frame,width=15,locale='fr_FR',selectmode='day',date_pattern='dd/MM/yyyy')
 		date_Box.delete(0,END)
 		date_Box.grid(row=1,column=3,padx=1,pady=10)
 		gender = StringVar()
@@ -280,7 +281,7 @@ class PlayerManager:
 		class_spinBox.grid(row=1,column=6,padx=10,pady=10)
 
 		# ================Button Commands(rm = remove)======================
-		button_frame = LabelFrame(frame,text="Commandes")
+		button_frame = LabelFrame(playerFrame,text="Commandes")
 		button_frame.pack(fill="x",padx=70,pady=20)
 
 		add_button = Button(button_frame,text="Ajouter",command=add_Entries)
@@ -298,14 +299,21 @@ class PlayerManager:
 		clear_button = Button(button_frame,text="Clear",command=clear_Entries)
 		clear_button.grid(row=0,column=5,padx=10,pady=20)
 
-		record_button = Button(button_frame,text="Quitter",command=cleanWindow)
-		record_button.grid(row=0,column=7,padx=10,pady=20)
+		quit_button = Button(button_frame,text="Quitter",command=lambda: self.quitPlayerView())
+		quit_button.grid(row=0,column=7,padx=10,pady=20)
 
 		# Bind the treeview
 		tree_frame.bind("<ButtonRelease-1>",selectEntry)
 
 		#createTable()
 		query_database()
+		"""		
+		quit_button = Button(self.playerFrame,text="Quitter",command=lambda: self.quitPlayerView())				
+		quit_button.grid(row=0,column=7,padx=10,pady=20)
+		self.hideFrames()				
+		self.playerFrame.pack()
+		"""
 
-		self.root.mainloop()
-
+		
+	
+	

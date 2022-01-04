@@ -1,14 +1,12 @@
-from view.start import Screen
-#from controller.control import Control
-from view.mainMenuWindow import WinMenu
-#from tkinter import *
-#from view import test
+from view.mainMenu import WinMenu
+
+
 
 def main():
-	#Screen()
-	WinMenu()
-	#Control()
 	
+	WinMenu()
+	
+
 
 if __name__ == '__main__':
 	main()
