@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 import time
+from tinydb import TinyDB, Query, where
+from tkinter import messagebox
+from control.controller import Controller
+from model.player import Player
+from model.round import Round
 
 
 
@@ -13,6 +18,11 @@ class RoundWindow:
 		# Create a Treeview Frame						
 		roundFrame.pack(padx=5,pady=20)
 		tree_frame = ttk.Treeview(roundFrame)
+
+	# ==========================Database============================		
+
+		db = TinyDB('data/db_tournaments.json')	
+		players_table = db.table('round')
 
 	# ===========================Style & frames=============================
 		style = ttk.Style()
@@ -47,15 +57,67 @@ class RoundWindow:
 
 # ===================== Fcts =================================
 
-		def getStartDate():			
-			date = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+		def genRound():
+			pass
+
+		def startMatch():
+			date = Controller.getTime()
 			startPrint_label = Label(data_frame,text=date)
 			startPrint_label.grid(row=2,column=1,padx=40,pady=10)
 
-		def getEndDate():			
-			date = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+		def endMatch():
+			date = Controller.getTime()
 			endPrint_label = Label(data_frame,text=date)
 			endPrint_label.grid(row=2,column=2,padx=40,pady=10)
+
+		def remove_all_Records():
+			response = messagebox.askyesno("Cette opération est irréversible!!")	
+			round_table = db.table('round')
+			if response == 1:
+				# Clear the treeview
+				for record in tree_frame.get_children():
+					tree_frame.delete(record)
+					#print("records",record)
+				players_table.truncate()
+		"""
+		def query_database():	
+			global count
+			count = 0	
+			round_table = db.table('rounds')	
+			records = round_table.all()
+
+			n = 0	
+			for record in records:
+				if n % 2 == 0:		
+					tree_frame.insert(parent="",index=n,iid=n,text='',
+						values=(
+						records[n]['matchs']								
+						records[n]['player_white'],
+						records[n]['score_white'],
+						records[n]['player_black'],
+						records[n]['score_black'],
+						records[n]['startTime'],
+						records[n]['endTime']
+						records[n]['rank']),
+					tags=('evenrow',))
+					
+				else:
+					tree_frame.insert(parent="",index=n,iid=n,text='',
+						values=(				
+						records[n]['matchs']								
+						records[n]['player_white'],
+						records[n]['score_white'],
+						records[n]['player_black'],
+						records[n]['score_black'],
+						records[n]['startTime'],
+						records[n]['endTime']
+						records[n]['rank']),				
+					tags=('oddrow',))
+				n += 1
+		"""
+		
+
+		
 
 # =====================Fill the Treeview======================		
 		
@@ -86,71 +148,49 @@ class RoundWindow:
 		data_frame.pack(fill="x",padx=30,pady=20)
 
 		# Labels		
-		gen_button = Button(data_frame,text="Générer une ronde")
+		gen_button = Button(data_frame,text="Générer une ronde",command=Round.getPlayerDatas())
 		gen_button.grid(row=1,column=0,padx=10,pady=20)
 
-		startButton = Button(data_frame,text="Début du match",command=getStartDate)
+		startButton = Button(data_frame,text="Début du match",command=startMatch)
 		startButton.grid(row=1,column=1,padx=10,pady=10)
 		
-		endButton = Button(data_frame,text="Fin du match",command=getEndDate)
+
+		
+		endButton = Button(data_frame,text="Fin du match",command=endMatch)
 		endButton.grid(row=1,column=2,padx=10,pady=10)
-
-		regButton = Button(data_frame,text="Enregistrer")
-		regButton.grid(row=1,column=4,padx=10,pady=10)
-		
-		#startBox = Entry(data_frame,width=25,text=date)		
-		#startBox.grid(row=2,column=1,padx=10,pady=10)
-		
-		#endTime_label = Label(data_frame,text="Date heure fin")
-		#endTime_label.grid(row=0,column=2,padx=10,pady=10)
-		
-		finalScore_label = Label(data_frame,text="Saisie manuelle des résultats")
-		finalScore_label.grid(row=0,column=4,padx=5,pady=10)
-		finalBox = Entry(data_frame,width=25)
-		finalBox.grid(row=2,column=4,padx=10,pady=10)
 		
 
-		# Logical Entry boxes
-		#genBox = Entry(data_frame,width=25)
-		#genBox.grid(row=1,column=1,padx=10,pady=10)
-		
-		
-				
-		
+		regWhiteButton = Button(data_frame,text="Total joueur blanc")
+		regWhiteButton.grid(row=1,column=5,padx=10,pady=10)
 
+		regBlackButton = Button(data_frame,text="Total joueur noir")
+		regBlackButton.grid(row=1,column=6,padx=10,pady=10)
+
+		spinWhite_label = Label(data_frame,text="Score joueur blanc")
+		spinWhite_label.grid(row=2,column=0,padx=0,pady=10)
+		
+		class_WspinBox = Spinbox(data_frame,values=(0,0.5,1),font=("helvetica",10),width=4)
+		class_WspinBox.grid(row=3,column=0,padx=10,pady=10)
+
+		spinBlack_label = Label(data_frame,text="Score joueur noir")
+		spinBlack_label.grid(row=2,column=1,padx=5,pady=10)
+
+		class_BspinBox = Spinbox(data_frame,values=(0,0.5,1),font=("helvetica",10),width=4)
+		class_BspinBox.grid(row=3,column=1,padx=10,pady=10)
+
+		scoreWhiteBox = Entry(data_frame,width=25)
+		scoreWhiteBox.grid(row=2,column=5,padx=10,pady=10)
+
+		scoreBlackBox = Entry(data_frame,width=25)
+		scoreBlackBox.grid(row=2,column=6,padx=10,pady=10)
+
+		rm_all_button = Button(data_frame,text="Supprimer tout",command=remove_all_Records)
+		rm_all_button.grid(row=3,column=7,padx=10,pady=20)				
 
 		quit_button = Button(data_frame,text="Quitter",command=lambda: self.quitRoundView())				
-		quit_button.grid(row=1,column=5,padx=20,pady=20)
+		quit_button.grid(row=3,column=8,padx=20,pady=20)
 
-# ================Button Commands(rm = remove)======================
-		
+		#query_database()
 
-		
 
-		
 
-		
-"""
-		#add_button = Button(button_frame,text="Ajouter",command=add_Entries)
-		#add_button.grid(row=0,column=0,padx=10,pady=20)
-
-		modif_button = Button(button_frame,text="Modifier",command=update_one_record) 
-		modif_button.grid(row=0,column=1,padx=10,pady=20)
-
-		rm_one_button = Button(button_frame,text="Supprimer",command=remove_One_Entry)
-		rm_one_button.grid(row=0,column=2,padx=10,pady=20)
-
-		rm_all_button = Button(button_frame,text="Supprimer tout",command=remove_all_Records)
-		rm_all_button.grid(row=0,column=3,padx=10,pady=20)
-
-		clear_button = Button(button_frame,text="Clear",command=clear_Entries)
-		clear_button.grid(row=0,column=5,padx=10,pady=20)
-
-		quit_button = Button(button_frame,text="Quitter",command=lambda: self.quitTourView())				
-		quit_button.grid(row=0,column=7,padx=10,pady=20)
-
-		# Bind the treeview
-		tree_frame.bind("<ButtonRelease-1>",selectEntry)
-
-		radio_frame.pack()
-"""

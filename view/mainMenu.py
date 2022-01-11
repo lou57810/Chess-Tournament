@@ -5,6 +5,7 @@ from tkinter.messagebox import *
 from view.playView import PlayerWindow
 from view.tourView import TourWindow
 from view.roundView import RoundWindow
+#from model.round import Round
 #from controller.control import Control
 #from PIL import ImageTk,Image
 #from view.turnViewManager import TournamentManager
@@ -19,7 +20,7 @@ class WinMenu:
 		self.root.title('Gestion Tournoi')
 		self.root.geometry("1024x760")		
 		self.root.config(background='grey')
-		#self.root.iconbitmap("./img/logo.ico")
+		self.root.iconbitmap("./img/logo.ico")
 		self.root.option_add('*tearOff', FALSE)	# Supprime le séparateur
 		
 		self.displayMenu()
@@ -44,8 +45,8 @@ class WinMenu:
 		menuBar.add_cascade(label = "?", menu=menuHelp)
 
 		# Commands
-		menuFile.add_command(label="Nouveau Tournoi",command=lambda: self.display_tourWindow(self.tourFrame))
-		menuFile.add_command(label="Nouveaux Joueurs",command=lambda: self.display_playerWindow(self.playerFrame))
+		menuFile.add_command(label="Gestion Tournoi",command=lambda: self.display_tourWindow(self.tourFrame))
+		menuFile.add_command(label="Gestion Joueurs",command=lambda: self.display_playerWindow(self.playerFrame))
 		menuFile.add_command(label="Gestion rondes",command=lambda: self.display_roundWindow(self.roundFrame))
 		menuFile.add_command(label="Afficher les resultats")
 		menuFile.add_command(label="Enregistrer les résultats")
@@ -84,6 +85,7 @@ class WinMenu:
 		#self.hideFrames()
 		self.clean_window(roundFrame)						
 		RoundWindow.roundView(self,self.roundFrame)
+		
 	
 	def quitPlayerView(self):		
 		self.playerFrame.pack_forget()		

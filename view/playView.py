@@ -13,12 +13,12 @@ from model.player import Player
 
 
 class PlayerWindow:
-	def __init__(self):
-		#self.player = Player(first_name,last_name,birth_date,gender,classement)
-		pass		
-		
+	def __init__(self):		
+		#self.playerFields = ("first_name","last_name","birth_date","gender","rank")
+		pass
 		
 	def playerView(self,playerFrame):
+		playerFields = ("first_name","last_name","birth_date","gender","rank")
 		playerFrame.pack(pady=20)
 		tree_frame = ttk.Treeview(playerFrame)
 
@@ -46,18 +46,20 @@ class PlayerWindow:
 		tree_scroll.config(command=tree_frame.yview)
 
 		# Define Columns
-		tree_frame["columns"] = ("first_name","last_name","birth_date","gender","classement")
+		tree_frame["columns"] = playerFields
 
 		# Create Striped Row Tags
 		tree_frame.tag_configure('oddrow',background="white")
 		tree_frame.tag_configure('evenrow',background="lightblue")
 
-		# ==========================Database============================
-		serialized_player = {}
-		#serialized_player = Player.serialize_player(self)
+		# ==========================Database============================		
 
 		db = TinyDB('data/db_tournaments.json')	
 		players_table = db.table('players')
+		serialized_players = players_table.all()
+
+		round_table = db.table('round')
+		#serialized_rounds = round_table.all()
 
 		# ===========================Fcts ==============================
 		def add_Entries():		
@@ -67,7 +69,7 @@ class PlayerWindow:
 			count = len(tree_frame.get_children())
 			
 			if count % 2 == 0:
-				tree_frame.insert(parent="",index=count,iid=count,text="",values=(						
+				tree_frame.insert(parent="",index=count,iid=count,text="",values=(											
 					f_nameBox.get(),
 					l_nameBox.get(),			
 					date_Box.get_date(),
@@ -77,7 +79,7 @@ class PlayerWindow:
 					)
 
 			else:
-				tree_frame.insert(parent="",index=count,iid=count,text="",values=(			
+				tree_frame.insert(parent="",index=count,iid=count,text="",values=(								
 					f_nameBox.get(),
 					l_nameBox.get(),			
 					date_Box.get_date(),
@@ -87,68 +89,94 @@ class PlayerWindow:
 						)
 			count +=1
 			
-			register_Datas()	# Filling DB	
+			register_dataPlayers()	# Filling identity playersDB
+			register_rankPlayers()	
 			clear_Entries()
-			
-		def register_Datas():	
-			players_table = db.table('players')	
-			players_table.insert({									
+			#getDbIndex()
+		"""
+		def getDbIndex():
+			Index = players_table.insert({									
 					'first_name': f_nameBox.get(),
 					'last_name': l_nameBox.get(),			
 					'birth_date': date_Box.get(),
 					'gender': gender.get(),
-					'classement': class_spinBox.get()
-					})	
+					'rank': class_spinBox.get()
+					})			
+			print("Index:", Index)
+		"""
+			
+		def register_dataPlayers():	
+			players_table = db.table('players')				
+			players_table.insert({														
+					'first_name': f_nameBox.get(),
+					'last_name': l_nameBox.get(),			
+					'birth_date': date_Box.get(),
+					'gender': gender.get(),
+					'rank': class_spinBox.get()
+					})
+		
+			
+		def register_rankPlayers():
+			round_table = db.table('round')
+			round_table.insert({
+					'first_name': f_nameBox.get(),
+					'last_name': l_nameBox.get(),												
+					'rank': class_spinBox.get()
+				})
+		
 
 		def query_database():	
 			global count
 			count = 0	
 			players_table = db.table('players')	
-			records = players_table.all()
+			serialized_players = players_table.all()
 
 			n = 0	
-			for record in records:
+			for record in serialized_players:
 				if n % 2 == 0:		
 					tree_frame.insert(parent="",index=n,iid=n,text='',
 						values=(								
-						records[n]['first_name'],
-						records[n]['last_name'],
-						records[n]['birth_date'],
-						records[n]['gender'],
-						records[n]['classement']),
+						serialized_players[n]['first_name'],
+						serialized_players[n]['last_name'],
+						serialized_players[n]['birth_date'],
+						serialized_players[n]['gender'],
+						serialized_players[n]['rank']),
 					tags=('evenrow',))
 					
 				else:
 					tree_frame.insert(parent="",index=n,iid=n,text='',
 						values=(				
-						records[n]['first_name'],
-						records[n]['last_name'],
-						records[n]['birth_date'],
-						records[n]['gender'],
-						records[n]['classement']),				
+						serialized_players[n]['first_name'],
+						serialized_players[n]['last_name'],
+						serialized_players[n]['birth_date'],
+						serialized_players[n]['gender'],
+						serialized_players[n]['rank']),				
 					tags=('oddrow',))
 				n += 1
 			
-		def remove_One_Entry():
-			#clear_Entries()
-			x = tree_frame.selection()[0]	
-			tree_frame.delete(x)	
-			
-			players_table = db.table('players')		
-			el = players_table.all()[int(x)]		
-			players_table.remove(doc_ids=[el.doc_id])
-			messagebox.showinfo("Deleted!", "Your record is deleted")
+		def remove_one_record():
 			clear_Entries()
+			x = tree_frame.selection()[0]				
+			
+			players_table = db.table('players')
+			round_table = db.table('round')
+			el = players_table.all()[int(x)]
+			elr = round_table.all()[int(x)]
+			players_table.remove(doc_ids=[el.doc_id])
+			round_table.remove(doc_ids=[elr.doc_id])
+			messagebox.showinfo("Deleted!", "Your record is deleted")
+			#clear_Entries()
 
 		def remove_all_Records():
-			response = messagebox.askyesno("Cette opératon est irréversible!!")	
+			response = messagebox.askyesno("Cette opération est irréversible!!")	
 			players_table = db.table('players')
 			if response == 1:
 				# Clear the treeview
-				for record in my_tree.get_children():
+				for record in tree_frame.get_children():
 					tree_frame.delete(record)
-				players_table.truncate()	
-
+					#print("records",record)
+				players_table.truncate()
+		
 		def clear_Entries():			
 			f_nameBox.delete(0,END)
 			l_nameBox.delete(0,END)	
@@ -169,16 +197,25 @@ class PlayerWindow:
 					'last_name': l_nameBox.get(),			
 					'birth_date': date_Box.get(),
 					'gender': gender.get(),
-					'classement': class_spinBox.get()
+					'rank': class_spinBox.get()
 					})
+			round_table.insert({
+					'first_name': f_nameBox.get(),
+					'last_name': l_nameBox.get(),					
+					'rank': class_spinBox.get()
+				})
+
+			
 
 			el = players_table.all()[int(x)]		
 			players_table.remove(doc_ids=[el.doc_id])
 
+			elr = round_table.all()[int(x)]		
+			round_table.remove(doc_ids=[elr.doc_id])
+
 			# refresh my_tree
 			tree_frame.delete(x)
-			#dt=date()
-			#str=dt.strftime("%d-%B-%Y")
+			
 			if count % 2 == 0:
 				tree_frame.insert(parent="",index=x,iid=x,text="",values=(						
 					f_nameBox.get(),
@@ -198,6 +235,9 @@ class PlayerWindow:
 					class_spinBox.get()),
 					tags=('oddrow',)
 					)
+			register_dataPlayers()
+			register_rankPlayers()
+
 			
 		# Selection curseur souris
 		def selectEntry(e):	
@@ -234,7 +274,7 @@ class PlayerWindow:
 		tree_frame.column("last_name",anchor=W,width=130)
 		tree_frame.column("birth_date",anchor=CENTER,width=130)
 		tree_frame.column("gender",anchor=CENTER,width=120)
-		tree_frame.column("classement",anchor=CENTER,width=130)
+		tree_frame.column("rank",anchor=CENTER,width=130)
 
 		# Create headings
 		tree_frame.heading("#0",text="",anchor=W)	
@@ -242,7 +282,7 @@ class PlayerWindow:
 		tree_frame.heading("last_name",text="Prénom",anchor=W)
 		tree_frame.heading("birth_date",text="Date de naissance",anchor=CENTER)
 		tree_frame.heading("gender",text="Sexe H/F",anchor=CENTER)
-		tree_frame.heading("classement",text="Elo",anchor=CENTER)
+		tree_frame.heading("rank",text="Elo",anchor=CENTER)
 
 		# ================Add Management Entries Boxes=================
 		data_frame = LabelFrame(playerFrame,text="Management Joueurs")
@@ -290,7 +330,7 @@ class PlayerWindow:
 		modif_button = Button(button_frame,text="Modifier",command=update_one_record) 
 		modif_button.grid(row=0,column=1,padx=10,pady=20)
 
-		rm_one_button = Button(button_frame,text="Supprimer",command=remove_One_Entry)
+		rm_one_button = Button(button_frame,text="Supprimer",command=remove_one_record)
 		rm_one_button.grid(row=0,column=2,padx=10,pady=20)
 
 		rm_all_button = Button(button_frame,text="Supprimer tout",command=remove_all_Records)
@@ -307,12 +347,8 @@ class PlayerWindow:
 
 		#createTable()
 		query_database()
-		"""		
-		quit_button = Button(self.playerFrame,text="Quitter",command=lambda: self.quitPlayerView())				
-		quit_button.grid(row=0,column=7,padx=10,pady=20)
-		self.hideFrames()				
-		self.playerFrame.pack()
-		"""
+		
+
 
 		
 	
