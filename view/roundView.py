@@ -11,18 +11,21 @@ from model.round import Round
 
 
 class RoundWindow:
-	def __init__(self):		
+	def __init__(self,root):		
 		self.date = None
 	
 	def roundView(self,roundFrame):
-		# Create a Treeview Frame						
+		# Create a Treeview Frame
+		roundFrame = Frame(self.root)
 		roundFrame.pack(padx=5,pady=20)
 		tree_frame = ttk.Treeview(roundFrame)
+
+		count = 0
 
 	# ==========================Database============================		
 
 		db = TinyDB('data/db_tournaments.json')	
-		players_table = db.table('round')
+		players_table = db.table('rounds')
 
 	# ===========================Style & frames=============================
 		style = ttk.Style()
@@ -58,17 +61,68 @@ class RoundWindow:
 # ===================== Fcts =================================
 
 		def genRound():
-			pass
+			
+			tupleList = list()
+			lowerTupleList = list()
+			upperTupleList = list()
+			tupleList = Round.getPlayerDatas()
+			i=0
+			while i < len(tupleList) / 2:
+				lowerTupleList.append(tupleList[i])
+				i += 1
+			j = 4
+			while j < len(tupleList):
+				upperTupleList.append(tupleList[j])
+				j += 1
 
+			#print(lowerTupleList)
+			#print(upperTupleList)
+
+			
+			
+			global count
+			
+			tree_frame.tag_configure('oddrow',background="#ecdab9")
+			tree_frame.tag_configure('evenrow',background="#a47053")
+			# Output to entry boxes
+			count = len(tree_frame.get_children())
+			
+			i = 0
+			while i < 4:
+				
+				if count % 2 == 0:
+					tree_frame.insert(parent="",index="end",iid=count,text="",values=(
+						i,																	
+						lowerTupleList[i][1],
+						class_WspinBox.get(),			
+						upperTupleList[i][1],
+						class_BspinBox.get(),
+						'0',
+						'0'),
+						tags=('evenrow',))
+								
+				else:
+					tree_frame.insert(parent="",index="end",iid=count,text="",values=(
+						i,																	
+						lowerTupleList[i][1],
+						class_WspinBox.get(),			
+						upperTupleList[i][1],
+						class_WspinBox.get(),
+						'0',
+						'0'),
+						tags=('oddrow',))					
+				count +=1
+				i+=1
+				
 		def startMatch():
 			date = Controller.getTime()
-			startPrint_label = Label(data_frame,text=date)
-			startPrint_label.grid(row=2,column=1,padx=40,pady=10)
+			startEntry.insert(0, date)
+			return
 
 		def endMatch():
 			date = Controller.getTime()
-			endPrint_label = Label(data_frame,text=date)
-			endPrint_label.grid(row=2,column=2,padx=40,pady=10)
+			endEntry.insert(0, date)
+			return
 
 		def remove_all_Records():
 			response = messagebox.askyesno("Cette opération est irréversible!!")	
@@ -79,6 +133,9 @@ class RoundWindow:
 					tree_frame.delete(record)
 					#print("records",record)
 				players_table.truncate()
+
+		def quitRoundWindow():			
+			roundFrame.destroy()
 		"""
 		def query_database():	
 			global count
@@ -148,47 +205,52 @@ class RoundWindow:
 		data_frame.pack(fill="x",padx=30,pady=20)
 
 		# Labels		
-		gen_button = Button(data_frame,text="Générer une ronde",command=Round.getPlayerDatas())
+		#gen_button = Button(data_frame,text="Générer une ronde",command=Round.getPlayerDatas)
+		gen_button = Button(data_frame,text="Générer une ronde",command=genRound)
 		gen_button.grid(row=1,column=0,padx=10,pady=20)
+
+		regen_button = Label(data_frame,text="Afficher une ronde")  #,command=Round.getPlayerDatas())
+		regen_button.grid(row=2,column=0,padx=10,pady=20)
+		class_WspinBox = Spinbox(data_frame,from_=0,to=50,font=("helvetica",10),width=4)
+		class_WspinBox.grid(row=3,column=0,padx=10,pady=10)
 
 		startButton = Button(data_frame,text="Début du match",command=startMatch)
 		startButton.grid(row=1,column=1,padx=10,pady=10)
-		
-
+		startEntry = Entry(data_frame,width=25)#,text=startMatch)
+		startEntry.grid(row=1,column=2,padx=10,pady=10)
 		
 		endButton = Button(data_frame,text="Fin du match",command=endMatch)
-		endButton.grid(row=1,column=2,padx=10,pady=10)
+		endButton.grid(row=1,column=3,padx=10,pady=10)
+		endEntry = Entry(data_frame,width=25)
+		endEntry.grid(row=1,column=4,padx=10,pady=10)
 		
 
 		regWhiteButton = Button(data_frame,text="Total joueur blanc")
-		regWhiteButton.grid(row=1,column=5,padx=10,pady=10)
+		regWhiteButton.grid(row=2,column=3,padx=10,pady=10)
+		scoreWhiteBox = Entry(data_frame,width=10)
+		scoreWhiteBox.grid(row=2,column=4,padx=10,pady=10)
 
 		regBlackButton = Button(data_frame,text="Total joueur noir")
-		regBlackButton.grid(row=1,column=6,padx=10,pady=10)
+		regBlackButton.grid(row=3,column=3,padx=10,pady=10)
+		scoreBlackBox = Entry(data_frame,width=10)
+		scoreBlackBox.grid(row=3,column=4,padx=10,pady=10)
+		
 
 		spinWhite_label = Label(data_frame,text="Score joueur blanc")
-		spinWhite_label.grid(row=2,column=0,padx=0,pady=10)
-		
+		spinWhite_label.grid(row=2,column=1,padx=0,pady=10)		
 		class_WspinBox = Spinbox(data_frame,values=(0,0.5,1),font=("helvetica",10),width=4)
-		class_WspinBox.grid(row=3,column=0,padx=10,pady=10)
+		class_WspinBox.grid(row=3,column=1,padx=10,pady=10)
 
 		spinBlack_label = Label(data_frame,text="Score joueur noir")
-		spinBlack_label.grid(row=2,column=1,padx=5,pady=10)
-
+		spinBlack_label.grid(row=2,column=2,padx=5,pady=10)
 		class_BspinBox = Spinbox(data_frame,values=(0,0.5,1),font=("helvetica",10),width=4)
-		class_BspinBox.grid(row=3,column=1,padx=10,pady=10)
-
-		scoreWhiteBox = Entry(data_frame,width=25)
-		scoreWhiteBox.grid(row=2,column=5,padx=10,pady=10)
-
-		scoreBlackBox = Entry(data_frame,width=25)
-		scoreBlackBox.grid(row=2,column=6,padx=10,pady=10)
+		class_BspinBox.grid(row=3,column=2,padx=10,pady=10)
 
 		rm_all_button = Button(data_frame,text="Supprimer tout",command=remove_all_Records)
-		rm_all_button.grid(row=3,column=7,padx=10,pady=20)				
+		rm_all_button.grid(row=2,column=5,padx=10,pady=20)				
 
-		quit_button = Button(data_frame,text="Quitter",command=lambda: self.quitRoundView())				
-		quit_button.grid(row=3,column=8,padx=20,pady=20)
+		quit_button = Button(data_frame,text="Quitter",command=quitRoundWindow)				
+		quit_button.grid(row=3,column=5,padx=20,pady=20)
 
 		#query_database()
 

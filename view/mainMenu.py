@@ -25,7 +25,7 @@ class WinMenu:
 		
 		self.displayMenu()
 		
-		self.playerFrame = Frame(self.root,width=1024,height=760,bg='#fff2cc')
+		self.playerFrame = Frame(self.root,width=1024,height=760,bg='#fff2cc')		
 		self.tourFrame   = Frame(self.root,width=1024,height=760,bg='#400000')
 		self.roundFrame  = Frame(self.root,width=1024,height=760,bg='#b2dc76')
 		
@@ -68,58 +68,27 @@ class WinMenu:
 		menuHelp.add_command(label="A propos")#,command=self.show_about)
 
 		self.root.config(menu=menuBar)
+		
 
-		#turnManagement()
-
-	def display_playerWindow(self,playerFrame):
-		#self.hideFrames()
-		self.clean_window(playerFrame)
+	def display_playerWindow(self,root):		
+		self.clean_window(self.root)
 		PlayerWindow.playerView(self,self.playerFrame)
 
-	def display_tourWindow(self,tourFrame):
-		#self.hideFrames()
-		self.clean_window(tourFrame)						
+	def display_tourWindow(self,root):		
+		self.clean_window(self.root)						
 		TourWindow.tourView(self,self.tourFrame)
 
-	def display_roundWindow(self,roundFrame):
-		#self.hideFrames()
-		self.clean_window(roundFrame)						
+	def display_roundWindow(self,root):		
+		self.clean_window(self.root)						
 		RoundWindow.roundView(self,self.roundFrame)
 		
 	
-	def quitPlayerView(self):		
-		self.playerFrame.pack_forget()		
-		self.displayMenu()	
-
-	def quitTourView(self):		
-		self.tourFrame.pack_forget()
-		self.displayMenu()
-
-	def quitRoundView(self):		
-		self.roundFrame.pack_forget()
-		self.displayMenu()
-
-	def hideFrames(self):		
-		self.playerFrame.pack_forget()
-		self.tourFrame.pack_forget()
-		self.roundFrame.pack_forget()
-
-	def clean_window(self,p):
-		self.hideFrames()
-		for widget in p.winfo_children():			
+	def clean_window(self,root):		
+		for widget in root.winfo_children():			
 			widget.destroy()			
 		self.displayMenu()
 
-	"""
-	def clearFrame():
-    # destroy all widgets from frame
-    for widget in frame.winfo_children():
-       widget.destroy()
-    
-    # this will clear frame and frame will be empty
-    # if you want to hide the empty panel then
-    frame.pack_forget()
-    """
+	
 
 
 		

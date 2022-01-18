@@ -11,14 +11,21 @@ class Round:
 		self.score 			= score		
 		self.startTime 		= startTime
 		self.endTime 		= endTime
-
-		self.upperList = []
-		self.lowerList = []
+		self.serialized_rounds = {
+							'matchName':	getName.matchName,
+							'playerName':	getPlayerName().playerName,
+							'score':		getScore.startTime,
+							'startTime':	getTime().startTime,							
+							'endTime':		getTime().endTime
+							} 
+		self.tupleList = list()
+		self.upperTupleList = list()
+		self.lowerTupleList = list()
 
 	def initFirstRound():
 		# ==========================Database============================		
 		"""
-		serialized_round = {
+		serialized_rounds = {
 							'matchName':	getName.matchName,
 							'playerName':	getPlayerName().playerName,
 							'score':		getScore.startTime,
@@ -30,27 +37,36 @@ class Round:
 
 	def getPlayerDatas():				
 		db = TinyDB('data/db_tournaments.json')		
-		round_table = db.table('round')
+		round_table = db.table('rounds')
 		serialized_rounds = round_table.all()
-		
-		
+
 		tupleList = list()
+		
+
 		binome = ()		# Tuple				
 		i = 0
-		
-		query0 = 'first_name'
-		query1 = 'last_name'
-		query2 = 'rank'
+		query0 = 'id'			# elt0
+		query1 = 'first_name'	#{elt1,								
+		query2 = 'last_name'	# elt1}
+		query3 = 'rank'			# elt2
 		while i < len(serialized_rounds):
-			binome =(serialized_rounds[i].get(query0)+" "+serialized_rounds[i].get(query1), int(serialized_rounds[i].get(query2)))			
+			binome =(int(serialized_rounds[i].get(query0)),serialized_rounds[i].get(query1)+" "+serialized_rounds[i].get(query2), int(serialized_rounds[i].get(query3)))			
 			tupleList.insert(i,binome)						
 			i += 1
 		# Sort(tupleList)
-		tupleList.sort(key = lambda x: x[1])   #index 2 means third element
+		tupleList.sort(key = lambda x: x[2])   #index 2 means third element
+		#print(tupleList)
 		# Fraction in two lists
-		n = 4
-		lower_upperList = [tupleList[i:i + n] for i in range(0, len(tupleList), n)]
-		print(lower_upperList)
+		#print("tupleList[0]: ",tupleList[0][2])
+
+		return tupleList
+		
+		
+
+			
+
+		
+		
 
 		
 		

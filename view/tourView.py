@@ -12,11 +12,12 @@ from tinydb.operations import delete
 
 
 class TourWindow:
-	def __init__(self):		
+	def __init__(self,root):		
 		pass
 	
 	def tourView(self,tourFrame):
-		# Create a Treeview Frame		
+		# Create a Treeview Frame
+		tourFrame = Frame(self.root)		
 		tourFrame.pack(pady=20)		
 		tree_frame = ttk.Treeview(tourFrame)
 		
@@ -234,8 +235,8 @@ class TourWindow:
 					tags=('oddrow',))
 				n += 1
 
-		def quitTournamentWindow(self):			
-			tournament_frame.destroy()
+		def quitTourWindow():			
+			tourFrame.destroy()
 
 
 		
@@ -332,7 +333,7 @@ class TourWindow:
 		clear_button = Button(button_frame,text="Clear",command=clear_Entries)
 		clear_button.grid(row=0,column=5,padx=10,pady=20)
 
-		quit_button = Button(button_frame,text="Quitter",command=lambda: self.quitTourView())				
+		quit_button = Button(button_frame,text="Quitter",command=quitTourWindow)				
 		quit_button.grid(row=0,column=7,padx=10,pady=20)
 
 		# Bind the treeview
