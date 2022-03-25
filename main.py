@@ -1,14 +1,12 @@
-from view.mainMenu import WinMenu
-from model.round import Round
+from control.controller import Controller
 
 
 
 def main():
-	
-	WinMenu()
-	#Round()
-	#Round.initFirstRound()
+    start = Controller()
+    start.run_tournamentApp()    
+    
 
 
 if __name__ == '__main__':
-	main()
+    main()
