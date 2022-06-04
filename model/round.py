@@ -6,129 +6,73 @@ from tinydb.operations import set
 import copy
 
 
-
 class Round:
-    def __init__(self,name,start_time,round_list,end_time):
-        self.name = name
-        self.start_time = start_time
-        self.round_list = round_list
-        self.end_time = end_time
-
-
-
-    def initFirstRound(self):
-        pass
-        """
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
-
-        serialized_players = players_table.all()
-        serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le classement
-        firstRoundList = list()
-
-        i = 0
-        playerSet = list()
-        challengers = list()
-
-        while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview
-            challengers = [serialized_players[i].get('id'),
-                           (serialized_players[i].get('first_name') + " " + serialized_players[i].get('last_name')),
-                           serialized_players[i].get('rank')]
-
-            # challengers = [serialized_players[i].get('id'), serialized_players[i].get('score')]
-            firstRoundList.insert(i, challengers)  # Insertion challengers à l'indice i
-            i += 1
-        #print(firstRoundList)
-        return firstRoundList
-
     
+    def __init__(self, *args):
+        self.players_list = []
+        self.upper_list = []
+        self.lower_list = []
+        self.serialized_round_data = []
+        self.matches_list = []
+        #self.PLAYER_FIELD = ('Nom', 'Prénom', 'Date de naissance', 'Sexe', 'Classement')
 
-    def initSecondRound(self):
+        for element in args:
+            self.first_name = element[0]
+            self.last_name = element[1]
+            #self.start_time = element[2]
+            #self.end_time = element[3]
+            self.matches_list = element[2]
+            self.id = element[3]
+
+
+    def get_round_list2(self, data2):
         db = TinyDB('data/db_tournaments.json')
-        # round_table = db.table('rounds')
+        tournaments_table = db.table('tournaments')
+        Round.j += 1
+        if Round.j <= 4:
+            Round.round2.append(data2)
+        if Round.j == 4:
+            Round.all_rounds.append(Round.round2)
+            #tournaments_table.update({'rounds_list': Round.all_rounds})  # Round.all_rounds})
+            Round.reg_db_rounds(self)
+
+    def get_round_player_scores(self,data_player_list2):
+        db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
-        orderedList = Round.getScores()
-        id = orderedList[0][0]
-        # print("id:",id)
-        User = Query()
-        tempList = list()
-        challengers = list()
+        #print("date_player_list2:",data_player_list2)
         i = 0
-        while i < len(orderedList):
-            # print("i:",i)
-            # print("idListi : ",orderedList[i][0])
-            l = orderedList[i][0]
-            tempList.append(players_table.search(User.id == l))
-            # print("1:",players_table.search(User.id==l))
-            # print("tmp: ",tempList[i])
-            i += 1
-        i = 0
-        secondList = list()
-        serialized_players = players_table.all()
-        # serialized_players.sort(key=operator.itemgetter('rank'),reverse=True)  # Tri suivant le classement
-        while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview
-            challengers = ([serialized_players[i].get('id'),
-                            (serialized_players[i].get('first_name') + " " + serialized_players[i].get('last_name')),
-                            serialized_players[i].get('rank'), serialized_players[i].get('score')])
-            secondList.insert(i, challengers)
+        while i < len(data_player_list2):
+            #print("score:",data_player_list2[i][1])
+            #print("id:", data_player_list2[i][0])
+            players_table.update({'score': data_player_list2[i][1]}, where('id') == data_player_list2[i][0])
             i += 1
 
-        score1List = list()
-        score05List = list()
-        score0List = list()
-        i = 0
 
-        # for elt in secondList:
-        while i < len(secondList):
-            for elt in secondList:
-                if elt[3] == '1':
-                    score1List.append(elt)
-                    score1List.sort(key=lambda x: x[2], reverse=True)
-                elif elt[3] == '0.5':
-                    score05List.append(elt)
-                    score05List.sort(key=lambda x: x[2], reverse=True)
-                elif elt[3] == '0':
-                    score0List.append(elt)
-                    score0List.sort(key=lambda x: x[2], reverse=True)
+
+
+    def reg_db_rounds(self):
+        db = TinyDB('data/db_tournaments.json')
+        tournaments_table = db.table('tournaments')
+        tournaments_table.update({'rounds_list': Round.all_rounds})  # Round.all_rounds})
+
+    def create_players_list(self):
+        #Read all players data
+        all_players_data = Player.read_data()
+
+        # Get dictionary values for each players
+        for element in all_players_data:
+            player_data = []
+            i = 0
+            for key in self.FRENCH_NAME_OF_PLAYER_FIELD:
+                player_data.append(element.get(key))
                 i += 1
 
-        secondRoundList = list()
-        secondRoundList = score1List + score05List + score0List
-        # print("secondRoundList: ",secondRoundList)
-        return secondRoundList
+            player_data.append(element.get('score'))
+            player_data.append(element.get('id'))
 
-    
-    def regDbMatch(self, match, x):
-        db = TinyDB('data/db_tournaments.json')
-        tournament_round_list = list()
-        rounds_list = list()
-        players_table = db.table('players')
-        tournaments_table = db.table('tournaments')
-
-        # Match = tuple de deux listes : ([Joueur1,score],[Joueur2,score])
-        # Matchs multiples = liste sur l'instance du tour: {Round1{1,{[(m1),(m2),(m3),(m4)] },{}...
-
-        User = Query()
-        players_table.update({'score': match[0][1]}, User.id == match[0][0])  # Mise à jour db score joueur 1
-        players_table.update({'score': match[1][1]}, User.id == match[1][0])  # Mise à jour db score joueur 2
-
-        x = int(x) + 1  # n° ligne et de match
-        x = str(x)
-        # roundList = match
-        #rounds_list = match
-        # roundMatchList
-
-        rounds_list.append({'match' + x: match})  # db: insert({'match + n°', tuple(id,score)})
-        # tournament_round_list.append(round_list)
-        # return tournament_round_list
-        self.roundMatchList = rounds_list
-        #print("round_list: ",rounds_list)
-        #User = Query()
-        #tournaments_table.search(where(User.place_name == 'London'))
-        #tournaments_table.insert({'roundMatchList': self.roundMatchList})
-
-        # Tournaments.regTournament(round)
-        # return round_list
-    """
+            # Create instance for each player
+            player = Player(player_data)
+            self.players_list.append(player)
+        return self.players_list
 
 

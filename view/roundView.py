@@ -9,32 +9,37 @@ from datetime import datetime, timedelta
 from model.player import Player
 # from control.controller import Controller
 from model.round import Round
-from model.tournament import Tournaments
-# from control.tournamentController import TournamentController
+from model.tournament import Tournament
+from control.tournamentController import TournamentController
+from control.playerController import PlayerController
+from control.roundController import RoundController
+
 import operator
 
 
 class RoundView:
     round_list = []
+    round_list1 = []
+    round_list2 = []
+    data_player_list2 = []
 
-
-    def __init__(self,round_list=list()):
-        # self.date = None
+    def __init__(self, root, round_list=list()):  # ,round_list
+        self.root = root
         self.round_list = round_list
-
-    def roundView(self, roundFrame):
-        # Create a Treeview Frame
-        roundFrame = Frame(self.root_window)
-        roundFrame.pack(padx=5, pady=20)
-        tree_frame = ttk.Treeview(roundFrame)
-        round_list = []
+        self.tree_frame = None
+        self.rd_frame = None
+        self.tournament_name = None
+        self.ROUND_FIELDS = ("matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
+                             "last_name2", "rank2", "score2")
+        self.player_controller = PlayerController(self.root)
+        self.round_controller = RoundController(self.root)
         count = 0
 
-        # ==========================Database============================
+    def display_round_window(self):
 
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
-        tournaments_table = db.table('tournaments')
+        self.r_frame = Frame(self.root)
+        self.tree_frame = ttk.Treeview(self.r_frame)
+        self.r_frame.pack(padx=5, pady=20)
 
         # ===========================Style & frames=============================
         style = ttk.Style()
@@ -50,351 +55,168 @@ class RoundView:
         # Change selected color
         style.map("Treeview", background=[("selected", "brown")])
 
-        # Create a Treeview Scrollbar
-        tree_scroll = Scrollbar(roundFrame)
+        tree_scroll = Scrollbar(self.r_frame)
+        tree_scroll.config(command=self.tree_frame.yview)
         tree_scroll.pack(side=RIGHT, fill=Y)
-
-        # Configure the Scrollbar
-        tree_frame = ttk.Treeview(roundFrame, yscrollcommand=tree_scroll.set, select="extended")
-
-        tree_scroll.config(command=tree_frame.yview)
-
+        self.tree_frame = ttk.Treeview(self.r_frame, yscrollcommand=tree_scroll.set, select="extended")
+        self.tree_frame.pack(pady=20)
         # Define Columns
-        tree_frame["columns"] = (
-            "matchs", "player_class1", "player_rank1", "score_class1", "player_class2", "player_rank2",
-            "score_class2")
+        # self.tree_frame["columns"] = (
+        # "matchs", "id1", "player_class1", "player_rank1", "score_class1", "id2", "player_class2", "player_rank2",
+        # "score_class2")
+        self.tree_frame["columns"] = self.ROUND_FIELDS
+        self.tree_frame.column('#0', width=0, stretch=NO)
+        self.tree_frame.heading('#0', text='', anchor=CENTER)
 
         # Create Striped Row Tags
-        tree_frame.tag_configure('oddrow', background="#ecdab9")
-        tree_frame.tag_configure('evenrow', background="#a47053")
-        tree_frame.pack(padx=50, pady=20)
+        self.tree_frame.tag_configure('oddrow', background="#ecdab9")
+        self.tree_frame.tag_configure('evenrow', background="#a47053")
 
-        # ================= Classement et préparation à l'affichage ===============
-        def init_first_round(self):  # Renvoie une liste comprenant (Id, Nom+Prénom, rang)
-
-            serialized_players = players_table.all()
-            serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le classement
-            firstRoundList = list()
-
-            i = 0
-            challengers = list()
-
-            while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview
-                challengers = [serialized_players[i].get('id'),
-                               (serialized_players[i].get('first_name') + " " + serialized_players[i].get('last_name')),
-                               serialized_players[i].get('rank')]
-
-                firstRoundList.insert(i, challengers)  # Insertion challengers à l'indice i
-                i += 1
-
-            return firstRoundList
-
-        # Retourne une liste classée par ordre gagnants(points) et par classement(en cas égalité)
-        def init_second_round(self):
-            serialized_players = players_table.all()
-            # orderedList = getScores(self)   # Liste classée par scores et par rang
-            # print("orderedList: ", orderedList)
-
-            challengers = list()
-            i = 0
-            secondList = list()
-            # serialized_players = players_table.all()
-            # serialized_players.sort(key=operator.itemgetter('rank'),reverse=True)  # Tri suivant le classement
-            while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview
-                challengers = ([serialized_players[i].get('id'),
-                                (serialized_players[i].get('first_name') + " " + serialized_players[i].get(
-                                    'last_name')),
-                                serialized_players[i].get('rank'),
-                                serialized_players[i].get('score')])
-                secondList.insert(i, challengers)
-                i += 1
-
-            score1List = list()
-            score05List = list()
-            score0List = list()
-            i = 0
-
-            # for elt in secondList:
-            while i < len(secondList):
-                for elt in secondList:
-                    if elt[3] == '1':
-                        score1List.append(elt)
-                        score1List.sort(key=lambda x: x[2], reverse=True)
-                    elif elt[3] == '0.5':
-                        score05List.append(elt)
-                        score05List.sort(key=lambda x: x[2], reverse=True)
-                    elif elt[3] == '0':
-                        score0List.append(elt)
-                        score0List.sort(key=lambda x: x[2], reverse=True)
-                    i += 1
-
-            secondRoundList = list()
-            secondRoundList = score1List + score05List + score0List
-            return secondRoundList
-
-        # Répartition affichage dans le treeview depuis la db
-        def gen_round1(self):
-            tournaments_table = db.table('tournaments')
-            serialized_players = players_table.all()
-
-            firstRoundList = list()
-            lowerList = list()
-            upperList = list()
-            firstRoundList = init_first_round(self)
-
-            i = 0
-            while i < len(firstRoundList) / 2:
-                upperList.append(firstRoundList[i])
-                i += 1
-
-            i = int(len(firstRoundList) / 2)
-            while i < len(firstRoundList):
-                lowerList.append(firstRoundList[i])
-                i += 1
-
-            global count
-
-            tree_frame.tag_configure('oddrow', background="#ecdab9")
-            tree_frame.tag_configure('evenrow', background="#a47053")
-            # Output to entry boxes
-            count = len(tree_frame.get_children())
-
-            i = 0
-            while i < len(firstRoundList) / 2:
-
-                if count % 2 == 0:
-                    tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                        "Match " + str(i + 1),
-                        upperList[i][1],
-                        upperList[i][2],
-                        score1_spinBox.get(),
-                        lowerList[i][1],
-                        lowerList[i][2],
-                        score2_spinBox.get(),
-                    ),
-                                      tags=('evenrow',))
-
-                else:
-                    tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                        "Match " + str(i + 1),
-                        upperList[i][1],
-                        upperList[i][2],
-                        score1_spinBox.get(),
-                        lowerList[i][1],
-                        lowerList[i][2],
-                        score2_spinBox.get(),
-                    ),
-                                      tags=('oddrow',))
-                count += 1
-                i += 1
-
-            s = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            tournaments_table.update({'start_time': s})
-
-        # ===========Validation des entrées scores button: Valider1==================
-        def update_player_table1(self):
-            # db = TinyDB('data/db_tournaments.json')
-            # tournaments_table = db.table('tournaments')
-
-            first_round_list = list()
-            lower_list = list()
-            upper_list = list()
-            match = ()
-
-            first_round_list = init_first_round(self)
-            i = 0
-
-            while i < len(first_round_list) / 2:
-                upper_list.append(first_round_list[int(i)])
-                i += 1
-
-            i = len(first_round_list) / 2
-
-            i = int(i)
-            while i < len(first_round_list):
-                lower_list.append(first_round_list[int(i)])
-                i += 1
-
-            x = tree_frame.focus()
-            print("x:", x)
-            # Affiche la valeur du spinbox dans le treeframe
-            tree_frame.set(x, '#4', score1_spinBox.get())  # (#4 ou colonne 'score_class1')
-            tree_frame.set(x, '#7', score2_spinBox.get())
-            x = int(x)
-
-            # Enregistrement des scores joueurs dans la dataBase à chaques itérations
-            players_table.update({'score': score1_spinBox.get()}, where('id') == upper_list[x][0])
-            players_table.update({'score': score2_spinBox.get()}, where('id') == lower_list[x][0])
-
-            up_list = [upper_list[int(x)][1], score1_spinBox.get()]  # id + score
-            low_list = [lower_list[int(x)][1], score2_spinBox.get()]  # id + score
-
-            # match est un tuple de 2 listes
-            match = (up_list, low_list)
-            round_list.append(match)
-            print("Match: ", match)
-            print("x_end:", x)
-            print("round_list: ",round_list)
-            reg_db_round(self,round_list)
-
-        def gen_round2():
-            tree_frame.tag_configure('oddrow', background="#ecdab9")
-            tree_frame.tag_configure('evenrow', background="#a47053")
-            global count
-            secondRoundList = list()
-            secondRoundList = init_second_round(self)
-            count = len(tree_frame.get_children())
-            print("secondRoundList: ", secondRoundList)
-            j = 0
-            i = 0
-            while j < len(secondRoundList) / 2:  # 2 iterations
-                if count % 2 == 0:
-                    tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                        "Match " + str(count + 1),
-                        secondRoundList[i][1],  # nom
-                        secondRoundList[i][2],  # rang
-                        secondRoundList[i][3],  # score
-                        secondRoundList[i + 1][1],  # nom2...
-                        secondRoundList[i + 1][2],
-                        secondRoundList[i + 1][3],
-                    ),
-                                      tags=('evenrow',))
-                else:
-                    tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                        "Match " + str(count + 1),
-                        secondRoundList[i][1],
-                        secondRoundList[i][2],
-                        secondRoundList[i][3],
-                        secondRoundList[i + 1][1],
-                        secondRoundList[i + 1][2],
-                        secondRoundList[i + 1][3],
-                    ),
-                                      tags=('oddrow',))
-                count += 1
-                i += 2
-                j += 1
-
-        def clear_all_Records():
-            # Clear the treeview
-            for record in tree_frame.get_children():
-                tree_frame.delete(record)
-
-        def quitRoundWindow():
-            roundFrame.destroy()
-
-
-        def updateAndSaveRound2():
-            secondRoundList = list()
-            secondRoundList = Round.initSecondRound(self)
-            i = 0
-            x = tree_frame.selection()[0]
-            # tree_frame.delete(x)
-            print("xxx: ", int(x))
-
-            x = int(x)
-            y = x
-            if x == 1:
-                y += 1
-            if x == 2:
-                y += 2
-            if x == 3:
-                y += 3
-            X = y + 1
-
-            if x % 2 == 0:
-                tree_frame.insert(parent="", index=int(x), iid=int(x), text="", values=(
-                    "Match " + str(x + 1),
-                    secondRoundList[y][0],
-                    secondRoundList[y][1],  # nom                      # rang
-                    score1_spinBox.get(),
-                    secondRoundList[X][0],
-                    secondRoundList[X][1],
-                    score2_spinBox.get(),), tags=('evenrow',))  # Score
-                print("x :", x)
-                print("X :", X)
-
-            else:
-                tree_frame.insert(parent="", index=int(x), iid=int(x), text="", values=(
-                    "Match " + str(x + 1),
-                    secondRoundList[y][0],  # id
-                    secondRoundList[y][1],  # nom                      # rang
-                    score1_spinBox.get(),
-                    secondRoundList[X][0],  # id
-                    secondRoundList[X][1],  # nom                      # rang
-                    score2_spinBox.get(),), tags=('oddrow',))
-                print("x :", x)
-                print("X :", X)
-
-        def clear_Entries():
-            score1_spinBox.delete(0, END)
-            score2_spinBox.delete(0, END)
-
-        def reg_db_round(self,round_list):
-            tournaments_table.update({'rounds_list': round_list})
-
-        def get_end_round():
-            e = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            tournaments_table.update({'end_time': e})
-
-        # =====================Fill the Treeview======================
-
-        # Format columns
-        tree_frame.column("#0", width=0, stretch=NO)
-        tree_frame.column("matchs", anchor=W, width=50)
-        tree_frame.column("player_class1", anchor=CENTER, width=200)
-        tree_frame.column("player_rank1", anchor=CENTER, width=50)
-        tree_frame.column("score_class1", anchor=CENTER, width=50)
-        tree_frame.column("player_class2", anchor=CENTER, width=200)
-        tree_frame.column("player_rank2", anchor=CENTER, width=50)
-        tree_frame.column("score_class2", anchor=CENTER, width=50)
-
-        # Create headings
-        tree_frame.heading("#0", text="", anchor=W)
-        tree_frame.heading("matchs", text="Matchs", anchor=W)
-        tree_frame.heading("player_class1", text="Joueur class1", anchor=CENTER)
-        tree_frame.heading("player_rank1", text="Elo", anchor=CENTER)
-        tree_frame.heading("score_class1", text="Score", anchor=CENTER)
-        tree_frame.heading("player_class2", text="Joueur class2", anchor=CENTER)
-        tree_frame.heading("player_rank2", text="Elo", anchor=CENTER)
-        tree_frame.heading("score_class2", text="Score", anchor=CENTER)
+        for elt in self.ROUND_FIELDS:
+            self.tree_frame.column(elt, anchor=CENTER, width=100)
+            self.tree_frame.heading(elt, text=elt, anchor=CENTER)
+        
 
         # ================Add Management Entries Boxes==========================
 
-        data_frame = LabelFrame(roundFrame, text="Gestion des rondes")
-        data_frame.pack(fill="x", padx=30, pady=20)
+    def round_data_set(self, tournament_name):
+        # Create new frame
+        self.rd_frame = Frame(self.root)
+        self.rd_frame.pack()
 
-        gen1_button = Button(data_frame, text="Générer ronde 1",command=lambda: gen_round1(self))
-        gen1_button.grid(row=1, column=0, padx=10, pady=20)
+        spin_joueur1_label = Label(self.rd_frame, text="Score class 1")
+        spin_joueur1_label.grid(row=1, column=2, padx=0, pady=10)
 
+        spin_joueur2_label = Label(self.rd_frame, text="Score class 2")
+        spin_joueur2_label.grid(row=1, column=3, padx=5, pady=10)
 
+        input_list = list()
 
-        gen234_button = Button(data_frame, text="Générer ronde 234", command=gen_round2)
-        gen234_button.grid(row=2, column=0, padx=10, pady=20)
+        #for element in self.ROUND_FIELDS:
+            #current_element = StringVar()
+            #current_element.set(element)
 
-        spinWhite_label = Label(data_frame, text="Score class 1")
-        spinWhite_label.grid(row=1, column=2, padx=0, pady=10)
-        score1_spinBox = Spinbox(data_frame, values=(0, 0.5, 1), font=("helvetica", 10), width=4)
-        score1_spinBox.grid(row=2, column=2, padx=10, pady=10)
+        score1_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
+        score1_spin_box.grid(row=2, column=2, padx=10, pady=10)
+        input_list.append(score1_spin_box)
 
-        spinBlack_label = Label(data_frame, text="Score class 2")
-        spinBlack_label.grid(row=1, column=3, padx=5, pady=10)
-        score2_spinBox = Spinbox(data_frame, values=(0, 0.5, 1), font=("helvetica", 10), width=4)
-        score2_spinBox.grid(row=2, column=3, padx=10, pady=10)
+        score2_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
+        score2_spin_box.grid(row=2, column=3, padx=10, pady=10)
+        input_list.append(score2_spin_box)
 
-        valid_button1 = Button(data_frame, text="Valider1", command=lambda: update_player_table1(self))
-        valid_button1.grid(row=1, column=4, padx=10, pady=20)
+           
+        valid_button1 = Button(self.rd_frame, text="Valider",
+                                       command=lambda: self.round_controller.add_valid_button_action(input_list,
+                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box, tournament_name, valid_button1))
+        valid_button1.grid(row=2, column=4, padx=10, pady=20)
 
-        valid_button2 = Button(data_frame, text="Valider2", command=updateAndSaveRound2)
-        valid_button2.grid(row=2, column=4, padx=10, pady=20)
+        
 
-        clear_all_button = Button(data_frame, text="Effacer", command=clear_all_Records)
-        clear_all_button.grid(row=4, column=3, padx=10, pady=20)
-
-        test_button = Button(data_frame, text="Enregistrer la ronde",command=reg_db_round(self,round_list))
-        test_button.grid(row=4, column=4, padx=10, pady=20)
-
-        regRoundButton = Button(data_frame,text="Cloturer",command=get_end_round)
-        regRoundButton.grid(row=5, column=4, padx=10, pady=20)
-
-        quit_button = Button(data_frame, text="Quitter", command=quitRoundWindow)
+        quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=4, column=5, padx=20, pady=20)
+    
+
+    # ==========================Database============================
+
+    def create_tournament_db(self):
+        db = TinyDB('data/db_tournaments.json')
+        players_table = db.table('players')
+        tournaments_table = db.table('tournaments')
+
+            
+
+    def init_third_round(self):
+        db = TinyDB('data/db_tournaments.json')
+        players_table = db.table('players')
+        serialized_players = players_table.all()
+
+        thirdList = list()
+        serialized_players.sort(key=operator.itemgetter('Classement'), reverse=True)  # Tri suivant le rang
+        print("serial:", serialized_players)
+        serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
+
+        i = 0
+        while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview ordre = id
+            challengers = ([serialized_players[i].get('id'),
+                            (serialized_players[i].get('first_name') + ' ' + serialized_players[i].get(
+                                'last_name')),
+                            serialized_players[i].get('Classement'),
+                            serialized_players[i].get('score')])
+            thirdList.insert(i, challengers)
+            i += 1
+
+        thirdRoundList = thirdList
+        return thirdRoundList
+
+    
+    def gen_round1(self, t):
+        # Create new frame
+        self.rd_frame = Frame(self.root)
+        self.rd_frame.pack()
+        #self.tree_frame = ttk.Treeview(self.rd_frame)
+        #self.tree_frame = RoundView.display_round_window(self)
+
+        #print("t_round:",t)
+        #self.r_frame = Frame(self.root)
+
+
+
+        #self.r_frame.pack()
+        # self.tree_frame = RoundView.round_view(self)
+        #self.tree_frame.tag_configure('oddrow', background="#ecdab9")
+        #self.tree_frame.tag_configure('evenrow', background="#a47053")
+
+        lowerList = list()
+        upperList = list()
+        sorted_round_list = RoundController.init_first_round(self, t)
+        #print("tournament_first_round_list:",firstRoundList)
+        j = 0
+        while j < len(sorted_round_list) / 2:
+            upperList.append(sorted_round_list[j])
+            j += 1
+        #print("t/2:",upperList)
+
+        j = int(len(sorted_round_list) / 2)
+        while j < len(sorted_round_list):
+            lowerList.append(sorted_round_list[j])
+            j += 1
+        #print("t/2:",lowerList)
+        #global count
+
+        # Output to entry boxes
+        count = len(self.tree_frame.get_children())
+
+        i = 0
+        while i < len(sorted_round_list) / 2:
+
+            if count % 2 == 0:
+                self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Match " + str(i + 1),
+                    upperList[i][0],  # name
+                    upperList[i][1],  # last_name
+                    upperList[i][2],  # classement
+                    upperList[i][3],  # float(score1_spinBox.get()): score
+                    lowerList[i][0],
+                    lowerList[i][1],
+                    lowerList[i][2],
+                    lowerList[i][3],  # float(score2_spinBox.get()),
+                    ),
+                                           tags=('evenrow',))
+
+            else:
+                self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Match " + str(i + 1),
+                    upperList[i][0],
+                    upperList[i][1],
+                    upperList[i][2],
+                    upperList[i][3],  # float(score1_spinBox.get()),
+                    lowerList[i][0],
+                    lowerList[i][1],
+                    lowerList[i][2],
+                    lowerList[i][3],  # float(score2_spinBox.get()),
+                    ),
+                                           tags=('oddrow',))
+            count += 1
+            i += 1
+
+   

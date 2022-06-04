@@ -1,11 +1,8 @@
-from control.controller import Controller
-
-
+from window import Window
 
 def main():
-    start = Controller()
-    start.run_tournamentApp()    
-    
+    app = Window()
+    app.init_window()
 
 
 if __name__ == '__main__':

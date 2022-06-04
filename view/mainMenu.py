@@ -1,101 +1,81 @@
-import tkinter as tk
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
 from tkinter.messagebox import *
-from view.playerView import PlayerView
 from view.tournamentView import TournamentView
+from view.playerView import PlayerView
 from view.roundView import RoundView
+
+from control.menuController import MenuController
+from control.tournamentController import TournamentController
+
+from tinydb import TinyDB, where
+
 
 class MainMenu:
 
-	def __init__(self,root_window):
-		self.root_window = root_window
+    def __init__(self, root):
+        self.root = root
+        self.player_window = PlayerView(self.root)
+        self.tournament_window = TournamentView(self.root)
+        self.round_window = RoundView(self.root)
 
-		self.playerFrame = Frame(self.root_window, width=1024, height=760, bg='#fff2cc')
-		self.tourFrame = Frame(self.root_window, width=1024, height=760, bg='#400000')
-		self.roundFrame = Frame(self.root_window, width=1024, height=960, bg='#9a031e')
+        #self.tournament_controller = TournamentController(self.root)
 
+    def display_menu_window(self):
+        menuBar = Menu(self.root)
+        menuFile = Menu(menuBar)
+        menuEdition = Menu(menuBar)
+        menuOutils = Menu(menuBar)
+        menuHelp = Menu(menuBar)
 
+        menuBar.add_cascade(label="Fichier", menu=menuFile)
+        menuBar.add_cascade(label="Edition", menu=menuEdition)
+        menuBar.add_cascade(label="Outils", menu=menuOutils)
+        menuBar.add_cascade(label="?", menu=menuHelp)
 
+        # Commands
+        menuFile.add_command(label="Gestion Tournoi", command=lambda: MenuController.display_tournament_window(self))
+        # menuFile.add_command(label="Gestion joueurs", command=lambda: MenuController.display_player_window(self))
+        menuFile.add_command(label="Afficher les resultats")
+        menuFile.add_command(label="Enregistrer les résultats")
+        menuFile.add_command(label="Modifier les resultats")
+        menuFile.add_separator()
+        menuFile.add_command(label="Quitter", command=lambda: MenuController.fct_quit(self))
 
-	def draw_mainMenuView(self):
-		root_window = Tk()
-		root_window.title('Gestion Tournoi d\'echecs')
-		root_window.geometry("1024x860")
-		root_window.config(background='#9a031e')
-		root_window.iconbitmap("./img/logo.ico")
-		root_window.option_add('*tearOff', FALSE)	# Supprime le séparateur
+        menuEdition.add_command(label="Edition du rapport")
+        menuEdition.add_command(label="Impression du rapport", command=lambda: MenuController.fct_warning(self))
+        menuEdition.add_separator()
+        menuEdition.add_command(label="Rechercher", command=lambda: MenuController.fct_yes_no(self))
 
+        menuOutils.add_command(label="Parametres")
 
+        menuHelp.add_command(label="Obtenir de l'aide", command=lambda: MenuController.fct_error(self))
+        menuHelp.add_command(label="Mise à jour", command=lambda: MenuController.maj_fct(self))
+        menuHelp.add_separator()
+        menuHelp.add_command(label="A propos", command=lambda: MenuController.show_about(self))
 
-		#self.displayMenu(self.root_window)
-		menu = MainMenu(root_window)
-		menu.displayMenu()
-		root_window.mainloop()
-		return root_window
+        self.root.config(menu=menuBar)
 
-	def displayMenu(self):
-		#root_window = WinMenu.root_window
-		menuBar = Menu(self.root_window)
+    def clean_menu_window(self, root):
+        for widget in root.winfo_children():
+            widget.destroy()
+        self.display_menu_window()
 
-		menuFile = Menu(menuBar)
-		menuEdition = Menu(menuBar)
-		menuOutils = Menu(menuBar)
-		menuHelp = Menu(menuBar)
+    def display_player_window(self):
+        self.clean_menu_window(self.root)
+        self.display_menu_window()
+        self.player_window.call_tournament_player_list(tournament_name)
 
-		menuBar.add_cascade(label = "Fichier", menu=menuFile)
-		menuBar.add_cascade(label = "Edition", menu=menuEdition)
-		menuBar.add_cascade(label = "Outils", menu=menuOutils)
-		menuBar.add_cascade(label = "?", menu=menuHelp)
+    def display_tournament_window(self):
+        self.clean_menu_window(self.root)
+        self.display_menu_window()
+        self.tournament_window.display_tournament_window()
+        self.tournament_window.tournament_data_set()
 
-		# Commands
-		menuFile.add_command(label="Gestion Tournoi",command=lambda: self.display_tourWindow(self.tourFrame))
-		menuFile.add_command(label="Afficher les resultats")
-		menuFile.add_command(label="Enregistrer les résultats")
-		menuFile.add_command(label="Modifier les resultats")
-		menuFile.add_separator()
-		menuFile.add_command(label="Quitter", command=quit)
-
-		menuEdition.add_command(label="Edition du rapport")
-		menuEdition.add_command(label="Impression du rapport")#,command=self.fctWarning)
-		menuEdition.add_separator()
-		menuEdition.add_command(label="Rechercher")#,command=self.fctYesNo)
-
-		menuOutils.add_command(label="Gestion Joueurs",command=lambda: self.display_playerWindow(self.playerFrame))
-		menuOutils.add_command(label="Gestion rondes",command=lambda: self.display_roundWindow(self.roundFrame))
-		
-
-		menuHelp.add_command(label="Obtenir de l'aide")#, command=self.fctError)
-		menuHelp.add_command(label="Mise à jour")#,command=self.majFct)
-		menuHelp.add_separator()
-		menuHelp.add_command(label="A propos")#,command=self.show_about)
-
-		self.root_window.config(menu=menuBar)
-
-
-		
-
-	def display_playerWindow(self,root_window):
-		self.clean_window(self.root_window)
-		PlayerView.playerView(self,self.playerFrame)
-
-	def display_tourWindow(self,root_window):
-		self.clean_window(self.root_window)
-		TournamentView.tourView(self,self.tourFrame)
-
-	def display_roundWindow(self,root_window):
-		self.clean_window(self.root_window)
-		RoundView.roundView(self,self.roundFrame)
-
-	
-	def clean_window(self,root_window):
-		for widget in root_window.winfo_children():
-			widget.destroy()			
-		self.displayMenu()
-
-	
+    def display_round_window(self):
+        self.clean_menu_window(self.root)
+        self.display_menu_window()
+        
 
 
-		
-		
+
+
