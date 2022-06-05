@@ -78,8 +78,8 @@ class RoundController:
         print("x2:", x)
 
         # Enregistrement des scores joueurs dans la dataBase à chaques itérations
-        players_table.update({'Score': float(score1_spin_box.get())}, where('first_name') == upper_list[x][0])  # Joueur1
-        players_table.update({'Score': float(score2_spin_box.get())}, where('first_name') == lower_list[x][0])  # Joueur2
+        players_table.update({'score': float(score1_spin_box.get())}, where('first_name') == upper_list[x][0])  # Joueur1
+        players_table.update({'score': float(score2_spin_box.get())}, where('first_name') == lower_list[x][0])  # Joueur2
 
 
         # Mise à jour des tuples matchs
@@ -96,7 +96,7 @@ class RoundController:
 
         if x == 3:
             self.round_list.insert(0, 'Round:' + '1')
-            tournaments_table.update({'rounds_lists': self.round_list}, where('round_lists') == tournament_name)
+            tournaments_table.update({'rounds_lists': self.round_list}, where('tournament_name') == tournament_name)
             print("round_list:", self.round_list)
 
     def get_round_list(self, data1):
