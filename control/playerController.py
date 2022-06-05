@@ -5,12 +5,14 @@ from tkinter import *
 from tkinter import ttk
 from tinydb import TinyDB, Query, where
 from control.tournamentController import TournamentController
+from datetime import datetime, timedelta
 
 
 class PlayerController:
 
     def __init__(self, root):
         self.root = root
+        self.start_date = None
 
     def add_player_tree_frame(self, input_list, frame, tree_frame,  y, tournament_name, add_player_button, data_fields):
         data = list()
@@ -22,8 +24,7 @@ class PlayerController:
             if not element.get():
                 data_check = False
         if data_check:
-            data.append('0')  # score
-            print("data:",data)
+            data.append('0')  # score            
             player = Player(data)
             player.serialize_player()
             player.write_data()
@@ -43,7 +44,7 @@ class PlayerController:
         player_selected = tree_frame.focus()
         temp = tree_frame.item(player_selected,
                                     'values')  # tournament_selected = n° ligne, value = valeurs colonnes
-        print("values:", temp[0])
+        
 
         for element in tree_frame.selection():
             print("elt à détruire",element)
@@ -84,8 +85,9 @@ class PlayerController:
         self.round_window = RoundView(self.root)
         self.round_window.display_round_window()
 
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.round_window.gen_round1(t)
-        self.round_window.round_data_set(t)
+        self.round_window.round_data_set(t, self.start_date)
 
         
 

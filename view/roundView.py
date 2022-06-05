@@ -43,8 +43,7 @@ class RoundView:
 
         # ===========================Style & frames=============================
         style = ttk.Style()
-        # Pick a theme
-        # print(style.theme_names())  : themes disponibles pour Tk
+        # Pick a theme        
         style.theme_use("alt")
         style.configure("Treeview",
                         background="white",
@@ -60,10 +59,8 @@ class RoundView:
         tree_scroll.pack(side=RIGHT, fill=Y)
         self.tree_frame = ttk.Treeview(self.r_frame, yscrollcommand=tree_scroll.set, select="extended")
         self.tree_frame.pack(pady=20)
-        # Define Columns
-        # self.tree_frame["columns"] = (
-        # "matchs", "id1", "player_class1", "player_rank1", "score_class1", "id2", "player_class2", "player_rank2",
-        # "score_class2")
+
+        # Define Columns        
         self.tree_frame["columns"] = self.ROUND_FIELDS
         self.tree_frame.column('#0', width=0, stretch=NO)
         self.tree_frame.heading('#0', text='', anchor=CENTER)
@@ -79,7 +76,7 @@ class RoundView:
 
         # ================Add Management Entries Boxes==========================
 
-    def round_data_set(self, tournament_name):
+    def round_data_set(self, tournament_name, start_date):
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -91,11 +88,7 @@ class RoundView:
         spin_joueur2_label.grid(row=1, column=3, padx=5, pady=10)
 
         input_list = list()
-
-        #for element in self.ROUND_FIELDS:
-            #current_element = StringVar()
-            #current_element.set(element)
-
+        
         score1_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
         score1_spin_box.grid(row=2, column=2, padx=10, pady=10)
         input_list.append(score1_spin_box)
@@ -107,7 +100,7 @@ class RoundView:
            
         valid_button1 = Button(self.rd_frame, text="Valider",
                                        command=lambda: self.round_controller.add_valid_button_action(input_list,
-                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box, tournament_name, valid_button1))
+                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box, tournament_name, valid_button1, start_date))
         valid_button1.grid(row=2, column=4, padx=10, pady=20)
 
         
@@ -124,7 +117,7 @@ class RoundView:
         tournaments_table = db.table('tournaments')
 
             
-
+    """
     def init_third_round(self):
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
@@ -147,41 +140,27 @@ class RoundView:
 
         thirdRoundList = thirdList
         return thirdRoundList
-
+    """
     
     def gen_round1(self, t):
         # Create new frame
         self.rd_frame = Frame(self.root)
-        self.rd_frame.pack()
-        #self.tree_frame = ttk.Treeview(self.rd_frame)
-        #self.tree_frame = RoundView.display_round_window(self)
-
-        #print("t_round:",t)
-        #self.r_frame = Frame(self.root)
-
-
-
-        #self.r_frame.pack()
-        # self.tree_frame = RoundView.round_view(self)
-        #self.tree_frame.tag_configure('oddrow', background="#ecdab9")
-        #self.tree_frame.tag_configure('evenrow', background="#a47053")
+        self.rd_frame.pack()        
 
         lowerList = list()
         upperList = list()
         sorted_round_list = RoundController.init_first_round(self, t)
-        #print("tournament_first_round_list:",firstRoundList)
+        
         j = 0
         while j < len(sorted_round_list) / 2:
             upperList.append(sorted_round_list[j])
-            j += 1
-        #print("t/2:",upperList)
+            j += 1        
 
         j = int(len(sorted_round_list) / 2)
         while j < len(sorted_round_list):
             lowerList.append(sorted_round_list[j])
             j += 1
-        #print("t/2:",lowerList)
-        #global count
+        
 
         # Output to entry boxes
         count = len(self.tree_frame.get_children())

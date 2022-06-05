@@ -10,6 +10,7 @@ from model.round import Round
 from control.playerController import PlayerController
 import operator
 from operator import itemgetter
+from datetime import datetime, timedelta
 
 
 class RoundController:
@@ -21,42 +22,28 @@ class RoundController:
 
     def getTime(self):
         date = time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
-        return date
+        return date    
 
-    def create_round(self):
-        data = ['name', '12:00', '13:00']
-        data.append(self.match_data())
-        # Retrieve first id not use and add
-        data.append(0)
-        new_round = Round(data)
-        new_round.serialize_round_data()
-
-    def add_valid_button_action(self, input_list, rd_frame, tree_frame,score1_spin_box, score2_spin_box, tournament_name,  valid_button1):
+    def add_valid_button_action(self, input_list, rd_frame, tree_frame,score1_spin_box, score2_spin_box, tournament_name,  valid_button1,start_date):
 
         data = list()
         data_check = True
-        for element in input_list:
-            print("elt_input_list :",element.get())
-            data.append(element.get())
-            #data.append('0')  # score
+        for element in input_list:            
+            data.append(element.get())            
             if not element.get():
                 data_check = False
-        if data_check:
-            #data.append('0')  # score
-            print("data:",data)
-            #round = Round(data)
-            #round.serialize_round_data()
-            #round.write_data()
-        # pass
+        if data_check:            
+            pass            
+        
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
         tournaments_table = db.table('tournaments')
-        #serialized_players = players_table.all()
+        
         first_round_list = list()
         lower_list = list()
         upper_list = list()
         first_round_list = self.init_first_round(tournament_name)
-        print("valid_tournament_name:", tournament_name)
+        
         i = 0
         while i < len(first_round_list) / 2:
             upper_list.append(first_round_list[int(i)])
@@ -69,35 +56,31 @@ class RoundController:
             i += 1
         self.tree_frame = tree_frame
         selected = self.tree_frame.focus()
-        print("x1:",selected)
+        
         # Affiche la valeur du spinbox dans le treeframe
         self.tree_frame.set(selected, '#5', float(score1_spin_box.get()))  # (#4 ou colonne 'score_class1')
         self.tree_frame.set(selected, '#9', float(score2_spin_box.get()))
         x = selected
-        x = int(x)
-        print("x2:", x)
+        x = int(x)        
 
         # Enregistrement des scores joueurs dans la dataBase à chaques itérations
         players_table.update({'score': float(score1_spin_box.get())}, where('first_name') == upper_list[x][0])  # Joueur1
         players_table.update({'score': float(score2_spin_box.get())}, where('first_name') == lower_list[x][0])  # Joueur2
 
-
         # Mise à jour des tuples matchs
         up_list = [upper_list[int(x)][0] + " " + upper_list[int(x)][1], float(score1_spin_box.get())]  # id(nom  prénom) + score
         low_list = [lower_list[int(x)][0] + " " + lower_list[int(x)][1], float(score2_spin_box.get())]  # id + score
 
-
-
         # match est un tuple de 2 listes
         match = (up_list, low_list)
 
-        self.round_list.append(match)
-        print("round_list:",self.round_list)
+        self.round_list.append(match)        
 
         if x == 3:
-            self.round_list.insert(0, 'Round:' + '1')
-            tournaments_table.update({'rounds_lists': self.round_list}, where('tournament_name') == tournament_name)
-            print("round_list:", self.round_list)
+            self.round_list.insert(0, 'Round' + '1')
+            self.round_list.insert(1, start_date)
+            self.round_list.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            tournaments_table.update({'rounds_lists': self.round_list}, where('tournament_name') == tournament_name)            
 
     def get_round_list(self, data1):
         db = TinyDB('data/db_tournaments.json')
@@ -144,8 +127,7 @@ class RoundController:
 
 
     def quit_round_window(self):
-        # menu_controller = MenuController(self.root)
-        # self.menu_controller.clean_window()
+        
         self.rd_frame.destroy()
         from view.mainMenu import MainMenu  # Outside déclaration
         main_menu = MainMenu(self.root)
@@ -156,12 +138,12 @@ class RoundController:
         self.tournament_name = tournament_name
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
-        #serialized_players = players_table.all()
+        
         serialized_players = []
         serialized_players = players_table.search(where('tournament_name') == self.tournament_name)
 
         first_round_list = list()
-        #print("firstRoundList:",first_round_list)
+        
         i = 0
         challengers = list()
         while i < len(serialized_players):  # Liste comprenant [id,(nom et prénom),rang] ===> treeview
@@ -173,8 +155,7 @@ class RoundController:
 
             first_round_list.insert(i, challengers)  # Insertion challengers à l'indice i
             i += 1
-        res = sorted(first_round_list, key=lambda x:x[2])
-        print("res:", res)
+        res = sorted(first_round_list, key=lambda x:x[2])        
         return res
 
 

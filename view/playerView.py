@@ -59,8 +59,7 @@ class PlayerView:
         self.tree_frame.pack(pady=20)
         tree_scroll.config(command=self.tree_frame.yview)
 
-        # Define Columns
-        #self.tree_frame["columns"] = self.ALL_PLAYER_FIELDS
+        # Define Columns        
         self.tree_frame["columns"] = self.PLAYER_FIELDS
 
         self.tree_frame.column('#0', width=0, stretch=NO)
@@ -68,8 +67,7 @@ class PlayerView:
 
         self.tree_frame.tag_configure('oddrow', background="white")
         self.tree_frame.tag_configure('evenrow', background="lightblue")
-
-        #for element in self.ALL_PLAYER_FIELDS:
+        
         for element in self.PLAYER_FIELDS:
             self.tree_frame.column(element, anchor=CENTER, width=140)
             self.tree_frame.heading(element, text=element, anchor=CENTER)
