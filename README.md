@@ -1,11 +1,16 @@
 # Chess-Tournament
+WINDOW:
 Power Shell: commande = env/Scripts/Activate.ps1 (However, you might run into the following error when you try to run the script
-
-venv\Scripts\Activate.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies
-
-You may use Set-Execution Policy to allow the current user to execute scripts as follows:
-
-commande = Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser)
-
 otherwise Git Bash (MINGW64):
 commande = source env/Scripts/activate
+
+LINUX DEBIAN:
+source env/bin/activate
+
+Demarrage de l'appli: Fichier
+                      Gestion tournoi
+                                     Bouton Ajouter un tournoi
+                                            Double click sur tournoi ajouté
+                                                                           Bouton Ajouter joueur (<=8)
+                                                                                                      Bouton Création rondes
+                                                                                                                            click Match et entrer score (x4)
