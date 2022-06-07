@@ -5,14 +5,16 @@ import PIL
 from PIL import ImageTk, Image
 from tkinter import messagebox
 from tkcalendar import *
-# import sqlite3
+
 from tinydb import TinyDB, Query, where
-# from tinydb.operations import delete
+
 from model.player import Player
+from model.round import Round
+
 from control.playerController import PlayerController
 from control.menuController import MenuController
 from control.tournamentController import TournamentController
-from model.round import Round
+
 
 
 
@@ -20,8 +22,8 @@ from model.round import Round
 class PlayerView:
     def __init__(self, root):
 
-        self.ALL_PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank')
-        self.PLAYER_FIELDS = ('Nom du tournoi', 'Nom', 'Prénom', 'Date de naissance', 'Genre', 'Classement')
+        self.ALL_PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank', 'score')
+        self.PLAYER_FIELDS = ('Nom du tournoi', 'Nom', 'Prénom', 'Date de naissance', 'Genre', 'Classement', 'Score')
         self.DATA_FIELDS = ('Nom', 'Prénom', 'Date de naissance', 'Genre', 'Classement')
         self.root = root
         self.tree_frame = None
@@ -69,7 +71,7 @@ class PlayerView:
         self.tree_frame.tag_configure('evenrow', background="lightblue")
         
         for element in self.PLAYER_FIELDS:
-            self.tree_frame.column(element, anchor=CENTER, width=140)
+            self.tree_frame.column(element, anchor=CENTER, width=120)
             self.tree_frame.heading(element, text=element, anchor=CENTER)
 
 
@@ -134,12 +136,10 @@ class PlayerView:
                 input_list.append(l_name_box)
 
             elif element == 'Date de naissance':
-                date_box = DateEntry(self.p_frame, width=15, locale='fr_FR', selectmode='day', date_pattern='dd/MM/yyyy')
-                #date_box.delete(0, END)
+                date_box = DateEntry(self.p_frame, width=15, locale='fr_FR', selectmode='day', date_pattern='dd/MM/yyyy')                
                 date_box.grid(row=2, column=2, padx=10, pady=10)
                 input_list.append(date_box)
-
-            # "RadioButton" for "gender", Data Picker for "birthday", "Entry" for other
+            
             elif element == "Genre":
                 gender_frame = Frame(self.p_frame)
                 gender_var = StringVar()
@@ -151,9 +151,8 @@ class PlayerView:
                 radiobutton2.pack(side=RIGHT, padx=15)
                 gender_frame.grid(row=2, column=3)
                 input_list.append(gender_var)
-
-            #else element == 'Classement':
-            else:
+            
+            elif element == 'Classement':
                 class_spin_box = Spinbox(self.p_frame, from_=0, to=1000, font=("helvetica", 10), width=5)
                 input_list.append(class_spin_box)
                 class_spin_box.grid(row=2, column=4, padx=10, pady=10)
@@ -168,6 +167,18 @@ class PlayerView:
                             self.DATA_FIELDS), clear_entries()])
         add_player_button.grid(row=3, column=0, padx=10, pady=10)
 
+        select_player_button = Button(self.p_frame, text="Selectionner un joueur",
+                                      command=lambda: self.player_controller.select_one_record(
+                                      self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      radiobutton2, class_spin_box))
+        select_player_button.grid(row=4, column=0, padx=10, pady=10)
+
+        modify_player_button = Button(self.p_frame, text="Modifier",command=lambda:
+                                     self.player_controller.modify_one_record(
+                                     self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                     radiobutton2, class_spin_box, tournament_name))
+        modify_player_button.grid(row=4, column=1, padx=10, pady=10)
+
         delete_player_button = Button(self.p_frame, text="Supprimer un joueur",
                                       command=lambda: self.player_controller.delete_player_button_action(
                                           self.tree_frame))
@@ -179,7 +190,7 @@ class PlayerView:
 
         quit_button = Button(self.p_frame, text="Quitter",
                              command=lambda: PlayerController.quit_player_window(self))  # self.quitPlayerView())
-        quit_button.grid(row=3, column=4, padx=10, pady=20)
+        quit_button.grid(row=3, column=5, padx=10, pady=20)
 
         gen_rounds = Button(self.p_frame, text="Création Rondes",
                             command=lambda: PlayerController.display_tournament_round_window(self, tournament_name))
