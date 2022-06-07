@@ -41,9 +41,38 @@ class MenuController:
         self.tournament_window.display_tournament_window()     #tournament_data_frame
         self.tournament_window.tournament_data_set()      #tournament_management_frame()
 
-   
+    """
+
+    def display_player_window(self):
+        self.clean_menu_window(self.root)
+        from view.mainMenu import MainMenu
+        main_menu = MainMenu(self.root)
+        main_menu.display_menu_window()
+        #self.display_menu_window()
+        self.player_window.display_player_window()
+        self.player_window.player_data_set(t)
+
+    def clean_menu_window(self, root):
+        from view.mainMenu import MainMenu
+        main_menu = MainMenu(self.root)
+        for widget in root.winfo_children():
+            widget.destroy()
+        main_menu.display_menu_window()
+
+    
+    def bind_player_window(self):
+        self.clean_menu_window(self.root)
+        self.display_menu_window()
+        self.player_window.display_player_window()
+        self.player_window.player_data_get()
     
 
+
+    def clean_window(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        #self.display_menu_window()
+    """
 
 
 

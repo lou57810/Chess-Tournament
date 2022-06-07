@@ -8,15 +8,13 @@ from tkcalendar import *
 
 from tinydb import TinyDB, Query, where
 
-from model.player import Player
-from model.round import Round
-
 from control.playerController import PlayerController
 from control.menuController import MenuController
 from control.tournamentController import TournamentController
+from control.roundController import RoundController
 
-
-
+from model.round import Round
+from model.player import Player
 
 
 class PlayerView:
@@ -30,6 +28,7 @@ class PlayerView:
         self.date = None
         self.p_frame = None
         self.player_controller = PlayerController(self.root)
+        self.round_controller = RoundController(self.root)
 
     def display_player_window(self):
         self.p_frame = Frame(self.root)
@@ -61,7 +60,7 @@ class PlayerView:
         self.tree_frame.pack(pady=20)
         tree_scroll.config(command=self.tree_frame.yview)
 
-        # Define Columns        
+        # Define Columns
         self.tree_frame["columns"] = self.PLAYER_FIELDS
 
         self.tree_frame.column('#0', width=0, stretch=NO)
@@ -69,18 +68,26 @@ class PlayerView:
 
         self.tree_frame.tag_configure('oddrow', background="white")
         self.tree_frame.tag_configure('evenrow', background="lightblue")
-        
+
         for element in self.PLAYER_FIELDS:
             self.tree_frame.column(element, anchor=CENTER, width=120)
             self.tree_frame.heading(element, text=element, anchor=CENTER)
+        """
+        def on_tree_frame_click(e):
+            selected = self.tree_frame.focus()
+            values = self.tree_frame.item(selected,'values')
+            #print("values:", values)
+            self.player_controller.select_one_record(self.tree_frame)
+            #self.selected_player(vale[1])
 
+        self.tree_frame.bind("<Double-Button-1>", on_tree_frame_click)
+        """
 
     def call_tournament_player_list(self, tournament_name):
         # Depuis tournamentController: Affiche la liste des joueurs si elle existe
         self.display_player_window()
         # Display datas
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
+        players_table = self.round_controller.set_db_players_env()
         tournament_players_data = players_table.search(where('tournament_name') == tournament_name)
 
         count = 0
@@ -106,7 +113,7 @@ class PlayerView:
         def clear_entries():
             f_name_box.delete(0, END)
             l_name_box.delete(0, END)
-            date_box.delete(0, END)
+            date_box.delete(0, 'end')
             gender_var.set(None)  # gender.deselect() don't work
             class_spin_box.delete(0, END)
 
@@ -136,10 +143,11 @@ class PlayerView:
                 input_list.append(l_name_box)
 
             elif element == 'Date de naissance':
-                date_box = DateEntry(self.p_frame, width=15, locale='fr_FR', selectmode='day', date_pattern='dd/MM/yyyy')                
+                date_box = DateEntry(self.p_frame, width=15, locale='fr_FR', selectmode='day', date_pattern='dd/MM/yyyy')
+                #date_box.delete(0, END)
                 date_box.grid(row=2, column=2, padx=10, pady=10)
                 input_list.append(date_box)
-            
+
             elif element == "Genre":
                 gender_frame = Frame(self.p_frame)
                 gender_var = StringVar()
@@ -151,11 +159,13 @@ class PlayerView:
                 radiobutton2.pack(side=RIGHT, padx=15)
                 gender_frame.grid(row=2, column=3)
                 input_list.append(gender_var)
-            
+
             elif element == 'Classement':
                 class_spin_box = Spinbox(self.p_frame, from_=0, to=1000, font=("helvetica", 10), width=5)
                 input_list.append(class_spin_box)
                 class_spin_box.grid(row=2, column=4, padx=10, pady=10)
+
+
 
         # Next column
         y += 1
@@ -173,10 +183,8 @@ class PlayerView:
                                       radiobutton2, class_spin_box))
         select_player_button.grid(row=4, column=0, padx=10, pady=10)
 
-        modify_player_button = Button(self.p_frame, text="Modifier",command=lambda:
-                                     self.player_controller.modify_one_record(
-                                     self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
-                                     radiobutton2, class_spin_box, tournament_name))
+        modify_player_button = Button(self.p_frame, text="Modifier",command=lambda: self.player_controller.modify_one_record(self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      radiobutton2, class_spin_box, tournament_name))
         modify_player_button.grid(row=4, column=1, padx=10, pady=10)
 
         delete_player_button = Button(self.p_frame, text="Supprimer un joueur",
@@ -195,6 +203,41 @@ class PlayerView:
         gen_rounds = Button(self.p_frame, text="Création Rondes",
                             command=lambda: PlayerController.display_tournament_round_window(self, tournament_name))
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
+
+
+
+
+        #self.select_record()
+
+    #self.tree_frame.bind("<ButtonRelease-1>", lambda: on_tree_frame_click())
+
+
+
+
+
+    """
+    
+
+    def get_tournaments_names(self):
+        name_list = list()
+        db = TinyDB('data/db_tournaments.json')
+        tournaments_table = db.table('tournaments')
+        serialized_tournaments = tournaments_table.all()
+        n = 0
+
+        for record in serialized_tournaments:
+            name_list.append(serialized_tournaments[n]['Nom du tournoi'])
+            n += 1
+        return name_list
+
+    
+
+    def display_db_tournaments(self, event):
+        # print("tournoi: ", self.tour_box.get())
+        tournament_name = self.tour_box.get()
+        print("t_id", tournament_name)
+        tournament_players_list = []
+    """
 
 
 
