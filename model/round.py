@@ -9,6 +9,8 @@ import copy
 class Round:
     
     def __init__(self, *args):
+        pass
+        """
         self.players_list = []
         self.upper_list = []
         self.lower_list = []
@@ -74,5 +76,6 @@ class Round:
             player = Player(player_data)
             self.players_list.append(player)
         return self.players_list
+    """
 
 

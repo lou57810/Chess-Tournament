@@ -2,12 +2,12 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import ttk as tk
-# from datetime import *
+
 from tinydb import TinyDB, Query, where
 from tkinter import messagebox
 from datetime import datetime, timedelta
+
 from model.player import Player
-# from control.controller import Controller
 from model.round import Round
 from model.tournament import Tournament
 from control.tournamentController import TournamentController
@@ -33,10 +33,11 @@ class RoundView:
                              "last_name2", "rank2", "score2")
         self.player_controller = PlayerController(self.root)
         self.round_controller = RoundController(self.root)
+
+        self.start_date = RoundController
         count = 0
 
     def display_round_window(self):
-
         self.r_frame = Frame(self.root)
         self.tree_frame = ttk.Treeview(self.r_frame)
         self.r_frame.pack(padx=5, pady=20)
@@ -81,6 +82,11 @@ class RoundView:
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
 
+        round_number = self.round_controller.round_number
+
+        round_label = Label(self.rd_frame, text="ROUND"+str(round_number), font=("Helvetica", 14), foreground='#9a031e')
+        round_label.grid(row=1, column=5,padx=10, pady=10)
+
         spin_joueur1_label = Label(self.rd_frame, text="Score class 1")
         spin_joueur1_label.grid(row=1, column=2, padx=0, pady=10)
 
@@ -98,15 +104,19 @@ class RoundView:
         input_list.append(score2_spin_box)
 
            
-        valid_button1 = Button(self.rd_frame, text="Valider",
-                                       command=lambda: self.round_controller.add_valid_button_action(input_list,
-                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box, tournament_name, valid_button1, start_date))
+        valid_button1 = Button(self.rd_frame, text="Valider", command=lambda: self.round_controller.add_valid_button_action(
+                              input_list, self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box,
+                              tournament_name, valid_button1, start_date))
         valid_button1.grid(row=2, column=4, padx=10, pady=20)
 
-        
+        round_button2 = Button(self.rd_frame, text="Deuxième ronde")  # , command=lambda: update_player_table2(self))
+        round_button2.grid(row=3, column=5, padx=10, pady=20)
+
+        next_round_button = Button(self.rd_frame, text="Rondes suivantes")  # , command=lambda: update_player_table3(self))
+        next_round_button.grid(row=3, column=6, padx=10, pady=20)
 
         quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
-        quit_button.grid(row=4, column=5, padx=20, pady=20)
+        quit_button.grid(row=3, column=7, padx=20, pady=20)
     
 
     # ==========================Database============================
@@ -159,8 +169,7 @@ class RoundView:
         j = int(len(sorted_round_list) / 2)
         while j < len(sorted_round_list):
             lowerList.append(sorted_round_list[j])
-            j += 1
-        
+            j += 1        
 
         # Output to entry boxes
         count = len(self.tree_frame.get_children())

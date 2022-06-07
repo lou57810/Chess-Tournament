@@ -1,7 +1,5 @@
 from tinydb import TinyDB, Query, where
 import tkinter as tk
-import time
-import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import ttk as tk
@@ -11,6 +9,7 @@ from control.playerController import PlayerController
 import operator
 from operator import itemgetter
 from datetime import datetime, timedelta
+import time
 
 
 class RoundController:
@@ -19,41 +18,39 @@ class RoundController:
         self.root = root
         self.round_model = Round()
         self.round_list = list()
+        self.round_number = 1
 
     def getTime(self):
         date = time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
-        return date    
+        return date
 
-    def add_valid_button_action(self, input_list, rd_frame, tree_frame,score1_spin_box, score2_spin_box, tournament_name,  valid_button1,start_date):
-
-        data = list()
-        data_check = True
-        for element in input_list:            
-            data.append(element.get())            
-            if not element.get():
-                data_check = False
-        if data_check:            
-            pass            
-        
+    def set_db_players_env(self):
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
+        return players_table
+
+    def set_db_tournaments_env(self):
+        db = TinyDB('data/db_tournaments.json')
         tournaments_table = db.table('tournaments')
+        return tournaments_table    
+
+    def add_valid_button_action(self, input_list, rd_frame, tree_frame,
+                                score1_spin_box, score2_spin_box,
+                                tournament_name,  valid_button1,start_date):
+        self.round_number = 1
+        data = list()        
+        for element in input_list:            
+            data.append(element.get())                     
+        
+        tournaments_table = self.set_db_tournaments_env()
+        players_table = self.set_db_players_env()
         
         first_round_list = list()
         lower_list = list()
         upper_list = list()
         first_round_list = self.init_first_round(tournament_name)
+        self.create_upper_and_lower_list(first_round_list, upper_list, lower_list)
         
-        i = 0
-        while i < len(first_round_list) / 2:
-            upper_list.append(first_round_list[int(i)])
-            i += 1
-
-        i = len(first_round_list) / 2
-        i = int(i)
-        while i < len(first_round_list):
-            lower_list.append(first_round_list[int(i)])
-            i += 1
         self.tree_frame = tree_frame
         selected = self.tree_frame.focus()
         
@@ -80,12 +77,7 @@ class RoundController:
             self.round_list.insert(0, 'Round' + '1')
             self.round_list.insert(1, start_date)
             self.round_list.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            tournaments_table.update({'rounds_lists': self.round_list}, where('tournament_name') == tournament_name)            
-
-    def get_round_list(self, data1):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
-
+            tournaments_table.update({'rounds_lists': self.round_list}, where('tournament_name') == tournament_name)
 
     def match_data(self):
         """Get, sort and separate in two list player's data"""
@@ -96,18 +88,16 @@ class RoundController:
 
     def sort_players(self):
         """Sort players by ranking"""
-        self.round_model.players_list.sort(key=lambda x: x.ranking, reverse=True)
-        print(self.round_model.players_list)
+        self.round_model.players_list.sort(key=lambda x: x.ranking, reverse=True)        
 
-    def create_upper_and_lower_list(self):
-        """Split players in two list"""
-        length = len(self.round_model.players_list)
+    def create_upper_and_lower_list(self, first_round_list, upper_list, lower_list):
+        length = len(first_round_list)
         i = 0
         while i < length:
             if i < length / 2:
-                self.round_model.upper_list.append(self.round_model.players_list[i])
+                upper_list.append(first_round_list[i])
             else:
-                self.round_model.lower_list.append(self.round_model.players_list[i])
+                lower_list.append(first_round_list[i])
             i += 1
 
     def create_match(self):
@@ -123,11 +113,8 @@ class RoundController:
 
     def get_tournament_name(self):
         tournament_name = PlayerController.display_tournament_round_window(t)
-        print("get_t:",tournament_name)
 
-
-    def quit_round_window(self):
-        
+    def quit_round_window(self):        
         self.rd_frame.destroy()
         from view.mainMenu import MainMenu  # Outside déclaration
         main_menu = MainMenu(self.root)
@@ -155,7 +142,7 @@ class RoundController:
 
             first_round_list.insert(i, challengers)  # Insertion challengers à l'indice i
             i += 1
-        res = sorted(first_round_list, key=lambda x:x[2])        
+        res = sorted(first_round_list, key=lambda x:x[2], reverse=True)        
         return res
 
 

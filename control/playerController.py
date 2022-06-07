@@ -1,9 +1,11 @@
-from model.player import Player
-from tinydb import TinyDB
+from tinydb import TinyDB, Query, where
+
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-from tinydb import TinyDB, Query, where
+
+from model.player import Player
+
 from control.tournamentController import TournamentController
 from datetime import datetime, timedelta
 
@@ -14,7 +16,9 @@ class PlayerController:
         self.root = root
         self.start_date = None
 
-    def add_player_tree_frame(self, input_list, frame, tree_frame,  y, tournament_name, add_player_button, data_fields):
+    def add_player_tree_frame(self, input_list, frame,
+                             tree_frame,  y, tournament_name,
+                             add_player_button, data_fields):
         data = list()
         data.append(tournament_name)  # test TOURNOI
         data_check = True
@@ -36,7 +40,52 @@ class PlayerController:
             tree_frame.insert('', 'end', text='', values=data, tags='evenrow')
         else:
             tree_frame.insert('', 'end', text='', values=data, tags='oddrow')
-        count += 1        
+        count += 1
+
+    def modify_one_record(self, tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      radiobutton2, class_spin_box, tournament_name):
+        db = TinyDB('data/db_tournaments.json')
+        players_table = db.table('players')
+
+        selected = tree_frame.focus()
+        value = tree_frame.item(selected, 'values')
+        if radiobutton1.invoke == "Homme":
+            gender_var = "Homme"
+        else:
+            gender_var = "Femme"
+        # Updating treeview
+        tree_frame.item(selected, text="", values=(
+                        tournament_name,
+                        f_name_box.get(),
+                        l_name_box.get(),
+                        date_box.get(),
+                        gender_var,
+                        class_spin_box.get(),
+                        value[6]))
+
+        name = f_name_box.get()        
+        players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
+
+    def select_one_record(self, tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      radiobutton2, class_spin_box):
+        selected = tree_frame.focus()
+        values = tree_frame.item(selected, 'values')
+
+        f_name_box.delete(0,END)
+        l_name_box.delete(0, END)
+        date_box.delete(0, END)
+        radiobutton1.deselect()
+        radiobutton2.deselect()
+        class_spin_box.delete(0, END)
+
+        f_name_box.insert(0, values[1])
+        l_name_box.insert(0, values[2])
+        date_box.insert(0, values[3])
+        if values[4] == "Homme":
+            radiobutton1.invoke()
+        else:
+            radiobutton2.invoke()
+        class_spin_box.insert(0, values[5])  
 
 
     def delete_player_button_action(self, tree_frame):
@@ -46,29 +95,20 @@ class PlayerController:
                                     'values')  # tournament_selected = n° ligne, value = valeurs colonnes
         
 
-        for element in tree_frame.selection():
-            print("elt à détruire",element)
+        for element in tree_frame.selection():            
             tree_frame.delete(player_selected)
             Player.delete_player_data(temp[1])
 
     def delete_all_players_button_action(self, t):
-        """Delete all players in tournaments_datas"""
-
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
         tournament_players_data = players_table.search(where('tournament_name') == t)
-        print("delete_all_fct:", tournament_players_data)
 
-        
-
-    def refresh_player_frame(self,t):
-        """Clean root window and display menu"""
+    def refresh_player_frame(self,t):        
         from view.mainMenu import MainMenu
         self.main_menu = MainMenu(self.root)
 
-    def quit_player_window(self):
-        # menu_controller = MenuController(self.root)
-        # self.menu_controller.clean_window()
+    def quit_player_window(self):        
         self.p_frame.destroy()
         from view.mainMenu import MainMenu  # Outside déclaration
         main_menu = MainMenu(self.root)
