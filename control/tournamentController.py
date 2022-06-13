@@ -11,7 +11,6 @@ class TournamentController:
 
     def __init__(self,root):
         self.root = root
-        #self.menu_controller = MenuController(self.root)
         self.tournament_name = ""
 
     def read_data(self):
@@ -28,12 +27,7 @@ class TournamentController:
             tournament_data.append(rounds_list)
             tournament = Tournament(tournament_data)
             tournament_instance_list.append(tournament)
-        #print("tournament_instance_list",tournament_instance_list)
         return tournament_instance_list
-
-    def write_data(self):
-        """Write tournament data in DB"""
-        pass
 
     def add_tournament_button_action(self, input_list, frame, y, add_tournament_button):
         data = list()
@@ -59,7 +53,6 @@ class TournamentController:
             self.refresh_tournament_frame()
 
     def display_player_window(self):
-        #self.menu_controller.clean_window()
         from view.mainMenu import MainMenu  # Outside déclaration
         self.main_menu = MainMenu(self.root)
         self.main_menu.display_menu_window()
@@ -68,7 +61,7 @@ class TournamentController:
         self.player_window = PlayerView(self.root)
         self.player_window.display_player_window()  # rattache a id
         self.player_window.player_data_set()
-        #self.player_window.call_tournament_player_list(tournament_name)
+
 
     def display_add_player_window(self, t):
         # Appelé depuis tournamentView: def tour_db_click(self)
@@ -84,8 +77,6 @@ class TournamentController:
         tournament_name = t
         from view.playerView import PlayerView  # Outside déclaration
         self.player_window = PlayerView(self.root)
-        #self.player_window.display_player_window()  # rattache a id
-        # self.player_window.player_data_set(tournament_name)
         self.player_window.call_tournament_player_list(tournament_name)
         self.player_window.player_data_set(tournament_name)
 

@@ -36,17 +36,7 @@ class Player:
         """Write player data in DB"""
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
-
-        #self.serialized_player['score'] = 0
-
-        # Retrieve id not use for get new player ID
-        #i = 1
-        #while players_table.search(where('id') == i):
-            #i += 1
-        #self.serialized_player['id'] = i
-
         players_table.insert(self.serialized_player)
-        #print(f'Données ajoutées : {self.serialized_player}')
         return self.serialized_player
 
     def set_tinyDB_Players(self):
@@ -68,7 +58,6 @@ class Player:
     def delete_player_data(data):
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
-        #players_table.remove(where('id') == int(data))
         players_table.remove(where('Nom') == data)
 
     @staticmethod

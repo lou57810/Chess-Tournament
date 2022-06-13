@@ -7,14 +7,7 @@ import copy
 
 
 class Round:
-    #all_rounds = []
-    #round1 = []
-    #round2 = []
-    #i = 0
-    #j = 0
-    #k = 0
 
-    # data = []
     def __init__(self, *args):
         self.PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank', 'score')
         self.all_rounds_list = []
@@ -22,23 +15,12 @@ class Round:
         self.upper_list = []
         self.lower_list = []
         self.all_tournament_rounds_list = []
-        #self.serialized_round_data = []
-        #self.matches_list = []
-        #self.PLAYER_FIELD = ('Nom', 'Prénom', 'Date de naissance', 'Sexe', 'Classement')
 
         for element in args:
             self.first_name = element[0]
             self.last_name = element[1]
             self.rank = element[2]
             self.score = element[3]
-            #self.start_time = element[2]
-            #self.end_time = element[3]
-            #self.matches_list = element[2]
-            #self.id = element[3]
-
-
-
-    
 
     def serialize_round_data(self):
         self.serialized_round_data = {
@@ -58,23 +40,15 @@ class Round:
         if Round.i == 4:
             Round.all_rounds.append(Round.round1)
             Round.reg_db_rounds(self)
-    
-
-    
 
     def get_round_player_scores(self,data_player_list2):
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
-        #print("date_player_list2:",data_player_list2)
         i = 0
         while i < len(data_player_list2):
-            #print("score:",data_player_list2[i][1])
-            #print("id:", data_player_list2[i][0])
+
             players_table.update({'score': data_player_list2[i][1]}, where('id') == data_player_list2[i][0])
             i += 1
-
-
-
 
     def reg_db_rounds(self):
         db = TinyDB('data/db_tournaments.json')

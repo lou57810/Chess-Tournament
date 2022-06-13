@@ -72,16 +72,6 @@ class PlayerView:
         for element in self.PLAYER_FIELDS:
             self.tree_frame.column(element, anchor=CENTER, width=120)
             self.tree_frame.heading(element, text=element, anchor=CENTER)
-        """
-        def on_tree_frame_click(e):
-            selected = self.tree_frame.focus()
-            values = self.tree_frame.item(selected,'values')
-            #print("values:", values)
-            self.player_controller.select_one_record(self.tree_frame)
-            #self.selected_player(vale[1])
-
-        self.tree_frame.bind("<Double-Button-1>", on_tree_frame_click)
-        """
 
     def call_tournament_player_list(self, tournament_name):
         # Depuis tournamentController: Affiche la liste des joueurs si elle existe
@@ -97,13 +87,10 @@ class PlayerView:
 
             for element in self.ALL_PLAYER_FIELDS:
                 attributes_player.append(player.get(element))
-            if count % 2 == 0:                                  # player.get('id') ?????
-
-                #self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
+            if count % 2 == 0:
                 self.tree_frame.insert('', 'end', text='', values=attributes_player,
                                            tags='evenrow')
             else:
-                #self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
                 self.tree_frame.insert('', 'end', text='', values=attributes_player,
                                            tags='oddrow')
             count += 1
@@ -148,7 +135,6 @@ class PlayerView:
 
             elif element == 'Date de naissance':
                 date_box = DateEntry(self.p_frame, width=15, locale='fr_FR', selectmode='day', date_pattern='dd/MM/yyyy')
-                #date_box.delete(0, END)
                 date_box.grid(row=2, column=2, padx=10, pady=10)
                 input_list.append(date_box)
 
@@ -208,38 +194,6 @@ class PlayerView:
 
 
 
-
-        #self.select_record()
-
-    #self.tree_frame.bind("<ButtonRelease-1>", lambda: on_tree_frame_click())
-
-
-
-
-
-    """
-    
-
-    def get_tournaments_names(self):
-        name_list = list()
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
-        serialized_tournaments = tournaments_table.all()
-        n = 0
-
-        for record in serialized_tournaments:
-            name_list.append(serialized_tournaments[n]['Nom du tournoi'])
-            n += 1
-        return name_list
-
-    
-
-    def display_db_tournaments(self, event):
-        # print("tournoi: ", self.tour_box.get())
-        tournament_name = self.tour_box.get()
-        print("t_id", tournament_name)
-        tournament_players_list = []
-    """
 
 
 

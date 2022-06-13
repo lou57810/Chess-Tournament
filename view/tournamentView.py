@@ -18,8 +18,6 @@ class TournamentView:
         self.TOURNAMENT_FIELDS = (
             "Nom du tournoi", "Lieu", "Date debut", "Date fin", "Nombre tours", "Timing", "Description")
 
-        #self.all_tournaments_data = None
-        # self.player_view = PlayerView(self.root)
         self.tournament_controller = TournamentController(self.root)
         self.menu_controller = MenuController
 
@@ -163,9 +161,8 @@ class TournamentView:
 
     def tour_db_click(self):
         tournament_selected = self.tree_frame.focus()
-        temp = self.tree_frame.item(tournament_selected, 'values')  # tournament_selected = n° ligne, value = valeurs colonnes
-        #print("val:",temp[0])                                       # Nom du tournoi
-        TournamentController.display_add_player_window(self,temp[0])    # TournamentController récupère le nom du tournoi
+        temp = self.tree_frame.item(tournament_selected, 'values')
+        TournamentController.display_add_player_window(self,temp[0])   # TournamentController récupère le nom du tournoi
 
 
 
