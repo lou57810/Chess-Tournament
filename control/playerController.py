@@ -26,7 +26,7 @@ class PlayerController:
             if not element.get():
                 data_check = False
         if data_check:
-            data.append('0')  # score
+            data.append('0.0')  # score
             player = Player(data)
             player.serialize_player()
             player.write_data()
@@ -142,10 +142,11 @@ class PlayerController:
         from view.roundView import RoundView
         self.round_window = RoundView(self.root)
         self.round_window.display_round_window()
-
+        round_number = 1
         self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.round_window.gen_round1(t)
-        self.round_window.round_data_set(t, self.start_date)
+        self.round_window.gen_round1(t, round_number)
+        self.round_window.round_data_set(t, self.start_date, round_number)
+
 
     def quitPlayerWindow(self):
         self.frame.destroy()

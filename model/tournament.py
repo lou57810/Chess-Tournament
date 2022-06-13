@@ -41,11 +41,34 @@ class Tournament:
         db = TinyDB('data/db_tournaments.json')
         tournament_table = db.table('tournaments')
 
+        # Add players, rounds list and id attributes
+        #self.serialized_tournaments['players_list'] = self.players_list
+        #rounds_list = []
+        #for element in self.rounds_list:
+            #rounds_list.append(element.serialize_round_data())
+        #self.serialized_tournaments['rounds_list'] = rounds_list
+        #i = 1
+        #while tournament_table.search(where('id') == i):
+            #i += 1
+        #self.serialized_tournaments['id'] = i
 
         tournament_table.insert(self.serialized_tournaments)
         print(f'Tournoi ajouté :{self.serialized_tournaments}')
 
-    
+    """
+    def write_datas(self):
+        roundList = []
+        roundList = Round.getMatch(r)
+        self.serialized_tournaments['player_list'] = self.player_list
+        for elt in self.roundList:
+            roundList.append(elt.serialized_round_data())
+            print("elt: ",elt.serialized_round_data())
+        self.serialized_tournaments['rounds_list'] = roundList
+        self.serialized_tournaments['id'] = self.id
+
+        self.tournaments_table.insert(self.serialized_tournaments)
+        print("Tournoi +: ",self.serialized_tournaments)
+    """
 
     @staticmethod
     def read_data():
@@ -53,4 +76,18 @@ class Tournament:
         tournament_table = db.table('tournaments')
         return tournament_table.all()
 
-    
+    """
+
+    def tournaments_reg_datas(self,rounds_list):
+    #print("sPlayerlids", self.player_list)
+        #self.serialized_tournaments['players'] = self.player_list
+        rounds_list = []
+        for elt in self.rounds_list:
+            self.rounds_list.append(elt.serialize_round_data())
+        self.serialized_tournaments['rounds_list'] = self.rounds_list
+        self.serialized_tournaments['id'] = self.id
+
+        self.tournaments_table.insert(self.serialized_tournaments)
+        print(f'Tournoi ajouté :{self.serialized_tournaments}')
+        
+    """

@@ -11,7 +11,7 @@ class Player:
             self.gender                 = element[4]
             self.rank                   = element[5]
             self.score                  = element[6]
-            
+            #self.id                    = element[7]
 
         self.serialized_player = {}
 

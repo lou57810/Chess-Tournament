@@ -13,7 +13,7 @@ from model.tournament import Tournament
 from control.tournamentController import TournamentController
 from control.playerController import PlayerController
 from control.roundController import RoundController
-
+import time
 import operator
 
 
@@ -23,13 +23,15 @@ class RoundView:
     round_list2 = []
     data_player_list2 = []
 
+
     def __init__(self, root, round_list=list()):  # ,round_list
         self.root = root
         self.round_list = round_list
         self.tree_frame = None
         self.rd_frame = None
+        self.l_frame = None
         self.tournament_name = None
-        self.ROUND_FIELDS = ("matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
+        self.ROUND_FIELDS = ("Rounds", "matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
                              "last_name2", "rank2", "score2")
         self.player_controller = PlayerController(self.root)
         self.round_controller = RoundController(self.root)
@@ -40,6 +42,7 @@ class RoundView:
         self.r_frame = Frame(self.root)
         self.tree_frame = ttk.Treeview(self.r_frame)
         self.r_frame.pack(padx=5, pady=20)
+
 
         # ===========================Style & frames=============================
         style = ttk.Style()
@@ -75,15 +78,13 @@ class RoundView:
 
     # ================Add Management Entries Boxes==========================
 
-    def round_data_set(self, tournament_name, start_date):
+    def round_data_set(self, tournament_name, start_date, round_number):
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
 
-        round_number = self.round_controller.round_number
-
-        round_label = Label(self.rd_frame, text="ROUND"+str(round_number), font=("Helvetica", 14), foreground='#9a031e')
-        round_label.grid(row=1, column=5,padx=10, pady=10)
+        #round_label = Label(self.rd_frame, text="ROUND"+str(round_number), font=("Helvetica", 14), foreground='#9a031e')
+        #round_label.grid(row=1, column=5,padx=10, pady=10)
 
         spin_joueur1_label = Label(self.rd_frame, text="Score class 1")
         spin_joueur1_label.grid(row=1, column=2, padx=0, pady=10)
@@ -101,11 +102,12 @@ class RoundView:
         input_list.append(score2_spin_box)
 
         valid_button1 = Button(self.rd_frame, text="Valider",
-                                       command=lambda: self.round_controller.add_valid_button_action(input_list,
-                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box, tournament_name, valid_button1, start_date))
+                                        command=lambda: self.round_controller.add_valid_button_action(input_list,
+                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box,
+                                        tournament_name, valid_button1, start_date))
         valid_button1.grid(row=2, column=4, padx=10, pady=20)
 
-        round_button2 = Button(self.rd_frame, text="Deuxième ronde", command=lambda: self.gen_round2(tournament_name))  # , command=lambda: update_player_table2(self))
+        round_button2 = Button(self.rd_frame, text="Deuxième ronde", command=lambda: self.gen_round2(tournament_name, round_number))  # , command=lambda: update_player_table2(self))
         round_button2.grid(row=3, column=5, padx=10, pady=20)
 
         next_round_button = Button(self.rd_frame, text="Rondes suivantes")  # , command=lambda: update_player_table3(self))
@@ -114,7 +116,6 @@ class RoundView:
 
         quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
-
     # ==========================Database============================
     """
 
@@ -144,7 +145,7 @@ class RoundView:
     # Répartition affichage dans le treeview depuis la db
     """
 
-    def gen_round1(self, t):
+    def gen_round1(self, t, round_number):
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -171,6 +172,7 @@ class RoundView:
 
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Round" + str(round_number),
                     "Match " + str(i + 1),
                     upperList[i][0],  # name
                     upperList[i][1],  # last_name
@@ -185,6 +187,7 @@ class RoundView:
 
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Round" + str(round_number),
                     "Match " + str(i + 1),
                     upperList[i][0],
                     upperList[i][1],
@@ -199,23 +202,30 @@ class RoundView:
             count += 1
             i += 1
 
-    def gen_round2(self, tournament_name):
+
+    def gen_round2(self, tournament_name, round_number):
+
+        round_number += 1
+
+        #self.round_label_display(round_number)
+        print("round_number2: ",round_number)
         global count
 
         second_round_list = self.round_controller.init_second_round(tournament_name)
 
         count = len(self.tree_frame.get_children())
-        print("secondRoundList: ", second_round_list)
+        #print("secondRoundList: ", second_round_list)
         j = 0
         i = 0
         while j < len(second_round_list) / 2:  # 2 iterations
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Round" + str(round_number),
                     "Match " + str(count + 1),
                     second_round_list[i][0],
                     second_round_list[i][1],  # nom
                     second_round_list[i][2],  # rang
-                    second_round_list[i][3],
+                    second_round_list[i][3],  # score
                     second_round_list[i + 1][0],
                     second_round_list[i + 1][1],  # nom2...
                     second_round_list[i + 1][2],
@@ -224,6 +234,7 @@ class RoundView:
                                        tags=('evenrow',))
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    "Round" + str(round_number),
                     "Match " + str(count + 1),
                     second_round_list[i][0],
                     second_round_list[i][1],
@@ -239,8 +250,8 @@ class RoundView:
             i += 2
             j += 1
 
-        data2 = "Round2"
-        data2 = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        #data2 = "Round" + str(round_number)
+        #data2 = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         #RoundController.get_round_list2(self, data2)
 
     """

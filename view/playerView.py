@@ -87,7 +87,8 @@ class PlayerView:
         # Depuis tournamentController: Affiche la liste des joueurs si elle existe
         self.display_player_window()
         # Display datas
-        players_table = self.round_controller.set_db_players_env()
+        players_table = self.round_controller.set_db_players_env()      # Initialise db tournament
+        players_table.update({'score': 0.0}, where('tournament_name') == tournament_name)
         tournament_players_data = players_table.search(where('tournament_name') == tournament_name)
 
         count = 0
@@ -97,10 +98,13 @@ class PlayerView:
             for element in self.ALL_PLAYER_FIELDS:
                 attributes_player.append(player.get(element))
             if count % 2 == 0:                                  # player.get('id') ?????
-                self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
+
+                #self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
+                self.tree_frame.insert('', 'end', text='', values=attributes_player,
                                            tags='evenrow')
             else:
-                self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
+                #self.tree_frame.insert('', 'end', player.get('id'), text='', values=attributes_player,
+                self.tree_frame.insert('', 'end', text='', values=attributes_player,
                                            tags='oddrow')
             count += 1
         self.tree_frame.pack(padx=20, pady=20)
@@ -164,8 +168,6 @@ class PlayerView:
                 class_spin_box = Spinbox(self.p_frame, from_=0, to=1000, font=("helvetica", 10), width=5)
                 input_list.append(class_spin_box)
                 class_spin_box.grid(row=2, column=4, padx=10, pady=10)
-
-
 
         # Next column
         y += 1
