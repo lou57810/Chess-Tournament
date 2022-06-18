@@ -23,7 +23,6 @@ class RoundView:
     round_list2 = []
     data_player_list2 = []
 
-
     def __init__(self, root, round_list=list()):  # ,round_list
         self.root = root
         self.round_list = round_list
@@ -33,8 +32,8 @@ class RoundView:
         self.tournament_name = None
         #self.ROUND_FIELDS = ("Rounds", "matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
                              #"last_name2", "rank2", "score2")
-        self.HEADING_ROUND_FIELDS = ("Rondes", "Matchs", "Nom1", "Prénom1", "Classement1",
-                             "Score1", "Nom2", "Prénom2", "Classement2", "Score2")
+        self.HEADING_ROUND_FIELDS = ("Rondes", "Matchs", "Nom blanc", "Prénom blanc", "Rang blanc",
+                             "Score blanc","Total blanc", "Nom noir", "Prénom noir", "Rang noir", "Score noir", "Total noir")
         self.player_controller = PlayerController(self.root)
         self.round_controller = RoundController(self.root)
         self.start_date = None
@@ -75,12 +74,12 @@ class RoundView:
         self.tree_frame.tag_configure('evenrow', background="#a47053")
 
         for elt in self.HEADING_ROUND_FIELDS:
-            self.tree_frame.column(elt, anchor=CENTER, width=100)
+            self.tree_frame.column(elt, anchor=CENTER, width=80)
             self.tree_frame.heading(elt, text=elt, anchor=CENTER)
 
     # ================Add Management Entries Boxes==========================
 
-    def round_data_set(self, tournament_name, start_date, round_number):
+    def round_data_set(self, tournament_name, start_date):
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -107,7 +106,7 @@ class RoundView:
         valid_button1.grid(row=2, column=4, padx=10, pady=20)
 
         round_button2 = Button(self.rd_frame, text="Deuxième ronde",
-                                        command=lambda: self.gen_round2(tournament_name, round_number))
+                                        command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
         round_button2.grid(row=3, column=5, padx=10, pady=20)
 
         next_round_button = Button(self.rd_frame, text="Rondes suivantes",
@@ -118,14 +117,15 @@ class RoundView:
         quit_button.grid(row=3, column=7, padx=20, pady=20)
     # ==========================Database============================
 
-    def gen_round1(self, t, round_number):
+    def gen_round1(self, tournament_name):  #, round_number):
         # Create new frame
+        round_number = 1
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
-
+        round_list = list()
         lowerList = list()
         upperList = list()
-        sorted_round_list = RoundController.init_first_round(self, t)
+        sorted_round_list = RoundController.init_first_round(self, tournament_name, round_number)
 
         j = 0
         while j < len(sorted_round_list) / 2:
@@ -150,11 +150,13 @@ class RoundView:
                     upperList[i][0],  # name
                     upperList[i][1],  # last_name
                     upperList[i][2],  # classement
-                    upperList[i][3],  # float(score1_spinBox.get()): score
+                    0.0,  # float(score1_spinBox.get()): score
+                    0.0,    # Total
                     lowerList[i][0],
                     lowerList[i][1],
                     lowerList[i][2],
-                    lowerList[i][3],  # float(score2_spinBox.get()),
+                    0.0,  # float(score2_spinBox.get()),
+                    0.0,    # Total
                     ),
                                            tags=('evenrow',))
 
@@ -165,101 +167,73 @@ class RoundView:
                     upperList[i][0],
                     upperList[i][1],
                     upperList[i][2],
-                    upperList[i][3],  # float(score1_spinBox.get()),
+                    0.0,  # float(score1_spinBox.get()),
+                    0.0,  # Total
                     lowerList[i][0],
                     lowerList[i][1],
                     lowerList[i][2],
-                    lowerList[i][3],  # float(score2_spinBox.get()),
+                    0.0,  # float(score2_spinBox.get()),
+                    0.0,  # Total
                     ),
                                            tags=('oddrow',))
             count += 1
             i += 1
 
-    def gen_round2(self, tournament_name, round_number):
-        round_number += 1
-        global count
-
-        second_round_list = self.round_controller.init_second_round(tournament_name)
-
-        count = len(self.tree_frame.get_children())
-        j = 0
-        i = 0
-        while j < len(second_round_list) / 2:  # 2 iterations
-            if count % 2 == 0:
-                self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                    "Round" + str(round_number),
-                    "Match " + str(count + 1),
-                    second_round_list[i][0],
-                    second_round_list[i][1],  # nom
-                    second_round_list[i][2],  # rang
-                    second_round_list[i][3],  # score
-                    second_round_list[i + 1][0],
-                    second_round_list[i + 1][1],  # nom2...
-                    second_round_list[i + 1][2],
-                    second_round_list[i + 1][3],
-                ),
-                                       tags=('evenrow',))
-            else:
-                self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                    "Round" + str(round_number),
-                    "Match " + str(count + 1),
-                    second_round_list[i][0],
-                    second_round_list[i][1],
-                    second_round_list[i][2],
-                    second_round_list[i][3],
-                    second_round_list[i + 1][0],
-                    second_round_list[i + 1][1],
-                    second_round_list[i + 1][2],
-                    second_round_list[i + 1][3],
-                ),
-                                       tags=('oddrow',))
-            count += 1
-            i += 2
-            j += 1
-
     def gen_rounds(self, tournament_name, tree_frame):
         self.tree_frame = tree_frame
+        round_list = list()
 
         # Get n° of round_number
         last_in_tree_frame = len(self.tree_frame.get_children()) - 1
         string_number = str(self.tree_frame.set(last_in_tree_frame, '#1'))
         round_number = int(string_number[5]) + 1
 
-        global count
-        second_round_list = self.round_controller.init_rounds(tournament_name)
+        if round_number == 2:
+            tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
+        else:
+            tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
 
+        global count
         count = len(self.tree_frame.get_children())
         j = 0
         i = 0
-        while j < len(second_round_list) / 2:  # 2 iterations
+
+        while j < len(tree_round_list) / 2:  # 2 iterations
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
-                    second_round_list[i][0],
-                    second_round_list[i][1],  # nom
-                    second_round_list[i][2],  # rang
-                    second_round_list[i][3],  # score
-                    second_round_list[i + 1][0],
-                    second_round_list[i + 1][1],  # nom2...
-                    second_round_list[i + 1][2],
-                    second_round_list[i + 1][3],
+                    tree_round_list[i][0],  # nom
+                    tree_round_list[i][1],  # prenom
+                    tree_round_list[i][2],  # rang
+                    tree_round_list[i][3],  # score
+                    tree_round_list[i][4],  # total
+                    tree_round_list[i + 1][0],
+                    tree_round_list[i + 1][1],  # nom2...
+                    tree_round_list[i + 1][2],
+                    tree_round_list[i + 1][3],
+                    tree_round_list[i + 1][4],
                 ),
                                        tags=('evenrow',))
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
-                    second_round_list[i][0],
-                    second_round_list[i][1],
-                    second_round_list[i][2],
-                    second_round_list[i][3],
-                    second_round_list[i + 1][0],
-                    second_round_list[i + 1][1],
-                    second_round_list[i + 1][2],
-                    second_round_list[i + 1][3],
+                    tree_round_list[i][0],
+                    tree_round_list[i][1],
+                    tree_round_list[i][2],
+                    tree_round_list[i][3],
+                    tree_round_list[i][4],
+                    tree_round_list[i + 1][0],
+                    tree_round_list[i + 1][1],
+                    tree_round_list[i + 1][2],
+                    tree_round_list[i + 1][3],
+                    tree_round_list[i + 1][4],
                 ),
                                        tags=('oddrow',))
             count += 1
             i += 2
             j += 1
+
+            round_list.append(tree_round_list)
+        return round_list

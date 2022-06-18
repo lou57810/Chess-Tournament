@@ -5,7 +5,6 @@ class Tournament:
 
     def __init__(self, *args):
         for element in args:
-            #print("element:",element)
             self.tournament_name    = element[0]
             self.place_name         = element[1]
             self.start_date         = element[2]
@@ -15,7 +14,6 @@ class Tournament:
             self.description        = element[6]
             self.players_list       = element[7]
             self.rounds_lists        = element[8]
-            #self.id                 = element[9]
 
         self.tournament_table = self.set_tournaments_table()
         self.serialized_tournaments = {}
@@ -40,7 +38,6 @@ class Tournament:
         """Write tournament data in DB"""
         db = TinyDB('data/db_tournaments.json')
         tournament_table = db.table('tournaments')
-
         tournament_table.insert(self.serialized_tournaments)
 
     @staticmethod

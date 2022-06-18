@@ -171,21 +171,24 @@ class PlayerView:
                                       radiobutton2, class_spin_box))
         select_player_button.grid(row=4, column=0, padx=10, pady=10)
 
-        modify_player_button = Button(self.p_frame, text="Modifier",command=lambda: self.player_controller.modify_one_record(self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+        modify_player_button = Button(self.p_frame, text="Modifier",
+                                      command=lambda: self.player_controller.modify_one_record(
+                                      self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
                                       radiobutton2, class_spin_box, tournament_name))
         modify_player_button.grid(row=4, column=1, padx=10, pady=10)
 
         delete_player_button = Button(self.p_frame, text="Supprimer un joueur",
                                       command=lambda: self.player_controller.delete_player_button_action(
-                                          self.tree_frame))
+                                      self.tree_frame))
         delete_player_button.grid(row=3, column=1, padx=10, pady=10)
 
         delete_all_players_button = Button(self.p_frame, text="Supprimer tous les joueurs",
-                                           command=lambda: self.player_controller.delete_all_players_button_action(tournament_name))
+                                           command=lambda: self.player_controller.delete_all_players_button_action(
+                                           tournament_name))
         delete_all_players_button.grid(row=3, column=2, padx=10, pady=10)
 
         quit_button = Button(self.p_frame, text="Quitter",
-                             command=lambda: PlayerController.quit_player_window(self))  # self.quitPlayerView())
+                             command=lambda: PlayerController.quit_player_window(self))
         quit_button.grid(row=3, column=5, padx=10, pady=20)
 
         gen_rounds = Button(self.p_frame, text="Création Rondes",

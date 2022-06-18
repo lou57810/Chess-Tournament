@@ -1,8 +1,7 @@
 from tinydb import TinyDB, where
 from model.tournament import Tournament
-#from control.menuController import MenuController
 from model.player import Player
-#from control.roundController import RoundController
+
 from tkinter import *
 from tkinter import ttk
 

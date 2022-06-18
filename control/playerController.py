@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import ttk
 
 from control.tournamentController import TournamentController
+from control.roundController import RoundController
 from model.player import Player
 from datetime import datetime, timedelta
 
@@ -109,7 +110,7 @@ class PlayerController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
-    def display_tournament_round_window(self, t):
+    def display_tournament_round_window(self, t): # t -> tournament_name
         # ========== Nouvelle fenêtre============================
         from view.mainMenu import MainMenu   # Outside déclaration
         main_menu = MainMenu(self.root)
@@ -118,11 +119,11 @@ class PlayerController:
         from view.roundView import RoundView
         self.round_window = RoundView(self.root)
         self.round_window.display_round_window()
-        round_number = 1
-        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.round_window.gen_round1(t, round_number)
-        self.round_window.round_data_set(t, self.start_date, round_number)
 
+        #round_number = 1
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.round_window.gen_round1(t)
+        self.round_window.round_data_set(t, self.start_date) #, round_number)
 
     def quitPlayerWindow(self):
         self.frame.destroy()

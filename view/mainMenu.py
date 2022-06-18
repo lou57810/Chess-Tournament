@@ -18,8 +18,6 @@ class MainMenu:
         self.tournament_window = TournamentView(self.root)
         self.round_window = RoundView(self.root)
 
-        #self.tournament_controller = TournamentController(self.root)
-
     def display_menu_window(self):
         menuBar = Menu(self.root)
         menuFile = Menu(menuBar)
@@ -34,7 +32,6 @@ class MainMenu:
 
         # Commands
         menuFile.add_command(label="Gestion Tournoi", command=lambda: MenuController.display_tournament_window(self))
-        # menuFile.add_command(label="Gestion joueurs", command=lambda: MenuController.display_player_window(self))
         menuFile.add_command(label="Afficher les resultats")
         menuFile.add_command(label="Enregistrer les résultats")
         menuFile.add_command(label="Modifier les resultats")
@@ -74,8 +71,7 @@ class MainMenu:
     def display_round_window(self):
         self.clean_menu_window(self.root)
         self.display_menu_window()
-        #self.round_window.display_round_window()
-        #RoundView.roundView(self, self.roundFrame)
+
 
 
 

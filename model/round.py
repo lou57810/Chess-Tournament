@@ -15,6 +15,7 @@ class Round:
         self.upper_list = []
         self.lower_list = []
         self.all_tournament_rounds_list = []
+        self.serialized_round_data = {}
 
         for element in args:
             self.first_name = element[0]
@@ -24,13 +25,12 @@ class Round:
 
     def serialize_round_data(self):
         self.serialized_round_data = {
-                                        'round_name': self.round_name,
-                                        'start_time': self.start_time,
-                                        'matchs_list': self.matchs_list,
-                                        'end_time': self.end_time
+                                        'first_name': self.first_name,
+                                        'last_name': self.last_name,
+                                        'rank': self.rank,
+                                        'score': self.score
                                       }
 
-    
     def get_round_list(self, data1):
         db = TinyDB('data/db_tournaments.json')
         tournaments_table = db.table('tournaments')

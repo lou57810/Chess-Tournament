@@ -1,10 +1,10 @@
 from tinydb import TinyDB, where
 
 class Player:
-    def __init__(self, *args):
+    def __init__(self, tournment_name):
 
         for element in args:
-            self.tournament_name        = element[0]
+            self.tournament_name        = tournament_name
             self.first_name             = element[1]
             self.last_name              = element[2]
             self.birth_date             = element[3]
