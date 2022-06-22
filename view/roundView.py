@@ -30,10 +30,10 @@ class RoundView:
         self.rd_frame = None
         self.l_frame = None
         self.tournament_name = None
-        #self.ROUND_FIELDS = ("Rounds", "matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
-                             #"last_name2", "rank2", "score2")
-        self.HEADING_ROUND_FIELDS = ("Rondes", "Matchs", "Nom blanc", "Prénom blanc", "Rang blanc",
-                             "Score blanc","Total blanc", "Nom noir", "Prénom noir", "Rang noir", "Score noir", "Total noir")
+        # self.ROUND_FIELDS = ("Rounds", "matchs", "first_name1", "last_name1", "rank1", "score1", "first_name2",
+        # "last_name2", "rank2", "score2")
+        self.HEADING_ROUND_FIELDS = ("Tournoi", "Rondes", "Matchs", "Nom joueur1", "Prénom joueur1", "Rang1", "Score1",
+                                     "Total1", "Nom joueur2", "Prénom joueur2", "Rang2", "Score2", "Total2")
         self.player_controller = PlayerController(self.root)
         self.round_controller = RoundController(self.root)
         self.start_date = None
@@ -43,7 +43,6 @@ class RoundView:
         self.r_frame = Frame(self.root)
         self.tree_frame = ttk.Treeview(self.r_frame)
         self.r_frame.pack(padx=5, pady=20)
-
 
         # ===========================Style & frames=============================
         style = ttk.Style()
@@ -74,7 +73,7 @@ class RoundView:
         self.tree_frame.tag_configure('evenrow', background="#a47053")
 
         for elt in self.HEADING_ROUND_FIELDS:
-            self.tree_frame.column(elt, anchor=CENTER, width=80)
+            self.tree_frame.column(elt, anchor=CENTER, width=95)
             self.tree_frame.heading(elt, text=elt, anchor=CENTER)
 
     # ================Add Management Entries Boxes==========================
@@ -84,40 +83,58 @@ class RoundView:
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
 
-        spin_joueur1_label = Label(self.rd_frame, text="Score class 1")
-        spin_joueur1_label.grid(row=1, column=2, padx=0, pady=10)
-
-        spin_joueur2_label = Label(self.rd_frame, text="Score class 2")
-        spin_joueur2_label.grid(row=1, column=3, padx=5, pady=10)
-
         input_list = list()
-        score1_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
-        score1_spin_box.grid(row=2, column=2, padx=10, pady=10)
-        input_list.append(score1_spin_box)
 
-        score2_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
-        score2_spin_box.grid(row=2, column=3, padx=10, pady=10)
-        input_list.append(score2_spin_box)
+        # spin_joueur1_label = Label(self.rd_frame, text="Score class 1")
+        # spin_joueur1_label.grid(row=1, column=2, padx=0, pady=10)
 
-        valid_button1 = Button(self.rd_frame, text="Valider",
-                                        command=lambda: self.round_controller.add_valid_button_action(input_list,
-                                        self.rd_frame, self.tree_frame, score1_spin_box, score2_spin_box,
-                                        tournament_name, valid_button1, start_date))
-        valid_button1.grid(row=2, column=4, padx=10, pady=20)
+        # spin_joueur2_label = Label(self.rd_frame, text="Score class 2")
+        # spin_joueur2_label.grid(row=1, column=3, padx=5, pady=10)
 
-        round_button2 = Button(self.rd_frame, text="Deuxième ronde",
-                                        command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
-        round_button2.grid(row=3, column=5, padx=10, pady=20)
 
-        next_round_button = Button(self.rd_frame, text="Rondes suivantes",
-                                        command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
+        # score1_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
+        # score1_spin_box.grid(row=2, column=2, padx=10, pady=10)
+        # input_list.append(score1_spin_box)
+
+        # score2_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
+        # score2_spin_box.grid(row=2, column=3, padx=10, pady=10)
+        # input_list.append(score2_spin_box)
+
+        win_button1 = Button(self.rd_frame, text="Joueur1 gagne",
+                             command=lambda: self.round_controller.get_score1(input_list, self.tree_frame))
+
+
+        win_button1.grid(row=2, column=3, padx=10, pady=20)
+
+        win_button_equal = Button(self.rd_frame, text="Egalité",
+                             command=lambda: self.round_controller.get_score_equal(input_list, self.tree_frame))
+        win_button_equal.grid(row=2, column=4, padx=10, pady=20)
+
+        win_button2 = Button(self.rd_frame, text="Joueur2 gagne",
+                               command=lambda: self.round_controller.get_score2(input_list, self.tree_frame))
+        win_button2.grid(row=2, column=5, padx=10, pady=20)
+
+        valid_button = Button(self.rd_frame, text="Validation ronde",
+                              command=lambda: self.round_controller.valid_round(self.tree_frame, start_date))
+        valid_button.grid(row=2, column=6, padx=10, pady=10)
+
+
+        # round_button2 = Button(self.rd_frame, text="Deuxième ronde",
+        # command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
+        # round_button2.grid(row=3, column=5, padx=10, pady=20)
+
+        next_round_button = Button(self.rd_frame, text="Ronde suivante",
+                                   command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
         next_round_button.grid(row=3, column=6, padx=10, pady=20)
 
         quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
+
+
+
     # ==========================Database============================
 
-    def gen_round1(self, tournament_name):  #, round_number):
+    def gen_round1(self, tournament_name):  # , round_number):
         # Create new frame
         round_number = 1
         self.rd_frame = Frame(self.root)
@@ -145,23 +162,25 @@ class RoundView:
 
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    tournament_name,
                     "Round" + str(round_number),
                     "Match " + str(i + 1),
                     upperList[i][0],  # name
                     upperList[i][1],  # last_name
                     upperList[i][2],  # classement
                     0.0,  # float(score1_spinBox.get()): score
-                    0.0,    # Total
+                    0.0,  # Total
                     lowerList[i][0],
                     lowerList[i][1],
                     lowerList[i][2],
                     0.0,  # float(score2_spinBox.get()),
-                    0.0,    # Total
-                    ),
-                                           tags=('evenrow',))
+                    0.0,  # Total
+                ),
+                                       tags=('evenrow',))
 
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    tournament_name,
                     "Round" + str(round_number),
                     "Match " + str(i + 1),
                     upperList[i][0],
@@ -174,10 +193,18 @@ class RoundView:
                     lowerList[i][2],
                     0.0,  # float(score2_spinBox.get()),
                     0.0,  # Total
-                    ),
-                                           tags=('oddrow',))
+                ),
+                                       tags=('oddrow',))
             count += 1
             i += 1
+
+
+
+
+        #self.round_controller.select_row(self.tree_frame, 0)  # Préselectionne row in round tree_frame
+        #self.tree_frame.focus(0)
+        #self.tree_frame.selection_set(0)
+        #self.tree_frame.selection_set(iid=0)  # Does work
 
     def gen_rounds(self, tournament_name, tree_frame):
         self.tree_frame = tree_frame

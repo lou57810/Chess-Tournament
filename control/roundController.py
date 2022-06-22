@@ -7,7 +7,6 @@ from tkinter import ttk
 from tkinter import ttk as tk
 
 from model.round import Round
-#from control.playerController import PlayerController
 import operator
 from operator import itemgetter
 from datetime import datetime, timedelta
@@ -18,13 +17,15 @@ class RoundController:
     def __init__(self, root):
         self.root = root
         self.round_model = Round()
-        #self.round_list = list()
+        self.round_list = list()
         self.round_list1 = list()
         self.round_list2 = list()
         self.round_list3 = list()
         self.round_list4 = list()
         self.pair_list = list()
         self.round_number = None
+        self.match_list = list()
+        self.match = tuple()
 
     def getTime(self):
         date = time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
@@ -39,6 +40,30 @@ class RoundController:
         db = TinyDB('data/db_tournaments.json')
         tournaments_table = db.table('tournaments')
         return tournaments_table
+    """
+    def create_row_round_list(self, tree_frame, selected):
+        temp_list = list()
+        upper_list = list()
+        lower_list = list()
+        round_list = list()
+        # append tuple tree_frame in a temp list
+        #for child in tree_frame.get_children():
+        for value in tree_frame.item(selected)['values']:
+            temp_list.append(value)
+        del temp_list[0]    # Tournament, Match
+        del temp_list[0]
+        i = 0
+        while i < 10:
+            if i < 5:
+                upper_list.append(temp_list[i])
+            else:
+                lower_list.append(temp_list[i])
+            i += 1
+
+        match = (upper_list, lower_list)
+        round_list.insert(selected, match)
+        return round_list
+    
 
     def create_round_list(self, tree_frame, selected):
         temp_list = list()
@@ -48,6 +73,7 @@ class RoundController:
         # append tuple tree_frame in a temp list
         for value in tree_frame.item(selected)['values']:
             temp_list.append(value)
+        #print("temp_list:", temp_list)
         del temp_list[0]
         del temp_list[0]
         i = 0
@@ -61,39 +87,113 @@ class RoundController:
         match = (upper_list, lower_list)
         round_list.insert(selected, match)
         return round_list
+        """
 
-    def get_players_values(self, tree_frame, score1_spin_box, score2_spin_box, tournaments_table, players_table, selected):
+    def reg_players_values(self, tree_frame):  # Reg in db
+        players_table = self.set_db_players_env()
 
         # ================ Get row rank & score values converted from str to float=======================
-        # a=list dict Joueur1 a[0]=dict Joueur1
-        a = players_table.search(where('first_name') == self.tree_frame.set((int(selected)), '#3'))
-        previous_score1 = float(self.tree_frame.set((int(selected)), '#7'))
-        b = players_table.search(where('first_name') == self.tree_frame.set((int(selected)), '#8'))  # Joueur2
-        previous_score2 = float(self.tree_frame.set((int(selected)), '#12'))
 
-        # Get new score from spinbox
-        score1 = float(score1_spin_box.get())
-        score2 = float(score2_spin_box.get())
+        for elt in tree_frame.get_children():
 
-        # Display new scores
-        tree_frame.set(selected, '#6', score1)  # score match
-        tree_frame.set(selected, '#11', score2)
+            previous_score1 = float(tree_frame.set((int(elt)), '#8'))
+            previous_score2 = float(tree_frame.set((int(elt)), '#13'))
 
-        sum1 = previous_score1 + score1
-        sum2 = previous_score2 + score2
+            score1 = float(tree_frame.set((int(elt)), '#7'))
+            score2 = float(tree_frame.set((int(elt)), '#12'))
 
-        tree_frame.set(selected, '#7', sum1)  # (#4 ou colonne 'scores_class1')
-        tree_frame.set(selected, '#12', sum2)
+            sum1 = previous_score1 + score1
+            sum2 = previous_score2 + score2
 
-        # Reg total in db
-        players_table.update({'score': sum1},
-                             where('first_name') == self.tree_frame.set((int(selected)), '#3'))  # Nom Joueur1
-        players_table.update({'score': sum2},
-                             where('first_name') == self.tree_frame.set((int(selected)), '#8'))  # Nom Joueur2
+            tree_frame.set(elt, '#8', previous_score1 + score1)  # (#4 ou colonne 'scores_class1')
+            tree_frame.set(elt, '#13', previous_score2 + score2)
 
-    def add_valid_button_action(self, input_list, rd_frame, tree_frame,score1_spin_box, score2_spin_box,
-                                                            tournament_name,  valid_button1, start_date):
+            # Reg total in db
+            players_table.update({'score': sum1}, where('first_name') == (tree_frame.set(elt, '#4')))# & where('tournament_name') == str(tree_frame.set(elt), '#1'))  # Nom Joueur1
+            players_table.update({'score': sum2}, where('first_name') == (tree_frame.set(elt, '#9')))  # Nom Joueur2
 
+    def get_match(self, match):
+        i = 0
+        match_list = list()
+        while i < 4:
+            print("Match:", match)
+            match_list.append(match)
+            print("list:", match_list)
+            i += 1
+
+
+    def reg_round_matches(self, tree_frame):
+        round_list = []
+        match_list1 = list()
+        match_list2 = list()
+        match1 = tuple()
+        match2 = tuple()
+        match3 = tuple()
+        match4 = tuple()
+
+        players_table = self.set_db_players_env()
+        tournament_name = tree_frame.set(1, '#1')
+        print("tournament_name:", tournament_name)
+        #elt = 0
+        for elt in tree_frame.get_children():
+            match_list1.append(tree_frame.set(elt, '#4') + ' ' + tree_frame.set(int(elt), '#5'))
+            match_list1.append(tree_frame.set(elt, '#7'))
+            match_list2.append(tree_frame.set(elt, '#9') + ' ' + tree_frame.set(int(elt), '#10'))
+            match_list2.append(tree_frame.set(elt, '#12'))
+            if int(elt) == 0:
+                match1 = (match_list1, match_list2)
+                print("match1", match1)
+                self.round_list.append(match1)
+            elif int(elt) == 1:
+                match2 = (match_list1, match_list2)
+                print("match2", match2)
+                self.round_list.append(match2)
+            elif int(elt) == 2:
+                match3 = (match_list1, match_list2)
+                print("match3", match3)
+                self.round_list.append(match3)
+            elif int(elt) == 3:
+                match4 = (match_list1, match_list2)
+                print("match4", match4)
+                self.round_list.append(match4)
+
+
+
+
+        #self.get_match(match)
+        #print("match:", match)
+            #print("round_list:", round_list)
+            i = 0
+            while i < 2:
+                del match_list1[0]
+                del match_list2[0]
+                i += 1
+        #round_list = [match1, match2, match3, match4]
+        print("round_list:", self.round_list)
+
+
+
+    def valid_round(self, tree_frame, start_date):
+        #selected = tree_frame.focus()
+        temp_list = list()
+        temp_list1 = list()
+        temp_list2 = list()
+        """
+            if selected == 3:
+                self.round_list1.insert(0, round_number)
+                self.round_list1.insert(1, start_date)
+                self.round_list1.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                self.round_model.all_tournament_rounds_list.append(self.round_list1)
+        """
+        # Db register
+        self.reg_players_values(tree_frame)
+        #self.create_round_list()
+        #round_list = self.create_matchs_list(tree_frame)
+        #print("roundnn_list", round_list)
+        self.reg_round_matches(tree_frame)
+
+
+    def valid_round_back(self, input_list, tree_frame, tournament_name, start_date):
         tournaments_table = self.set_db_tournaments_env()
         players_table = self.set_db_players_env()
 
@@ -102,8 +202,8 @@ class RoundController:
 
         round_number = self.tree_frame.set(selected, '#1')
         if round_number == 'Round1':
-            self.get_players_values(tree_frame, score1_spin_box,
-                                    score2_spin_box, tournaments_table, players_table, selected)
+            self.get_players_values(tree_frame, score1,
+                                    score2, tournaments_table, players_table, selected)
             self.round_list1.append(self.create_round_list(tree_frame, selected))
 
             if selected == 3:
@@ -210,33 +310,6 @@ class RoundController:
             i += 1
         return round_players_list
 
-    """
-    def init_second_round(self, tournament_name):   # Return second round player list sorted by rank & score
-        self.tournament_name = tournament_name
-        players_table = self.set_db_players_env()       # Appel de la fonction depuis RoundController
-        serialized_players = []
-        serialized_players = players_table.search(where('tournament_name') == self.tournament_name)
-
-        serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le rang
-        serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
-
-        round_players_list = list()    # liste de dico_players
-
-        i = 0
-        while i < len(serialized_players):  # Liste comprenant [nom, prénom,rang, score, total] ===> treeview +1 pour ajout total
-            init_list = [
-                            serialized_players[i].get('first_name'),
-                            serialized_players[i].get('last_name'),
-                            int(serialized_players[i].get('rank')),
-                            0.0,
-                            float(serialized_players[i].get('score'))
-                            ]
-            round_players_list.insert(i, init_list)  # Insertion first_list à l'indice i
-            i += 1
-        #print("list_serial_p", list_serial_players)
-        return round_players_list
-    """
-
     # Initialisation rounds 3 & 4
     def init_rounds(self, tournament_name, round_number):
         self.tournament_name = tournament_name
@@ -273,6 +346,43 @@ class RoundController:
             i += 1
 
         return round_players_list
+
+# ==========================Button fct==========================
+    def get_score1(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        if int(selected) < 3:
+            self.select_row(tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 1.0
+        score2 = 0.0
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def get_score_equal(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        if int(selected) < 3:
+            self.select_row(tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 0.5
+        score2 = 0.5
+
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def get_score2(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        if int(selected) < 3:
+            self.select_row(tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 0.0
+        score2 = 1.0
+
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def select_row(self, tree_frame,row):
+        tree_frame.focus(row)
+        tree_frame.selection_set(row)
 
 
 
