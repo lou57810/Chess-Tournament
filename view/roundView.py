@@ -91,7 +91,6 @@ class RoundView:
         # spin_joueur2_label = Label(self.rd_frame, text="Score class 2")
         # spin_joueur2_label.grid(row=1, column=3, padx=5, pady=10)
 
-
         # score1_spin_box = Spinbox(self.rd_frame, values=(0.0, 0.5, 1.0), font=("helvetica", 10), width=4)
         # score1_spin_box.grid(row=2, column=2, padx=10, pady=10)
         # input_list.append(score1_spin_box)
@@ -103,21 +102,19 @@ class RoundView:
         win_button1 = Button(self.rd_frame, text="Joueur1 gagne",
                              command=lambda: self.round_controller.get_score1(input_list, self.tree_frame))
 
-
         win_button1.grid(row=2, column=3, padx=10, pady=20)
 
         win_button_equal = Button(self.rd_frame, text="Egalité",
-                             command=lambda: self.round_controller.get_score_equal(input_list, self.tree_frame))
+                                  command=lambda: self.round_controller.get_score_equal(input_list, self.tree_frame))
         win_button_equal.grid(row=2, column=4, padx=10, pady=20)
 
         win_button2 = Button(self.rd_frame, text="Joueur2 gagne",
-                               command=lambda: self.round_controller.get_score2(input_list, self.tree_frame))
+                             command=lambda: self.round_controller.get_score2(input_list, self.tree_frame))
         win_button2.grid(row=2, column=5, padx=10, pady=20)
 
         valid_button = Button(self.rd_frame, text="Validation ronde",
-                              command=lambda: self.round_controller.valid_round(self.tree_frame, start_date))
+                              command=lambda: self.round_controller.valid_round(self.tree_frame, start_date, tournament_name))
         valid_button.grid(row=2, column=6, padx=10, pady=10)
-
 
         # round_button2 = Button(self.rd_frame, text="Deuxième ronde",
         # command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
@@ -129,8 +126,6 @@ class RoundView:
 
         quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
-
-
 
     # ==========================Database============================
 
@@ -159,6 +154,9 @@ class RoundView:
 
         i = 0
         while i < len(sorted_round_list) / 2:
+
+        # fonction saisie des matchs  id players [id_joueur1, id_joueur2] reversible !!! auto
+        # fonction avec exeptions
 
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
@@ -198,13 +196,10 @@ class RoundView:
             count += 1
             i += 1
 
-
-
-
-        #self.round_controller.select_row(self.tree_frame, 0)  # Préselectionne row in round tree_frame
-        #self.tree_frame.focus(0)
-        #self.tree_frame.selection_set(0)
-        #self.tree_frame.selection_set(iid=0)  # Does work
+        # self.round_controller.select_row(self.tree_frame, 0)  # Préselectionne row in round tree_frame
+        # self.tree_frame.focus(0)
+        # self.tree_frame.selection_set(0)
+        # self.tree_frame.selection_set(iid=0)  # Does work
 
     def gen_rounds(self, tournament_name, tree_frame):
         self.tree_frame = tree_frame
@@ -212,7 +207,7 @@ class RoundView:
 
         # Get n° of round_number
         last_in_tree_frame = len(self.tree_frame.get_children()) - 1
-        string_number = str(self.tree_frame.set(last_in_tree_frame, '#1'))
+        string_number = str(self.tree_frame.set(last_in_tree_frame, '#2'))
         round_number = int(string_number[5]) + 1
 
         if round_number == 2:
@@ -228,6 +223,7 @@ class RoundView:
         while j < len(tree_round_list) / 2:  # 2 iterations
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    tournament_name,
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
                     tree_round_list[i][0],  # nom
@@ -244,6 +240,7 @@ class RoundView:
                                        tags=('evenrow',))
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
+                    tournament_name,
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
                     tree_round_list[i][0],
