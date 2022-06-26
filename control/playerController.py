@@ -110,7 +110,7 @@ class PlayerController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
-    def display_tournament_round_window(self, t): # t -> tournament_name
+    def display_tournament_round_window(self, tournament_name): # t -> tournament_name
         # ========== Nouvelle fenêtre============================
         from view.mainMenu import MainMenu   # Outside déclaration
         main_menu = MainMenu(self.root)
@@ -120,10 +120,9 @@ class PlayerController:
         self.round_window = RoundView(self.root)
         self.round_window.display_round_window()
 
-        #round_number = 1
         self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.round_window.gen_round1(t)
-        self.round_window.round_data_set(t, self.start_date) #, round_number)
+        self.round_window.gen_rounds(tournament_name)
+        self.round_window.round_data_set(tournament_name, self.start_date)
 
     def quitPlayerWindow(self):
         self.frame.destroy()

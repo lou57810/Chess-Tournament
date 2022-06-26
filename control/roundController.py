@@ -17,10 +17,6 @@ class RoundController:
     def __init__(self, root):
         self.root = root
         self.round_list = list()
-        self.round_list1 = list()
-        self.round_list2 = list()
-        self.round_list3 = list()
-        self.round_list4 = list()
         self.pair_list = list()
         self.round_number = None
         self.match_list = list()
@@ -104,7 +100,6 @@ class RoundController:
             if int(selected) == 3:
                 self.insert_round_datas(round_list, round_name, start_date)
 
-
         elif round_name == 'Round2':
             self.reg_players_values(tree_frame, selected)
             round_list = self.reg_round_matches(tree_frame, start_date, selected)
@@ -166,29 +161,7 @@ class RoundController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
-    def init_first_round(self, tournament_name, round_number):  # Return first round player list sorted by rank
-        self.tournament_name = tournament_name
-        players_table = RoundController.set_db_players_env(self)  # Appel de la fonction depuis roundView-> gen_round1
-        serialized_players = []
-        serialized_players = players_table.search(where('tournament_name') == self.tournament_name)
-        serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le rang
-        round_players_list = list()
-
-        i = 0
-        init_list = list()
-        while i < len(serialized_players):  # Liste comprenant [id, nom, prénom, rang] ===> treeview
-            init_list = [
-                serialized_players[i].get('first_name'),
-                serialized_players[i].get('last_name'),
-                serialized_players[i].get('rank'),
-                0.0,
-                serialized_players[i].get('score')]
-
-            round_players_list.insert(i, init_list)  # Insertion first_list à l'indice i
-            i += 1
-        return round_players_list
-
-    # Initialisation rounds 3 & 4
+    # Initialisation rounds
     def init_rounds(self, tournament_name, round_number):
         self.tournament_name = tournament_name
         players_table = self.set_db_players_env()
