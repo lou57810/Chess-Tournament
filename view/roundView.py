@@ -119,11 +119,9 @@ class RoundView:
     # ==========================Database============================
 
     def gen_rounds(self, tournament_name):
-
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
 
-        #self.tree_frame = tree_frame
         round_list = list()
 
         if len(self.tree_frame.get_children()) == 0:
@@ -136,6 +134,8 @@ class RoundView:
             round_number = int(round_name[5]) + 1
 
         tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
+        #print("tree_round_list:", tree_round_list[0])
+        #print("len", len(tree_round_list))
 
         global count
         count = len(self.tree_frame.get_children())
@@ -148,13 +148,13 @@ class RoundView:
                     tournament_name,
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
-                    tree_round_list[i][0],  # nom
-                    tree_round_list[i][1],  # prenom
+                    tree_round_list[i][0],  # nom1
+                    tree_round_list[i][1],  # prenom1
                     tree_round_list[i][2],  # rang
                     tree_round_list[i][3],  # score
                     tree_round_list[i][4],  # total
-                    tree_round_list[i + 1][0],
-                    tree_round_list[i + 1][1],  # nom2...
+                    tree_round_list[i + 1][0],  # nom2
+                    tree_round_list[i + 1][1],  # prenom2...
                     tree_round_list[i + 1][2],
                     tree_round_list[i + 1][3],
                     tree_round_list[i + 1][4],
@@ -181,5 +181,3 @@ class RoundView:
             i += 2
             j += 1
 
-            round_list.append(tree_round_list)
-        return round_list

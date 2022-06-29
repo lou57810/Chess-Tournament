@@ -17,7 +17,7 @@ class RoundController:
     def __init__(self, root):
         self.root = root
         self.round_list = list()
-        self.pair_list = list()
+        self.player_pair_list = list()
         self.round_number = None
         self.match_list = list()
         self.match = tuple()
@@ -69,8 +69,8 @@ class RoundController:
             match_list1 = list()
             match_list2 = list()
 
-            match_list1.append(tree_frame.set(elt, '#4') + ' ' + tree_frame.set(int(elt), '#5'))
-            match_list1.append(tree_frame.set(elt, '#7'))
+            match_list1.append(tree_frame.set(elt, '#4') + ' ' + tree_frame.set(int(elt), '#5'))  # Nom Prénom
+            match_list1.append(tree_frame.set(elt, '#7'))  # Score
 
             match_list2.append(tree_frame.set(elt, '#9') + ' ' + tree_frame.set(int(elt), '#10'))
             match_list2.append(tree_frame.set(elt, '#12'))
@@ -161,44 +161,84 @@ class RoundController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
+    def add_pair_list(self, data):
+        pair_list1 = list()
+        pair_list1.append(data)
+        # print("pair_list1:", pair_list1)
+
     # Initialisation rounds
     def init_rounds(self, tournament_name, round_number):
+        pair_players_list = list()
+        pair_list = list()
         self.tournament_name = tournament_name
         players_table = self.set_db_players_env()
         serialized_players = []
         serialized_players = players_table.search(where('tournament_name') == self.tournament_name)
+        print("round_number:", round_number)
+        #for elt in serialized_players:
+            #print("serili", elt)
 
+        # ============================== TRI ============================================================
         # Round1
         if round_number == 1:
             serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le rang
 
-        # Round2
-        elif round_number == 2:
-            serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le rang
-            serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
-
-        # Rounds 3,4
         else:
-            serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
-            round_players_list = list()  # liste de dico_players
+            serialized_players = sorted(serialized_players, key=itemgetter('score'), reverse=True)
+            #serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
+            for elt in serialized_players:
+                print("serial:", elt)
+            i = 0
+            while i < len(serialized_players):  # 0 - 7
+                if i < 7:
+                    if serialized_players[i].get('score') == serialized_players[i + 1].get('score'):
+                        if serialized_players[i + 1].get('rank') > serialized_players[i].get('rank'):
 
+                            #temp1 = serialized_players[i]
+                            temp2 = serialized_players[i + 1]
+                            serialized_players.pop(i + 1)
+                            serialized_players.insert(i, temp2)
+                            #serialized_players.pop(i + 1)
+                            #serialized_players.pop()
+                            #serialized_players.insert(i + 1, temp)
+
+                i += 2  # 4 iter
+
+
+
+
+        # ============================== INSERTION =============================================
         round_players_list = list()  # liste de dico_players
-
         i = 0
         while i < len(serialized_players):  # Liste comprenant [nom, prénom,rang] ===> treeview
             init_list = [
                 serialized_players[i].get('first_name'),
                 serialized_players[i].get('last_name'),
                 int(serialized_players[i].get('rank')),
-                0.0,
-                float(serialized_players[i].get('score'))
+                0.0,  # score début de match
+                float(serialized_players[i].get('score')),
+                serialized_players[i].get('id')
             ]
-            round_players_list.insert(i, init_list)  # Insertion first_list à l'indice i
+            round_players_list.insert(i, init_list)  # Insertion list à l'indice i
             i += 1
+        # print("round_players_list:", round_players_list)
+
+        # ================================ TUPLES ID ===============================
+        i = 0
+        j = 0
+        while j < len(round_players_list) / 2:
+            tuple_pair = (round_players_list[i][5], round_players_list[i + 1][5])
+            print("r1,r2:", round_players_list[i][5], round_players_list[i + 1][5])
+            pair_list.insert(i, tuple_pair)
+            self.player_pair_list.append(tuple_pair)
+            i += 2
+            j += 1
+        print("p1:", pair_list)
+        print("p2:", self.player_pair_list)
 
         return round_players_list
 
-# ==========================Button fct==========================
+    # ==========================Button fct==========================
     def get_score1(self, input_list, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)
@@ -245,20 +285,3 @@ class RoundController:
         round_name = tree_frame.set(int(selected), '#2')
         round_number = int(round_name[5])
         return round_number
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

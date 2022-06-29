@@ -100,13 +100,14 @@ class PlayerView:
         # Create new frame
         self.p_frame = Frame(self.root)
         self.p_frame.pack()
-
+        """
         def clear_entries():
             f_name_box.delete(0, END)
             l_name_box.delete(0, END)
             date_box.delete(0, 'end')
             gender_var.set(None)  # gender.deselect() don't work
             class_spin_box.delete(0, END)
+        """
 
         # Row number
         y = 0
@@ -162,29 +163,30 @@ class PlayerView:
         add_player_button = Button(self.p_frame, text="Ajouter joueur",  command=lambda:
                             [self.player_controller.add_player_tree_frame(input_list, self.p_frame,
                             self.tree_frame, y, tournament_name, add_player_button,
-                            self.DATA_FIELDS), clear_entries()])
+                            self.DATA_FIELDS), self.player_controller.clear_entries(f_name_box, l_name_box, date_box, gender_var, radiobutton1,
+                      radiobutton2, class_spin_box)])
         add_player_button.grid(row=3, column=0, padx=10, pady=10)
 
         select_player_button = Button(self.p_frame, text="Selectionner un joueur",
                                       command=lambda: self.player_controller.select_one_record(
-                                      self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      self.tree_frame, f_name_box, l_name_box, date_box, gender_var, radiobutton1,
                                       radiobutton2, class_spin_box))
         select_player_button.grid(row=4, column=0, padx=10, pady=10)
 
         modify_player_button = Button(self.p_frame, text="Modifier",
                                       command=lambda: self.player_controller.modify_one_record(
-                                      self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      self.tree_frame, f_name_box, l_name_box, date_box, gender_var, radiobutton1,
                                       radiobutton2, class_spin_box, tournament_name))
         modify_player_button.grid(row=4, column=1, padx=10, pady=10)
 
         delete_player_button = Button(self.p_frame, text="Supprimer un joueur",
-                                      command=lambda: self.player_controller.delete_player_button_action(
+                                      command=lambda: self.player_controller.delete_one_player_button(
                                       self.tree_frame))
         delete_player_button.grid(row=3, column=1, padx=10, pady=10)
 
         delete_all_players_button = Button(self.p_frame, text="Supprimer tous les joueurs",
-                                           command=lambda: self.player_controller.delete_all_players_button_action(
-                                           tournament_name))
+                                           command=lambda: self.player_controller.delete_all_players_button
+                                           (self.tree_frame))
         delete_all_players_button.grid(row=3, column=2, padx=10, pady=10)
 
         quit_button = Button(self.p_frame, text="Quitter",
@@ -194,6 +196,10 @@ class PlayerView:
         gen_rounds = Button(self.p_frame, text="Création Rondes",
                             command=lambda: PlayerController.display_tournament_round_window(self, tournament_name))
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
+
+        # Bind the treeview
+        #self.tree_frame.bind("<ButtonRelease-1>", lambda event: self.player_controller.select_one_record(self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
+                                      #radiobutton2, class_spin_box, event))
 
 
 
