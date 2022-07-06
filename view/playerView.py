@@ -80,7 +80,7 @@ class PlayerView:
         players_table = self.round_controller.set_db_players_env()      # Initialise db tournament
         players_table.update({'score': 0.0}, where('tournament_name') == tournament_name)
         tournament_players_data = players_table.search(where('tournament_name') == tournament_name)
-
+        # Récuperer le model et implementer le tout dans une fonction.
         count = 0
         for player in tournament_players_data:
             attributes_player = list()

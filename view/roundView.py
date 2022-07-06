@@ -136,6 +136,7 @@ class RoundView:
         tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
         #print("tree_round_list:", tree_round_list[0])
         #print("len", len(tree_round_list))
+        print("round:", round_number)
 
         global count
         count = len(self.tree_frame.get_children())
@@ -145,36 +146,36 @@ class RoundView:
         while j < len(tree_round_list) / 2:  # 2 iterations
             if count % 2 == 0:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                    tournament_name,
+                    tree_round_list[i][0],  # tournament_name
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
-                    tree_round_list[i][0],  # nom1
-                    tree_round_list[i][1],  # prenom1
-                    tree_round_list[i][2],  # rang
-                    tree_round_list[i][3],  # score
-                    tree_round_list[i][4],  # total
-                    tree_round_list[i + 1][0],  # nom2
-                    tree_round_list[i + 1][1],  # prenom2...
-                    tree_round_list[i + 1][2],
+                    tree_round_list[i][1],  # nom1
+                    tree_round_list[i][2],  # prenom1
+                    tree_round_list[i][3],  # rang
+                    tree_round_list[i][4],  # score
+                    tree_round_list[i][5],  # total
+                    tree_round_list[i + 1][1],  # nom2
+                    tree_round_list[i + 1][2],  # prenom2...
                     tree_round_list[i + 1][3],
                     tree_round_list[i + 1][4],
+                    tree_round_list[i + 1][5],
                 ),
                                        tags=('evenrow',))
             else:
                 self.tree_frame.insert(parent="", index="end", iid=count, text="", values=(
-                    tournament_name,
+                    tree_round_list[i][0],  # tournament_name
                     "Round" + str(round_number),
                     "Match " + str(count + 1),
-                    tree_round_list[i][0],
                     tree_round_list[i][1],
                     tree_round_list[i][2],
                     tree_round_list[i][3],
                     tree_round_list[i][4],
-                    tree_round_list[i + 1][0],
+                    tree_round_list[i][5],
                     tree_round_list[i + 1][1],
                     tree_round_list[i + 1][2],
                     tree_round_list[i + 1][3],
                     tree_round_list[i + 1][4],
+                    tree_round_list[i + 1][5],
                 ),
                                        tags=('oddrow',))
             count += 1

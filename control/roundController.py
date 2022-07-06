@@ -10,18 +10,24 @@ from model.round import Round
 import operator
 from operator import itemgetter
 from datetime import datetime, timedelta
-
+from collections import Counter
 
 class RoundController:
 
     def __init__(self, root):
         self.root = root
         self.round_list = list()
-        self.player_pair_list = list()
+        self.round_players_list = list()
+        self.temp_round_players_list = list()
+        self.full_pair_players_list = list()
+        #self.upper_id = list()
+        #self.lower_id = list()
+        self.pair_players_id_list = list()
         self.round_number = None
         self.match_list = list()
         self.match = tuple()
         self.round_model = Round()
+        self.final_round = list()
 
     def getTime(self):
         date = time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
@@ -31,6 +37,12 @@ class RoundController:
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
         return players_table
+
+    def set_db_tournament_players_env(self, tournament_name):
+        db = TinyDB('data/db_tournaments.json')
+        players_table = db.table('players')
+        tournament_players_table = players_table.search(where('tournament_name') == self.tournament_name)
+        return tournament_players_table
 
     def set_db_tournaments_env(self):
         db = TinyDB('data/db_tournaments.json')
@@ -127,11 +139,19 @@ class RoundController:
         self.sort_players()
         self.create_upper_and_lower_list()
         return self.create_match()
-
+    """
     def sort_players(self):
-        """Sort players by ranking"""
+        #Sort players by ranking
         self.round_model.players_list.sort(key=lambda x: x.ranking, reverse=True)
         # print(self.round_model.players_list)
+    """
+    def sort_matches(self, round_number, one_round_players_list):
+        # ============================== TRI ============================================================
+        # Round1
+        if round_number == 1:
+            one_round_players_list.sort(key=lambda x: x[3], reverse=True)  # Tri suivant le rang
+        else:
+            one_round_players_list.sort(key=lambda x: (x[5], x[3]), reverse=True)   # Tri suivant score et rang
 
     def create_upper_and_lower_list(self):
         length = len(self.round_model.players_list)
@@ -142,7 +162,7 @@ class RoundController:
             else:
                 self.round_model.lower_list.append(self.round_model.players_list[i])
             i += 1
-
+    """
     def create_match(self):
         length = len(self.round_model.players_list)
         i = 0
@@ -153,6 +173,7 @@ class RoundController:
             self.round_model.matches_list.append(match)
             i += 1
         return self.round_model.matches_list
+    """
 
     def quit_round_window(self):
         self.rd_frame.destroy()
@@ -161,57 +182,40 @@ class RoundController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
-    def add_pair_list(self, data):
-        pair_list1 = list()
-        pair_list1.append(data)
-        # print("pair_list1:", pair_list1)
+    def reverse_pair(self, pair):
+        new_pair = pair[::-1]
+        return new_pair
 
-    # Initialisation rounds
-    def init_rounds(self, tournament_name, round_number):
-        pair_players_list = list()
-        pair_list = list()
+    def create_pairs(self, one_round_players_list):
+        id_list = list()
+        upper_id = list()
+        lower_id = list()
+        i = 0
+        while i < len(one_round_players_list):
+            if i % 2 == 0:
+                upper_id.append(one_round_players_list[i][6])
+            else:
+                lower_id.append(one_round_players_list[i][6])
+            i += 1
+
+        for elt in zip(upper_id, lower_id):
+            id_list.append(elt)
+
+        return id_list
+
+    def init_players_list(self, tournament_name, round_number):
+        one_round_players_list = list()
         self.tournament_name = tournament_name
         players_table = self.set_db_players_env()
         serialized_players = []
         serialized_players = players_table.search(where('tournament_name') == self.tournament_name)
-        print("round_number:", round_number)
-        #for elt in serialized_players:
-            #print("serili", elt)
+        pair_players_id_list = list()
 
-        # ============================== TRI ============================================================
-        # Round1
-        if round_number == 1:
-            serialized_players.sort(key=operator.itemgetter('rank'), reverse=True)  # Tri suivant le rang
-
-        else:
-            serialized_players = sorted(serialized_players, key=itemgetter('score'), reverse=True)
-            #serialized_players.sort(key=operator.itemgetter('score'), reverse=True)  # Tri suivant le score
-            for elt in serialized_players:
-                print("serial:", elt)
-            i = 0
-            while i < len(serialized_players):  # 0 - 7
-                if i < 7:
-                    if serialized_players[i].get('score') == serialized_players[i + 1].get('score'):
-                        if serialized_players[i + 1].get('rank') > serialized_players[i].get('rank'):
-
-                            #temp1 = serialized_players[i]
-                            temp2 = serialized_players[i + 1]
-                            serialized_players.pop(i + 1)
-                            serialized_players.insert(i, temp2)
-                            #serialized_players.pop(i + 1)
-                            #serialized_players.pop()
-                            #serialized_players.insert(i + 1, temp)
-
-                i += 2  # 4 iter
-
-
-
-
-        # ============================== INSERTION =============================================
-        round_players_list = list()  # liste de dico_players
         i = 0
-        while i < len(serialized_players):  # Liste comprenant [nom, prénom,rang] ===> treeview
+        while i < len(serialized_players):  # Liste dictionnaires comprenant tournoi, nom, prénom,date, rang, score, id
+            # i --> 4 (matches)
             init_list = [
+                serialized_players[i].get('tournament_name'),
                 serialized_players[i].get('first_name'),
                 serialized_players[i].get('last_name'),
                 int(serialized_players[i].get('rank')),
@@ -219,26 +223,103 @@ class RoundController:
                 float(serialized_players[i].get('score')),
                 serialized_players[i].get('id')
             ]
-            round_players_list.insert(i, init_list)  # Insertion list à l'indice i
+            # ex: init_list: ['Europa Chess', 'Flamand', 'Julia', 310, 0.0, 0.0, 8]... x 8
+            one_round_players_list.append(init_list)
+
             i += 1
-        # print("round_players_list:", round_players_list)
+        # ========================= Tri rangs et scores ====================
+        self.sort_matches(round_number, one_round_players_list)
+        # ========================== Create pairs ==========================
+        pair_players_id_list = self.create_pairs(one_round_players_list)
 
-        # ================================ TUPLES ID ===============================
+        return (one_round_players_list, pair_players_id_list)
+
+    def final_init_list(self, tournament_name, pair_players_id_list):
+        print("pair_players_id_list", pair_players_id_list)
         i = 0
+        players_list = list()
+        #while i < len(pair_players_id_list):
+        for elt in pair_players_id_list:
+            #print("elt:", elt)
+            players_list.append(self.display_id_values(elt[0], tournament_name))
+            players_list.append(self.display_id_values(elt[1], tournament_name))
+            #i += 1
+
+        #print("pair_players_list:", players_list)
+        return players_list
+
+    def display_id_values(self, id, tournament_name):
+        players_table = self.set_db_tournament_players_env(tournament_name)
+        init_player = list()
+        for elt in players_table:
+            if elt['id'] == id:
+                # i --> 4 (matches)
+                init_player = [
+                    elt['tournament_name'],
+                    elt['first_name'],
+                    elt['last_name'],
+                    elt['rank'],
+                    0.0,  # score début de match
+                    elt['score'],
+                    elt['id']
+                    ]
+        #print("init_player0:", init_player)
+        return init_player
+
+    # Initialisation rounds
+    def init_rounds(self, tournament_name, round_number):
+        one_round_players_list = list()
+        pair_players_id_list = list()
+        compare_list = list()
+        # Renvoi tuple init_list
+        round_tuple = self.init_players_list(tournament_name, round_number)
+        one_round_players_list = round_tuple[0]
+        pair_players_id_list = round_tuple[1]
+
+        # convert tuples in list because tuples are immuables: # utilisation de liste de compréhension
+        pair_players_id_list = [list(i) for i in pair_players_id_list]
+        print("pair_players_id_list_origin:", pair_players_id_list)
+        # ============================== INSERTION =============================================
+        for elt in pair_players_id_list:
+            self.full_pair_players_list.append(elt)     # cumul liste  pairs
+        #print("self.fullppil", self.full_pair_players_list)
+        # ================== Liste à comparer = list totale - liste actuelle ====================
+        for elt in self.full_pair_players_list:
+            compare_list.append(elt)
+        i = 0
+        while i < 4:            # Suppression de la ronde en cours
+            compare_list.pop()
+            i += 1
+        # ========================== Occurrences ============================
+        print("compare_list:", compare_list)
+        i = 0
+        while i < len(compare_list):    # -4 ronde actuelle
+            for elt in pair_players_id_list:
+                rev = self.reverse_pair(elt)    # define reverse pair
+                if elt == compare_list[i]:      # compare normal pair
+                    print("doublon1:", elt)
+                    pair_players_id_list = self.pairs_id_translate(elt, rev, pair_players_id_list)
+                elif rev == compare_list[i]:    # compare reverse pair
+                    print("doublon2:", elt)
+                    pair_players_id_list = self.pairs_id_translate(elt, rev, pair_players_id_list)
+            i += 1
+        #print("old_roundAffiche:", one_round_players_list)
+        final_round_list = self.final_init_list(tournament_name, pair_players_id_list)
+        print("final_roundAffiche:", final_round_list)
+        return final_round_list
+
+    def pairs_id_translate(self, elt, rev, pair_players_id_list):
+        temp = pair_players_id_list[0][0]  # pair_id[0]
         j = 0
-        while j < len(round_players_list) / 2:
-            tuple_pair = (round_players_list[i][5], round_players_list[i + 1][5])
-            print("r1,r2:", round_players_list[i][5], round_players_list[i + 1][5])
-            pair_list.insert(i, tuple_pair)
-            self.player_pair_list.append(tuple_pair)
-            i += 2
+        while j < len(pair_players_id_list) - 1:
+            pair_players_id_list[j][0] = pair_players_id_list[j + 1][0]
             j += 1
-        print("p1:", pair_list)
-        print("p2:", self.player_pair_list)
+            pair_players_id_list[j][0] = temp
 
-        return round_players_list
+        print("new_id_pair_players_list", pair_players_id_list)
+        return pair_players_id_list
 
-    # ==========================Button fct==========================
+    # =========================== Button fct ================================
     def get_score1(self, input_list, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)

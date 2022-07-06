@@ -8,15 +8,15 @@ import copy
 
 class Round:
 
-    def __init__(self):  # , *args):
-        self.PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank', 'score')
-        self.all_rounds_list = []
+    def __init__(self, *args):
+        #self.PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank', 'score')
+        #self.all_rounds_list = []
         self.players_list = []
         self.upper_list = []
         self.lower_list = []
         self.round_list = list()
         self.all_tournament_rounds_list = []
-        self.serialized_round_data = {}
+        self.serialized_round_players = {}
         """
         for element in args:
             self.first_name = element[0]
@@ -32,23 +32,14 @@ class Round:
             self.round_date2 = elemnt[3]
         """
 
-    def serialize_round_data(self):
-        self.serialized_round_data = {
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'rank': self.rank,
-            'score': self.score
-        }
-
-    def get_round_list(self, data1):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
-        Round.i += 1
-        if Round.i <= 4:
-            Round.round1.append(data1)
-        if Round.i == 4:
-            Round.all_rounds.append(Round.round1)
-            Round.reg_db_rounds(self)
+    def serialize_round_players(self):
+        self.serialized_round_players = {
+                                        'first_name':   self.first_name,
+                                        'last_name':    self.last_name,
+                                        'rank':         self.rank,
+                                        'score':        self.score,
+                                        'id':           self.id
+                                        }
 
     def get_round_player_scores(self, data_player_list2):
         db = TinyDB('data/db_tournaments.json')
