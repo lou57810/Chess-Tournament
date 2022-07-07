@@ -19,6 +19,3 @@ class Window:
         menu.display_menu_window()
         root.mainloop()
         return root
-
-
-

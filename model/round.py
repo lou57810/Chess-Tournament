@@ -1,16 +1,18 @@
-from tinydb import TinyDB, Query, where
+from tinydb import TinyDB, where
 # import data	# db_tournaments.json
 from model.player import Player
 # from model.tournament import Tournaments
-from tinydb.operations import set
-import copy
+# from tinydb.operations import set
+# import copy
 
 
 class Round:
 
     def __init__(self, *args):
-        #self.PLAYER_FIELDS = ('tournament_name', 'first_name', 'last_name', 'birth_date', 'gender', 'rank', 'score')
-        #self.all_rounds_list = []
+        # self.PLAYER_FIELDS = (
+        # 'tournament_name', 'first_name', 'last_name'
+        # 'birth_date', 'gender', 'rank', 'score')
+        # self.all_rounds_list = []
         self.players_list = []
         self.upper_list = []
         self.lower_list = []
@@ -23,7 +25,6 @@ class Round:
             self.last_name = element[1]
             self.rank = element[2]
             self.score = element[3]
-        
 
         for element in args:
             self.round_name = element[0]
@@ -46,13 +47,15 @@ class Round:
         players_table = db.table('players')
         i = 0
         while i < len(data_player_list2):
-            players_table.update({'score': data_player_list2[i][1]}, where('id') == data_player_list2[i][0])
+            players_table.update(
+                {'score': data_player_list2[i][1]},
+                where('id') == data_player_list2[i][0])
             i += 1
 
     def reg_db_rounds(self):
         db = TinyDB('data/db_tournaments.json')
         tournaments_table = db.table('tournaments')
-        tournaments_table.update({'rounds_list': Round.all_rounds})  # Round.all_rounds})
+        tournaments_table.update({'rounds_list': Round.all_rounds})
 
     def create_players_list(self):
         # Read all players data

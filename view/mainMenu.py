@@ -5,9 +5,9 @@ from view.playerView import PlayerView
 from view.roundView import RoundView
 
 from control.menuController import MenuController
-from control.tournamentController import TournamentController
+# from control.tournamentController import TournamentController
 
-from tinydb import TinyDB, where
+# from tinydb import TinyDB, where
 
 
 class MainMenu:
@@ -31,24 +31,38 @@ class MainMenu:
         menuBar.add_cascade(label="?", menu=menuHelp)
 
         # Commands
-        menuFile.add_command(label="Gestion Tournoi", command=lambda: MenuController.display_tournament_window(self))
+        menuFile.add_command(
+            label="Gestion Tournoi",
+            command=lambda: MenuController.display_tournament_window(self))
         menuFile.add_command(label="Afficher les resultats")
         menuFile.add_command(label="Enregistrer les résultats")
         menuFile.add_command(label="Modifier les resultats")
         menuFile.add_separator()
-        menuFile.add_command(label="Quitter", command=lambda: MenuController.fct_quit(self))
+        menuFile.add_command(
+            label="Quitter",
+            command=lambda: MenuController.fct_quit(self))
 
         menuEdition.add_command(label="Edition du rapport")
-        menuEdition.add_command(label="Impression du rapport", command=lambda: MenuController.fct_warning(self))
+        menuEdition.add_command(
+            label="Impression du rapport",
+            command=lambda: MenuController.fct_warning(self))
         menuEdition.add_separator()
-        menuEdition.add_command(label="Rechercher", command=lambda: MenuController.fct_yes_no(self))
+        menuEdition.add_command(
+            label="Rechercher",
+            command=lambda: MenuController.fct_yes_no(self))
 
         menuOutils.add_command(label="Parametres")
 
-        menuHelp.add_command(label="Obtenir de l'aide", command=lambda: MenuController.fct_error(self))
-        menuHelp.add_command(label="Mise à jour", command=lambda: MenuController.maj_fct(self))
+        menuHelp.add_command(
+            label="Obtenir de l'aide",
+            command=lambda: MenuController.fct_error(self))
+        menuHelp.add_command(
+            label="Mise à jour",
+            command=lambda: MenuController.maj_fct(self))
         menuHelp.add_separator()
-        menuHelp.add_command(label="A propos", command=lambda: MenuController.show_about(self))
+        menuHelp.add_command(
+            label="A propos",
+            command=lambda: MenuController.show_about(self))
 
         self.root.config(menu=menuBar)
 
@@ -71,8 +85,3 @@ class MainMenu:
     def display_round_window(self):
         self.clean_menu_window(self.root)
         self.display_menu_window()
-
-
-
-
-

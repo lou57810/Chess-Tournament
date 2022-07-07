@@ -1,14 +1,6 @@
-from tinydb import TinyDB, Query, where
-
-import tkinter as tk
-from tkinter import *
-from tkinter import ttk
-
-from control.tournamentController import TournamentController
-from control.roundController import RoundController
-from model.player import Player
 from datetime import datetime, timedelta
-
+from model.player import Player
+from tinydb import TinyDB, where
 
 
 class PlayerController:
@@ -17,7 +9,9 @@ class PlayerController:
         self.root = root
         self.start_date = None
 
-    def add_player_tree_frame(self, input_list, frame, tree_frame,  y, tournament_name, add_player_button, data_fields):
+    def add_player_tree_frame(self, input_list, frame, tree_frame,
+                              y, tournament_name, add_player_button,
+                              data_fields):
         data = list()
         data.append(tournament_name)
         data_check = True
@@ -47,8 +41,15 @@ class PlayerController:
 
         print("data:", data)
 
-    def modify_one_record(self, tree_frame, f_name_box, l_name_box, date_box, gender_var, radiobutton1,
-                          radiobutton2, class_spin_box, tournament_name):
+    def modify_one_record(self, tree_frame,
+                          f_name_box,
+                          l_name_box,
+                          date_box,
+                          gender_var,
+                          radiobutton1,
+                          radiobutton2,
+                          class_spin_box,
+                          tournament_name):
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
 
@@ -69,27 +70,47 @@ class PlayerController:
                         value[6]))
 
         name = f_name_box.get()
-        players_table.update({'first_name': f_name_box.get()}, where('first_name') == name)
-        players_table.update({'last_name': l_name_box.get()}, where('first_name') == name)
-        players_table.update({'birth_date': date_box.get()}, where('first_name') == name)
-        players_table.update({'gender': gender_var.get()}, where('first_name') == name)
-        players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
-        players_table.update({'score': 0}, where('first_name') == name)
+        players_table.update(
+            {'first_name': f_name_box.get()},
+            where('first_name') == name)
+        players_table.update(
+            {'last_name': l_name_box.get()},
+            where('first_name') == name)
+        players_table.update(
+            {'birth_date': date_box.get()},
+             where('first_name') == name)
+        players_table.update(
+            {'gender': gender_var.get()},
+            where('first_name') == name)
+        players_table.update(
+            {'rank': class_spin_box.get()},
+            where('first_name') == name)
+        players_table.update(
+            {'score': 0},
+            where('first_name') == name)
 
-    def clear_entries(self, f_name_box, l_name_box, date_box, gender_var, radiobutton1,
+    def clear_entries(self, f_name_box, l_name_box, date_box,
+                      gender_var, radiobutton1,
                       radiobutton2, class_spin_box):
         f_name_box.delete(0, END)
         l_name_box.delete(0, END)
         date_box.delete(0, END)
-        #radiobutton1.deselect
-        #radiobutton2.deselect
+        # radiobutton1.deselect
+        # radiobutton2.deselect
         gender_var.set(None)
         class_spin_box.delete(0, END)
 
-    def select_one_record(self, tree_frame, f_name_box, l_name_box, date_box, gender_var, radiobutton1,
-                                      radiobutton2, class_spin_box):
-        self.clear_entries(f_name_box, l_name_box, date_box, gender_var, radiobutton1,
-                                      radiobutton2, class_spin_box)
+    def select_one_record(self, tree_frame,
+                          f_name_box,
+                          l_name_box,
+                          date_box,
+                          gender_var,
+                          radiobutton1,
+                          radiobutton2,
+                          class_spin_box):
+        self.clear_entries(
+            f_name_box, l_name_box, date_box, gender_var, radiobutton1,
+            radiobutton2, class_spin_box)
         selected = tree_frame.focus()
         values = tree_frame.item(selected, 'values')
 
@@ -104,7 +125,8 @@ class PlayerController:
 
     def delete_one_player_button(self, tree_frame):
         player_selected = tree_frame.focus()
-        temp = tree_frame.item(player_selected, 'values')  # tournament_selected = n° ligne, value = valeurs colonnes
+        # tournament_selected = n° ligne, value = valeurs colonnes
+        temp = tree_frame.item(player_selected, 'values')
 
         for element in tree_frame.selection():
             tree_frame.delete(player_selected)
@@ -119,12 +141,6 @@ class PlayerController:
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
         players_table.remove(where('tournament_name') == tournament_name)
-    """
-    def refresh_player_frame(self):
-        from view.mainMenu import MainMenu
-        self.main_menu = MainMenu(self.root)
-        self.main_menu.display_player_window()
-    """
 
     def quit_player_window(self):
         self.p_frame.destroy()
@@ -133,7 +149,7 @@ class PlayerController:
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
 
-    def display_tournament_round_window(self, tournament_name): # t -> tournament_name
+    def display_tournament_round_window(self, tournament_name):
         # ========== Nouvelle fenêtre============================
         from view.mainMenu import MainMenu   # Outside déclaration
         main_menu = MainMenu(self.root)
@@ -149,5 +165,3 @@ class PlayerController:
 
     def quitPlayerWindow(self):
         self.frame.destroy()
-
-

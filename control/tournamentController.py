@@ -1,6 +1,6 @@
 from tinydb import TinyDB, where
 from model.tournament import Tournament
-from model.player import Player
+#from model.player import Player
 
 from tkinter import *
 from tkinter import ttk
@@ -8,7 +8,7 @@ from tkinter import ttk
 
 class TournamentController:
 
-    def __init__(self,root):
+    def __init__(self, root):
         self.root = root
         self.tournament_name = ""
 
@@ -28,7 +28,8 @@ class TournamentController:
             tournament_instance_list.append(tournament)
         return tournament_instance_list
 
-    def add_tournament_button_action(self, input_list, frame, y, add_tournament_button):
+    def add_tournament_button_action(
+            self, input_list, frame, y, add_tournament_button):
         data = list()
         data_check = True
 
@@ -61,7 +62,6 @@ class TournamentController:
         self.player_window.display_player_window()  # rattache a id
         self.player_window.player_data_set()
 
-
     def display_add_player_window(self, t):
         # Appelé depuis tournamentView: def tour_db_click(self)
         # tournament_selected = n° ligne, value = valeurs colonnes
@@ -79,7 +79,6 @@ class TournamentController:
         self.player_window.call_tournament_player_list(tournament_name)
         self.player_window.player_data_set(tournament_name)
 
-
     def refresh_tournament_frame(self):
         """Clean root window and display menu"""
         from view.mainMenu import MainMenu
@@ -92,10 +91,3 @@ class TournamentController:
         main_menu = MainMenu(self.root)
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
-
-
-
-        
-
-
-
