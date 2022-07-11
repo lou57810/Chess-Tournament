@@ -1,13 +1,23 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from model.player import Player
 from tinydb import TinyDB, where
+import tkinter as tk
 
 
 class PlayerController:
-
     def __init__(self, root):
         self.root = root
-        self.start_date = None
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    def set_db_tournaments_env(self):
+        db = TinyDB('data/db_tournaments.json')
+        tournaments_table = db.table('tournaments')
+        return tournaments_table
+
+    def set_db_players_env(self):
+        db = TinyDB('data/db_tournaments.json')
+        players_table = db.table('players')
+        return players_table
 
     def add_player_tree_frame(self, input_list, frame, tree_frame,
                               y, tournament_name, add_player_button,
@@ -70,35 +80,22 @@ class PlayerController:
                         value[6]))
 
         name = f_name_box.get()
-        players_table.update(
-            {'first_name': f_name_box.get()},
-            where('first_name') == name)
-        players_table.update(
-            {'last_name': l_name_box.get()},
-            where('first_name') == name)
-        players_table.update(
-            {'birth_date': date_box.get()},
-             where('first_name') == name)
-        players_table.update(
-            {'gender': gender_var.get()},
-            where('first_name') == name)
-        players_table.update(
-            {'rank': class_spin_box.get()},
-            where('first_name') == name)
-        players_table.update(
-            {'score': 0},
-            where('first_name') == name)
+        players_table.update({'first_name': f_name_box.get()}, where('first_name') == name)
+        players_table.update({'last_name': l_name_box.get()}, where('first_name') == name)
+        players_table.update({'birth_date': date_box.get()}, where('first_name') == name)
+        players_table.update({'gender': gender_var.get()}, where('first_name') == name)
+        players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
+        players_table.update({'score': 0}, where('first_name') == name)
 
-    def clear_entries(self, f_name_box, l_name_box, date_box,
-                      gender_var, radiobutton1,
-                      radiobutton2, class_spin_box):
-        f_name_box.delete(0, END)
-        l_name_box.delete(0, END)
-        date_box.delete(0, END)
+    def clear_entries(self, f_name_box, l_name_box, date_box, gender_var, radiobutton1, radiobutton2, class_spin_box):
+
+        f_name_box.delete(0, tk.END)
+        l_name_box.delete(0, tk.END)
+        date_box.delete(0, tk.END)
         # radiobutton1.deselect
         # radiobutton2.deselect
         gender_var.set(None)
-        class_spin_box.delete(0, END)
+        class_spin_box.delete(0, tk.END)
 
     def select_one_record(self, tree_frame,
                           f_name_box,
@@ -108,9 +105,7 @@ class PlayerController:
                           radiobutton1,
                           radiobutton2,
                           class_spin_box):
-        self.clear_entries(
-            f_name_box, l_name_box, date_box, gender_var, radiobutton1,
-            radiobutton2, class_spin_box)
+        self.clear_entries(f_name_box, l_name_box, date_box, gender_var, radiobutton1, radiobutton2, class_spin_box)
         selected = tree_frame.focus()
         values = tree_frame.item(selected, 'values')
 
@@ -148,7 +143,7 @@ class PlayerController:
         main_menu = MainMenu(self.root)
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
-
+    """
     def display_tournament_round_window(self, tournament_name):
         # ========== Nouvelle fenêtre============================
         from view.mainMenu import MainMenu   # Outside déclaration
@@ -157,11 +152,7 @@ class PlayerController:
 
         from view.roundView import RoundView
         self.round_window = RoundView(self.root)
-        self.round_window.display_round_window()
-
-        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.round_window.gen_rounds(tournament_name)
-        self.round_window.round_data_set(tournament_name, self.start_date)
+    """
 
     def quitPlayerWindow(self):
         self.frame.destroy()

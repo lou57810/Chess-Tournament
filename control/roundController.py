@@ -1,16 +1,12 @@
 from tinydb import TinyDB, where
-import tkinter as tk
+# import tkinter as tk
 import time
-import tkinter as tk
-from tkinter import *
-from tkinter import ttk
-from tkinter import ttk as tk
-
+# from tkinter import ttk
+from tkinter import Frame
 from model.round import Round
-import operator
-from operator import itemgetter
-from datetime import datetime, timedelta
-# from collections import Counter
+# import operator
+# from operator import itemgetter
+from datetime import datetime
 
 
 class RoundController:
@@ -27,8 +23,9 @@ class RoundController:
         self.match = tuple()
         self.round_model = Round()
         self.final_round = list()
+        self.start_date = None
 
-    def getTime(self):
+    def get_time(self):
         date = time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
         return date
 
@@ -41,7 +38,7 @@ class RoundController:
         db = TinyDB('data/db_tournaments.json')
         players_table = db.table('players')
         tournament_players_table = players_table.search(where(
-                                'tournament_name') == self.tournament_name)
+            'tournament_name') == self.tournament_name)
         return tournament_players_table
 
     def set_db_tournaments_env(self):
@@ -49,7 +46,118 @@ class RoundController:
         tournaments_table = db.table('tournaments')
         return tournaments_table
 
-    def reg_players_values(self, tree_frame, selected):  # Reg in db
+    def switch_window(self, tournament_name):
+        from view.mainMenu import MainMenu  # Outside déclaration
+        main_menu = MainMenu(self.root)
+        main_menu.clean_menu_window(self.root)
+        """
+        self.r_frame = Frame(self.root)
+        self.tree_frame = ttk.Treeview(self.r_frame)
+        self.r_frame.pack(padx=5, pady=20)
+
+        # ================= Style & frames ==============
+        style = ttk.Style()
+        # Pick a theme
+        style.theme_use("alt")
+        style.configure("Treeview",
+                        background="white",
+                        foreground="black",
+                        rowheight=25,
+                        fieldbackground="white"
+                        )
+        # Change selected color
+        style.map("Treeview", background=[("selected", "brown")])
+
+        tree_scroll = Scrollbar(self.r_frame)
+        tree_scroll.config(command=self.tree_frame.yview)
+        tree_scroll.pack(side=RIGHT, fill=Y)
+        self.tree_frame = ttk.Treeview(
+            self.r_frame, yscrollcommand=tree_scroll.set, select="extended")
+        self.tree_frame.pack(pady=20)
+
+        self.tree_frame["columns"] = self.HEADING_ROUND_FIELDS
+        self.tree_frame.column('#0', width=0, stretch=NO)
+        self.tree_frame.heading('#0', text='', anchor=CENTER)
+
+        # Create Striped Row Tags
+        self.tree_frame.tag_configure('oddrow', background="#ecdab9")
+        self.tree_frame.tag_configure('evenrow', background="#a47053")
+
+        for elt in self.HEADING_ROUND_FIELDS:
+            self.tree_frame.column(elt, anchor=CENTER, width=95)
+            self.tree_frame.heading(elt, text=elt, anchor=CENTER)
+    """
+
+    def gen_rounds(self, tournament_name, tree_frame):
+        self.tree_frame = tree_frame
+        self.rd_frame = Frame(self.root)
+        self.rd_frame.pack()
+
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # self.start_date = self.get_time()
+        self.set_start_date(self.start_date)
+
+        if len(self.tree_frame.get_children()) == 0:
+            round_number = 1
+
+        else:
+            # Get n° of round_number
+            last_in_tree_frame = len(self.tree_frame.get_children()) - 1
+            round_name = str(self.tree_frame.set(last_in_tree_frame, '#2'))
+            round_number = int(round_name[5]) + 1
+
+        tree_round_list = self.init_rounds(
+            tournament_name, round_number)
+        print("round:", round_number)
+
+        global count
+        count = len(self.tree_frame.get_children())
+        j = 0
+        i = 0
+
+        while j < len(tree_round_list) / 2:  # 2 iterations
+            if count % 2 == 0:
+                self.tree_frame.insert(
+                    parent="", index="end", iid=count, text="", values=(
+                        tree_round_list[i][0],  # tournament_name
+                        "Round" + str(round_number),
+                        "Match " + str(count + 1),
+                        tree_round_list[i][1],  # nom1
+                        tree_round_list[i][2],  # prenom1
+                        tree_round_list[i][3],  # rang
+                        tree_round_list[i][4],  # score
+                        tree_round_list[i][5],  # total
+                        tree_round_list[i + 1][1],  # nom2
+                        tree_round_list[i + 1][2],  # prenom2...
+                        tree_round_list[i + 1][3],
+                        tree_round_list[i + 1][4],
+                        tree_round_list[i + 1][5],
+                    ),
+                    tags=('evenrow',))
+            else:
+                self.tree_frame.insert(
+                    parent="", index="end", iid=count, text="", values=(
+                        tree_round_list[i][0],  # tournament_name
+                        "Round" + str(round_number),
+                        "Match " + str(count + 1),
+                        tree_round_list[i][1],
+                        tree_round_list[i][2],
+                        tree_round_list[i][3],
+                        tree_round_list[i][4],
+                        tree_round_list[i][5],
+                        tree_round_list[i + 1][1],
+                        tree_round_list[i + 1][2],
+                        tree_round_list[i + 1][3],
+                        tree_round_list[i + 1][4],
+                        tree_round_list[i + 1][5],
+                    ),
+                    tags=('oddrow',))
+            count += 1
+            i += 2
+            j += 1
+
+    # ========== Reg players datas in db ============
+    def reg_players_values(self, tree_frame, selected):
         players_table = self.set_db_players_env()
 
         # === Get row rank & score values converted from str to float ===
@@ -80,7 +188,7 @@ class RoundController:
                 where('first_name') == tree_frame.set(elt, '#9'))  # Joueur2
             elt += 1
 
-    def reg_round_matches(self, tree_frame, start_date, selected):
+    def reg_round_matches(self, tree_frame, selected):
         round_list = []
         elt = int(selected) - 3
         while elt <= int(selected):
@@ -109,7 +217,9 @@ class RoundController:
         round_list.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         self.round_model.all_tournament_rounds_list.append(round_list)
 
-    def valid_round(self, tree_frame, start_date, tournament_name):
+    def valid_round(self, tree_frame, tournament_name):
+        self.start_date = self.get_start_date()
+        print("start_date:", self.start_date)
         tournaments_table = self.set_db_tournaments_env()
         round_list = list()
         selected = tree_frame.focus()
@@ -118,32 +228,32 @@ class RoundController:
         if round_name == 'Round1':
             self.reg_players_values(tree_frame, selected)
             round_list = self.reg_round_matches(
-                tree_frame, start_date, selected)
+                tree_frame, selected)
 
             if int(selected) == 3:
-                self.insert_round_datas(round_list, round_name, start_date)
+                self.insert_round_datas(round_list, round_name, self.start_date)
 
         elif round_name == 'Round2':
             self.reg_players_values(tree_frame, selected)
             round_list = self.reg_round_matches(
-                tree_frame, start_date, selected)
+                tree_frame, selected)
 
             if int(selected) == 7:
-                self.insert_round_datas(round_list, round_name, start_date)
+                self.insert_round_datas(round_list, round_name, self.start_date)
 
         elif round_name == 'Round3':
             self.reg_players_values(tree_frame, selected)
             round_list = self.reg_round_matches(
-                tree_frame, start_date, selected)
+                tree_frame, selected)
             if int(selected) == 11:
-                self.insert_round_datas(round_list, round_name, start_date)
+                self.insert_round_datas(round_list, round_name, self.start_date)
 
         elif round_name == 'Round4':
             self.reg_players_values(tree_frame, selected)
             round_list = self.reg_round_matches(
-                tree_frame, start_date, selected)
+                tree_frame, selected)
             if int(selected) == 15:
-                self.insert_round_datas(round_list, round_name, start_date)
+                self.insert_round_datas(round_list, round_name, self.start_date)
 
             tournaments_table.update(
                 {'rounds_lists': self.round_model.all_tournament_rounds_list},
@@ -154,6 +264,7 @@ class RoundController:
         self.sort_players()
         self.create_upper_and_lower_list()
         return self.create_match()
+
     """
     def sort_players(self):
         # Sort players by ranking
@@ -257,28 +368,23 @@ class RoundController:
         # ========================== Create pairs ==========================
         pair_players_id_list = self.create_pairs(one_round_players_list)
 
-        return (one_round_players_list, pair_players_id_list)
+        # return (one_round_players_list, pair_players_id_list)
+        return pair_players_id_list
 
     def final_init_list(self, tournament_name, pair_players_id_list):
-        print("pair_players_id_list", pair_players_id_list)
         players_list = list()
-        # while i < len(pair_players_id_list):
         for elt in pair_players_id_list:
-            # print("elt:", elt)
             players_list.append(
                 self.display_id_values(elt[0], tournament_name))
             players_list.append(
                 self.display_id_values(elt[1], tournament_name))
-            # i += 1
-
-        # print("pair_players_list:", players_list)
         return players_list
 
-    def display_id_values(self, id, tournament_name):
+    def display_id_values(self, player_id, tournament_name):
         players_table = self.set_db_tournament_players_env(tournament_name)
         init_player = list()
         for elt in players_table:
-            if elt['id'] == id:
+            if elt['id'] == player_id:
                 # i --> 4 (matches)
                 init_player = [
                     elt['tournament_name'],
@@ -289,19 +395,13 @@ class RoundController:
                     elt['score'],
                     elt['id']
                 ]
-        # print("init_player0:", init_player)
         return init_player
 
     # Initialisation rounds
     def init_rounds(self, tournament_name, round_number):
-        # one_round_players_list = list()
         pair_players_id_list = list()
         compare_list = list()
-        # Renvoi tuple init_list
-        round_tuple = self.init_players_list(tournament_name, round_number)
-        # one_round_players_list = round_tuple[0]
-        # print("one_round_players_list:", one_round_players_list)
-        pair_players_id_list = round_tuple[1]
+        pair_players_id_list = self.init_players_list(tournament_name, round_number)
 
         # convert tuples in list because tuples are immuables:
         # utilisation de liste de compréhension
@@ -310,47 +410,68 @@ class RoundController:
         # =============== INSERTION ===============
         for elt in pair_players_id_list:
             self.full_pair_players_list.append(elt)  # cumul liste  pairs
-        # print("self.fullppil", self.full_pair_players_list)
-        # ========== Liste à comparer = list totale - liste actuelle ========
+
+        # ========== Compare list = total list - current list ========
         for elt in self.full_pair_players_list:
             compare_list.append(elt)
         i = 0
-        while i < 4:  # Suppression de la ronde en cours
+        while i < 4:  # Sub current list
             compare_list.pop()
             i += 1
         # ========================== Occurrences ============================
         print("compare_list:", compare_list)
-        i = 0
-        while i < len(compare_list):  # -4 ronde actuelle
-            for elt in pair_players_id_list:
-                rev = self.reverse_pair(elt)  # define reverse pair
-                if elt == compare_list[i]:  # compare normal pair
-                    print("doublon1:", elt)
-                    pair_players_id_list = self.pairs_id_translate(
-                        elt, rev, pair_players_id_list)
-                elif rev == compare_list[i]:  # compare reverse pair
-                    print("doublon2:", elt)
-                    pair_players_id_list = self.pairs_id_translate(
-                        elt, rev, pair_players_id_list)
-            i += 1
-        # print("old_roundAffiche:", one_round_players_list)
+        full_compare_list = self.reverse_compare_id_list(compare_list)
+
+        self.switch_id_list(full_compare_list, pair_players_id_list)
+        print("pair_players_id_list_final:", pair_players_id_list)
+
         final_round_list = self.final_init_list(
             tournament_name, pair_players_id_list)
         print("final_roundAffiche:", final_round_list)
         return final_round_list
 
-    def pairs_id_translate(self, elt, rev, pair_players_id_list):
+    # Translation x till no doubles
+    def switch_id_list(self, full_compare_list, pair_players_id_list):
+        i = 0
+        data_check = False
+        if len(full_compare_list) != 0:
+            while i < len(full_compare_list):
+                for elt in pair_players_id_list:
+                    if elt == full_compare_list[i]:
+                        print("doublon:", elt)
+                        pair_players_id_list = self.pairs_id_translate(
+                            elt, pair_players_id_list)
+                        data_check == True
+
+                i += 1
+        if data_check == True:
+            self.switch_id_list(full_compare_list, pair_players_id_list)
+        elif len(full_compare_list) != 0:
+            while i < len(full_compare_list):
+                for elt in pair_players_id_list:
+                    if elt != full_compare_list[i]:
+                        pass
+        return pair_players_id_list
+
+    def pairs_id_translate(self, elt, pair_players_id_list):
         temp = pair_players_id_list[0][0]  # pair_id[0]
         j = 0
         while j < len(pair_players_id_list) - 1:
             pair_players_id_list[j][0] = pair_players_id_list[j + 1][0]
             j += 1
             pair_players_id_list[j][0] = temp
-
-        print("new_id_pair_players_list", pair_players_id_list)
         return pair_players_id_list
 
-    # =========================== Button fct ================================
+    def reverse_compare_id_list(self, compare_list):
+        sum = list()
+        for elt1 in compare_list:  # ronde actuelle
+            sum.append(self.reverse_pair(elt1))
+        for elt2 in sum:
+            compare_list.append(elt2)
+        return compare_list
+
+        # =========================== Button fct ================================
+
     def get_score1(self, input_list, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)
@@ -400,3 +521,11 @@ class RoundController:
         round_name = tree_frame.set(int(selected), '#2')
         round_number = int(round_name[5])
         return round_number
+
+    def set_start_date(self, start_date):
+        # print("s_d:", start_date)
+        return start_date
+
+    def get_start_date(self):
+        self.start_date = self.set_start_date(self.start_date)
+        return self.start_date

@@ -1,5 +1,10 @@
-from tkinter import *
-from tkinter.messagebox import *
+from tkinter import Toplevel
+from tkinter.ttk import Label
+from tkinter.messagebox import showinfo
+from tkinter.messagebox import showerror
+from tkinter.messagebox import showwarning
+from tkinter.messagebox import askquestion
+from tkinter.messagebox import askyesno
 
 
 class MenuController:
@@ -15,6 +20,9 @@ class MenuController:
 
     def maj_fct(self):
         showinfo("showinfo", "Vous êtes à jour !")
+
+    def param_fct(self):
+        showinfo("showinfo", "Passez à la version 1.1.2")
 
     def fct_error(self):
         showerror("showerror", "En maintenance")

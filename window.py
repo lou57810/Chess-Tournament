@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Tk
 from view.mainMenu import MainMenu
 
 
@@ -12,7 +12,7 @@ class Window:
         root.geometry("1280x860")
         root.config(background='#9a031e')
         root.iconbitmap("./img/logo.ico")
-        root.option_add('*tearOff', FALSE)  # Supprime le séparateur
+        root.option_add('*tearOff', False)  # Supprime le séparateur
 
         # menu view creation
         menu = MainMenu(root)

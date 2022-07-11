@@ -1,12 +1,20 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
-from tkcalendar import *
+from tkinter import Button
+from tkinter import Entry
+from tkinter import Frame
+from tkcalendar import DateEntry
+from tkinter import Spinbox
+from tkinter import Scrollbar
+from tkinter import Label
+from tkinter import Radiobutton
+
 # from tinydb import TinyDB, Query, where
 # from tkinter import messagebox
-from tkinter.messagebox import *
+# from tkinter.messagebox import *
+
 from control.tournamentController import TournamentController
 from control.menuController import MenuController
-
 
 # from view.playerView import PlayerView
 # from model.tournament import Tournament
@@ -45,7 +53,7 @@ class TournamentView:
 
         # Create a Treeview Scrollbar
         tree_scroll = Scrollbar(self.t_frame)
-        tree_scroll.pack(side=RIGHT, fill=Y)
+        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Configure the Scrollbar
         self.tree_frame = ttk.Treeview(
@@ -55,12 +63,12 @@ class TournamentView:
 
         # Define Columns
         self.tree_frame["columns"] = self.TOURNAMENT_FIELDS
-        self.tree_frame.column('#0', width=0, stretch=NO)
-        self.tree_frame.heading('#0', text='', anchor=CENTER)
+        self.tree_frame.column('#0', width=0, stretch=tk.NO)
+        self.tree_frame.heading('#0', text='', anchor=tk.CENTER)
 
         for element in self.TOURNAMENT_FIELDS:
-            self.tree_frame.column(element, anchor=CENTER, width=120)
-            self.tree_frame.heading(element, text=element, anchor=CENTER)
+            self.tree_frame.column(element, anchor=tk.CENTER, width=120)
+            self.tree_frame.heading(element, text=element, anchor=tk.CENTER)
 
         count = 0
         # Alternative rows
@@ -97,7 +105,7 @@ class TournamentView:
         input_list = list()
         # Loop for fields names
         for element in self.TOURNAMENT_FIELDS:
-            current_elt = StringVar()
+            current_elt = tk.StringVar()
             current_elt.set(element)  # Création d'un set
 
             # Create label
@@ -106,21 +114,21 @@ class TournamentView:
 
             if element == "Timing":
                 speed_frame = Frame(self.t_frame)
-                speed_var = StringVar()
+                speed_var = tk.StringVar()
                 speed_var.set("None")
 
                 bulletRadio = Radiobutton(
-                    speed_frame, anchor=W, text="Bullet",
+                    speed_frame, anchor=tk.W, text="Bullet",
                     variable=speed_var, value="bullet", width=4)
                 fastRadio = Radiobutton(
-                    speed_frame, anchor=W, text="Rapide",
+                    speed_frame, anchor=tk.W, text="Rapide",
                     variable=speed_var, value="rapide", width=5)
                 blitzRadio = Radiobutton(
-                    speed_frame, anchor=W, text="Blitz",
+                    speed_frame, anchor=tk.W, text="Blitz",
                     variable=speed_var, value="blitz", width=3)
-                bulletRadio.pack(anchor=W, side=LEFT, padx=0)
-                fastRadio.pack(anchor=W, side=LEFT, padx=0)
-                blitzRadio.pack(anchor=W, side=LEFT, padx=0)
+                bulletRadio.pack(anchor=tk.W, side=tk.LEFT, padx=0)
+                fastRadio.pack(anchor=tk.W, side=tk.LEFT, padx=0)
+                blitzRadio.pack(anchor=tk.W, side=tk.LEFT, padx=0)
                 speed_frame.grid(row=2, column=5)
                 input_list.append(speed_var)
 
@@ -128,7 +136,7 @@ class TournamentView:
                 start_date_box = DateEntry(
                     self.t_frame, width=15, locale='fr_FR',
                     selectmode='day', date_pattern='dd/MM/yyyy')
-                start_date_box.delete(0, END)
+                start_date_box.delete(0, tk.END)
                 start_date_box.grid(row=1, column=2, padx=1, pady=10)
                 input_list.append(start_date_box)
 
@@ -136,7 +144,7 @@ class TournamentView:
                 end_date_box = DateEntry(
                     self.t_frame, width=15, locale='fr_FR',
                     selectmode='day', date_pattern='dd/MM/yyyy')
-                end_date_box.delete(0, END)
+                end_date_box.delete(0, tk.END)
                 end_date_box.grid(row=1, column=3, padx=1, pady=10)
                 input_list.append(end_date_box)
 

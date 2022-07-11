@@ -1,9 +1,5 @@
-from tinydb import TinyDB, where
 from model.tournament import Tournament
-#from model.player import Player
-
-from tkinter import *
-from tkinter import ttk
+# from tkinter import ttk
 
 
 class TournamentController:

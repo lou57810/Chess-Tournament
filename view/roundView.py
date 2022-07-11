@@ -1,20 +1,10 @@
 import tkinter as tk
-from tkinter import *
+from tkinter import Button
+from tkinter import Frame
+from tkinter import Scrollbar
 from tkinter import ttk
-from tkinter import ttk as tk
-# from datetime import *
-# from tinydb import TinyDB, Query, where
-# from tkinter import messagebox
-# from datetime import datetime, timedelta
-# from model.player import Player
-# from control.controller import Controller
-# from model.round import Round
-# from model.tournament import Tournament
-# from control.tournamentController import TournamentController
 from control.playerController import PlayerController
 from control.roundController import RoundController
-# import time
-# import operator
 
 
 class RoundView:
@@ -23,7 +13,7 @@ class RoundView:
     round_list2 = []
     data_player_list2 = []
 
-    def __init__(self, root, round_list=list()):  # ,round_list
+    def __init__(self, root, round_list=list()):  # round_list
         self.root = root
         self.round_list = round_list
         self.tree_frame = None
@@ -42,7 +32,9 @@ class RoundView:
         self.round_controller = RoundController(self.root)
         self.start_date = None
 
-    def display_round_window(self):
+    def display_round_window(self, tournament_name):
+        self.round_controller.switch_window(tournament_name)
+
         self.r_frame = Frame(self.root)
         self.tree_frame = ttk.Treeview(self.r_frame)
         self.r_frame.pack(padx=5, pady=20)
@@ -62,25 +54,27 @@ class RoundView:
 
         tree_scroll = Scrollbar(self.r_frame)
         tree_scroll.config(command=self.tree_frame.yview)
-        tree_scroll.pack(side=RIGHT, fill=Y)
+        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         self.tree_frame = ttk.Treeview(
             self.r_frame, yscrollcommand=tree_scroll.set, select="extended")
         self.tree_frame.pack(pady=20)
 
         self.tree_frame["columns"] = self.HEADING_ROUND_FIELDS
-        self.tree_frame.column('#0', width=0, stretch=NO)
-        self.tree_frame.heading('#0', text='', anchor=CENTER)
+        self.tree_frame.column('#0', width=0, stretch=tk.NO)
+        self.tree_frame.heading('#0', text='', anchor=tk.CENTER)
 
         # Create Striped Row Tags
         self.tree_frame.tag_configure('oddrow', background="#ecdab9")
         self.tree_frame.tag_configure('evenrow', background="#a47053")
 
         for elt in self.HEADING_ROUND_FIELDS:
-            self.tree_frame.column(elt, anchor=CENTER, width=95)
-            self.tree_frame.heading(elt, text=elt, anchor=CENTER)
+            self.tree_frame.column(elt, anchor=tk.CENTER, width=95)
+            self.tree_frame.heading(elt, text=elt, anchor=tk.CENTER)
 
     # ================Add Management Entries Boxes==========================
-    def round_data_set(self, tournament_name, start_date):
+    def round_data_set(self, tournament_name):
+        self.display_round_window(tournament_name)
+        self.round_controller.gen_rounds(tournament_name, self.tree_frame)
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -108,80 +102,15 @@ class RoundView:
         valid_button = Button(
             self.rd_frame, text="Validation ronde",
             command=lambda: self.round_controller.valid_round(
-                self.tree_frame, start_date, tournament_name))
+                self.tree_frame, tournament_name))
         valid_button.grid(row=2, column=6, padx=10, pady=10)
 
         next_round_button = Button(
             self.rd_frame, text="Ronde suivante",
-            command=lambda: self.gen_rounds(tournament_name))
+            command=lambda: self.round_controller.gen_rounds(tournament_name, self.tree_frame))
         next_round_button.grid(row=3, column=6, padx=10, pady=20)
 
         quit_button = Button(
             self.rd_frame, text="Quitter",
             command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
-
-    # ==========================Database============================
-
-    def gen_rounds(self, tournament_name):
-        self.rd_frame = Frame(self.root)
-        self.rd_frame.pack()
-
-        if len(self.tree_frame.get_children()) == 0:
-            round_number = 1
-
-        else:
-            # Get n° of round_number
-            last_in_tree_frame = len(self.tree_frame.get_children()) - 1
-            round_name = str(self.tree_frame.set(last_in_tree_frame, '#2'))
-            round_number = int(round_name[5]) + 1
-
-        tree_round_list = self.round_controller.init_rounds(
-            tournament_name, round_number)
-        print("round:", round_number)
-
-        global count
-        count = len(self.tree_frame.get_children())
-        j = 0
-        i = 0
-
-        while j < len(tree_round_list) / 2:  # 2 iterations
-            if count % 2 == 0:
-                self.tree_frame.insert(
-                    parent="", index="end", iid=count, text="", values=(
-                        tree_round_list[i][0],  # tournament_name
-                        "Round" + str(round_number),
-                        "Match " + str(count + 1),
-                        tree_round_list[i][1],  # nom1
-                        tree_round_list[i][2],  # prenom1
-                        tree_round_list[i][3],  # rang
-                        tree_round_list[i][4],  # score
-                        tree_round_list[i][5],  # total
-                        tree_round_list[i + 1][1],  # nom2
-                        tree_round_list[i + 1][2],  # prenom2...
-                        tree_round_list[i + 1][3],
-                        tree_round_list[i + 1][4],
-                        tree_round_list[i + 1][5],
-                    ),
-                    tags=('evenrow',))
-            else:
-                self.tree_frame.insert(
-                    parent="", index="end", iid=count, text="", values=(
-                        tree_round_list[i][0],  # tournament_name
-                        "Round" + str(round_number),
-                        "Match " + str(count + 1),
-                        tree_round_list[i][1],
-                        tree_round_list[i][2],
-                        tree_round_list[i][3],
-                        tree_round_list[i][4],
-                        tree_round_list[i][5],
-                        tree_round_list[i + 1][1],
-                        tree_round_list[i + 1][2],
-                        tree_round_list[i + 1][3],
-                        tree_round_list[i + 1][4],
-                        tree_round_list[i + 1][5],
-                    ),
-                    tags=('oddrow',))
-            count += 1
-            i += 2
-            j += 1

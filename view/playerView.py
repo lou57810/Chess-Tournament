@@ -1,20 +1,19 @@
 import tkinter as tk
-from tkinter import *
+from tkinter import Button
 from tkinter import ttk
-import PIL
-from PIL import ImageTk, Image
-from tkinter import messagebox
-from tkcalendar import *
-
-from tinydb import TinyDB, Query, where
-
+# import PIL
+# from PIL import ImageTk, Image
+from tkinter import Entry
+from tkinter import Label
+# from tkinter import messagebox
+from tkcalendar import DateEntry
+from tkinter import Frame
+from tkinter import Scrollbar
+from tkinter import Spinbox
+from tkinter import Radiobutton
+from tinydb import where
 from control.playerController import PlayerController
-# from control.menuController import MenuController
-# from control.tournamentController import TournamentController
-from control.roundController import RoundController
-
-# from model.round import Round
-# from model.player import Player
+from view.roundView import RoundView
 
 
 class PlayerView:
@@ -35,7 +34,8 @@ class PlayerView:
         self.date = None
         self.p_frame = None
         self.player_controller = PlayerController(self.root)
-        self.round_controller = RoundController(self.root)
+        # self.round_controller = RoundController(self.root)
+        self.round_view = RoundView(self.root)
 
     def display_player_window(self):
         self.p_frame = Frame(self.root)
@@ -60,7 +60,7 @@ class PlayerView:
 
         # Create a Treeview Scrollbar
         tree_scroll = Scrollbar(self.p_frame)
-        tree_scroll.pack(side=RIGHT, fill=Y)
+        tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Configure the Scrollbar
         self.tree_frame = ttk.Treeview(
@@ -71,20 +71,20 @@ class PlayerView:
         # Define Columns
         self.tree_frame["columns"] = self.PLAYER_FIELDS
 
-        self.tree_frame.column('#0', width=0, stretch=NO)
-        self.tree_frame.heading('#0', text='', anchor=CENTER)
+        self.tree_frame.column('#0', width=0, stretch=tk.NO)
+        self.tree_frame.heading('#0', text='', anchor=tk.CENTER)
 
         self.tree_frame.tag_configure('oddrow', background="white")
         self.tree_frame.tag_configure('evenrow', background="lightblue")
 
         for element in self.PLAYER_FIELDS:
-            self.tree_frame.column(element, anchor=CENTER, width=120)
-            self.tree_frame.heading(element, text=element, anchor=CENTER)
+            self.tree_frame.column(element, anchor=tk.CENTER, width=120)
+            self.tree_frame.heading(element, text=element, anchor=tk.CENTER)
 
     def call_tournament_player_list(self, tournament_name):
         self.display_player_window()
         # Display datas
-        players_table = self.round_controller.set_db_players_env()
+        players_table = self.player_controller.set_db_players_env()
         players_table.update(
             {'score': 0.0}, where('tournament_name') == tournament_name)
         tournament_players_data = players_table.search(
@@ -127,7 +127,7 @@ class PlayerView:
 
         # Loop for fields names
         for element in self.DATA_FIELDS:
-            current_element = StringVar()
+            current_element = tk.StringVar()
             current_element.set(element)
 
             # Create label
@@ -155,7 +155,7 @@ class PlayerView:
 
             elif element == "Genre":
                 gender_frame = Frame(self.p_frame)
-                gender_var = StringVar()
+                gender_var = tk.StringVar()
                 gender_var.set("None")
 
                 radiobutton1 = Radiobutton(
@@ -164,8 +164,8 @@ class PlayerView:
                 radiobutton2 = Radiobutton(
                     gender_frame, text="Femme",
                     variable=gender_var, value="Femme")
-                radiobutton1.pack(side=LEFT, padx=15)
-                radiobutton2.pack(side=RIGHT, padx=15)
+                radiobutton1.pack(side=tk.LEFT, padx=15)
+                radiobutton2.pack(side=tk.RIGHT, padx=15)
                 gender_frame.grid(row=2, column=3)
                 input_list.append(gender_var)
 
@@ -226,8 +226,11 @@ class PlayerView:
 
         gen_rounds = Button(
             self.p_frame, text="Création Rondes",
-            command=lambda: PlayerController.display_tournament_round_window(
-                self, tournament_name))
+            # command=lambda: PlayerController.display_tournament_round_window(
+            # self, tournament_name))
+            command=lambda: self.round_view.round_data_set(
+                tournament_name))
+
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
 
         # Bind the treeview
