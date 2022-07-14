@@ -9,3 +9,7 @@ commande = Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser)
 
 otherwise Git Bash (MINGW64):
 commande = source env/Scripts/activate
+
+For view flake8 report:
+pip install flake8-html
+flake8 --format=html --htmldir=flake-report

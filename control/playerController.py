@@ -1,5 +1,6 @@
 from datetime import datetime
 from model.player import Player
+from model.dbInterface import Interface
 from tinydb import TinyDB, where
 import tkinter as tk
 
@@ -7,6 +8,7 @@ import tkinter as tk
 class PlayerController:
     def __init__(self, root):
         self.root = root
+        self.model_interface = Interface()
         self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     def set_db_tournaments_env(self):
@@ -51,18 +53,10 @@ class PlayerController:
 
         print("data:", data)
 
-    def modify_one_record(self, tree_frame,
-                          f_name_box,
-                          l_name_box,
-                          date_box,
-                          gender_var,
-                          radiobutton1,
-                          radiobutton2,
-                          class_spin_box,
-                          tournament_name):
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
+    def modify_one_record(self, tree_frame, f_name_box, l_name_box, date_box, gender_var,
+                          radiobutton1, radiobutton2, class_spin_box, tournament_name):
 
+        players_table = self.model_interface.set_db_players_env()
         selected = tree_frame.focus()
         value = tree_frame.item(selected, 'values')
         if radiobutton1.invoke == "Homme":
@@ -92,8 +86,6 @@ class PlayerController:
         f_name_box.delete(0, tk.END)
         l_name_box.delete(0, tk.END)
         date_box.delete(0, tk.END)
-        # radiobutton1.deselect
-        # radiobutton2.deselect
         gender_var.set(None)
         class_spin_box.delete(0, tk.END)
 
@@ -133,8 +125,7 @@ class PlayerController:
         for values in tree_frame.get_children():
             tree_frame.delete(values)
 
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
+        players_table = self.model_interface.set_db_players_env()
         players_table.remove(where('tournament_name') == tournament_name)
 
     def quit_player_window(self):

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations: view\mainMenu.py</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+<script>
+function bindHandler(link) {
+   var code = link.getAttribute('data-code');
+   var key = location.pathname + '#' + code;
+
+   var ul = link.parentNode.querySelector('.details');
+   if (sessionStorage[key] != 'open') {
+      ul.style.display = 'none';
+   }
+   link.addEventListener('click', function (event) {
+      if (!ul.style.display || ul.style.display == 'none') {
+         ul.style.display = 'block';
+         sessionStorage[key] = 'open';
+      } else {
+         ul.style.display = 'none';
+         sessionStorage[key] = 'closed';
+      }
+   });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+   var links = document.querySelectorAll('#index > li > a');
+   for (var i = 0; i < links.length; i++) {
+      bindHandler(links[i]);
+   }
+});
+</script>
+   </head>
+   <body>
+      <div id="masthead" class="sev-2"></div>
+      <div id="page">
+         <p id="srclink">
+            <a title="View full annotated source"
+               href="view.mainMenu.source.html">
+               <img src="file.svg" alt="&#x2261;">
+            </a></p>
+         <h1>
+            <a href="index.html">
+               <img src="back.svg" alt="&#x2B05;">
+               view\mainMenu.py
+            </a>
+         </h1>
+
+         <ul id="index">
+         
+         <li>
+            <a data-code="E501">
+               <span class="count sev-2">
+                  27
+               </span>
+               <strong>E501:</strong> line too long (95 > 79 characters)
+               
+                  (and 14 similar)
+               
+            </a>
+            <ul class="details">
+            <li>
+               
+               <p>Line too long (95 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l33">
+                  <tt><i>33</i>         <span class="c1"># =================================== Menu Files ======================================</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (117 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l34">
+                  <tt><i>34</i>         <span class="n">menuFile</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Gestion Tournoi&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">display_tournament_window</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (111 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l35">
+                  <tt><i>35</i>         <span class="n">menuFile</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Enregistrer les résultats&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">param_fct</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (111 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l36">
+                  <tt><i>36</i>         <span class="n">menuFile</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Impression des rapports&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">fct_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (92 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l38">
+                  <tt><i>38</i>         <span class="n">menuFile</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Quitter&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">fct_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (96 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l40">
+                  <tt><i>40</i>         <span class="c1"># ================================== Menu Edition ======================================</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (119 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l43">
+                  <tt><i>43</i>                                 <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">display_reports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">alpha_display_all_players</span><span class="p">()))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (117 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l45">
+                  <tt><i>45</i>                                 <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">display_reports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">num_display_all_players</span><span class="p">()))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (97 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l49">
+                  <tt><i>49</i>         <span class="c1"># ===============================Getting sub_menus items ================================</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (101 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l53">
+                  <tt><i>53</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu_alpha_tournoi</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Tous les joueurs d&#39;un tournoi alpha&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (92 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l56">
+                  <tt><i>56</i>                                            <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">alpha_selected</span><span class="o">=</span><span class="n">tournament_list</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (98 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l57">
+                  <tt><i>57</i>                                            <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">switch_alpha_item</span><span class="p">(</span><span class="n">alpha_selected</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (97 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l60">
+                  <tt><i>60</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu_num_tournoi</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Tous les joueurs d&#39;un tournoi num&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (88 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l63">
+                  <tt><i>63</i>                                          <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">num_selected</span><span class="o">=</span><span class="n">tournament_list</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (92 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l64">
+                  <tt><i>64</i>                                          <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">switch_num_item</span><span class="p">(</span><span class="n">num_selected</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (113 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l69">
+                  <tt><i>69</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot; Tous les Tournois&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">display_reports</span><span class="p">(</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (100 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l74">
+                  <tt><i>74</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu_rounds_tournament</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Toutes les rondes d&#39;un tournoi&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (90 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l77">
+                  <tt><i>77</i>                                                <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">selected</span><span class="o">=</span><span class="n">tournament_list</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (102 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l78">
+                  <tt><i>78</i>                                                <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">switch_tournament_round</span><span class="p">(</span><span class="n">selected</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (98 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l81">
+                  <tt><i>81</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu_matchs_tournament</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Tous les matchs d&#39;un tournoi&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (90 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l84">
+                  <tt><i>84</i>                                                <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">selected</span><span class="o">=</span><span class="n">tournament_list</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (102 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l85">
+                  <tt><i>85</i>                                                <span class="bp">self</span><span class="o">.</span><span class="n">menu_controller</span><span class="o">.</span><span class="n">switch_tournament_match</span><span class="p">(</span><span class="n">selected</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (100 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l87">
+                  <tt><i>87</i>         <span class="n">menuEdition</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rechercher&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">fct_yes_no</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (98 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l90">
+                  <tt><i>90</i>         <span class="n">menuOutils</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Parametres&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">param_fct</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (103 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l91">
+                  <tt><i>91</i>         <span class="n">menuHelp</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Obtenir de l&#39;aide&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">fct_error</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (95 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l92">
+                  <tt><i>92</i>         <span class="n">menuHelp</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Mise à jour&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">maj_fct</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li><li>
+               
+               <p>Line too long (95 > 79 characters):</p>
+               
+               <a href="view.mainMenu.source.html#l94">
+                  <tt><i>94</i>         <span class="n">menuHelp</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;A propos&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MenuController</span><span class="o">.</span><span class="n">show_about</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+         
+         </ul>
+      </div>
+   </body>
+</html>
