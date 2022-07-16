@@ -8,19 +8,12 @@ from control.roundController import RoundController
 
 
 class RoundView:
-    round_list = []
-    round_list1 = []
-    round_list2 = []
-    data_player_list2 = []
 
-    def __init__(self, root, round_list=list()):  # round_list
+    def __init__(self, root):
         self.root = root
-        self.round_list = round_list
         self.tree_frame = None
         self.rd_frame = None
-        self.l_frame = None
         self.r_frame = None
-        self.tournament_name = None
 
         self.HEADING_ROUND_FIELDS = ("Tournoi", "Rondes",
                                      "Matchs", "Nom joueur1",

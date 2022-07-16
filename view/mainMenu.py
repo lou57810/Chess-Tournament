@@ -1,7 +1,3 @@
-# from tkinter import *
-# from tkinter.messagebox import *
-# from tkinter import Messagebox
-# import tkinter as tk
 from tkinter import Menu
 from view.tournamentView import TournamentView
 from view.playerView import PlayerView

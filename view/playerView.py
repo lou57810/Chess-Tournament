@@ -1,11 +1,8 @@
 import tkinter as tk
 from tkinter import Button
 from tkinter import ttk
-# import PIL
-# from PIL import ImageTk, Image
 from tkinter import Entry
 from tkinter import Label
-# from tkinter import messagebox
 from tkcalendar import DateEntry
 from tkinter import Frame
 from tkinter import Scrollbar
@@ -14,6 +11,8 @@ from tkinter import Radiobutton
 from tinydb import where
 from control.playerController import PlayerController
 from view.roundView import RoundView
+from model.dbInterface import Interface
+from model.player import Player
 
 
 class PlayerView:
@@ -34,8 +33,9 @@ class PlayerView:
         self.date = None
         self.p_frame = None
         self.player_controller = PlayerController(self.root)
-        # self.round_controller = RoundController(self.root)
         self.round_view = RoundView(self.root)
+        self.model_interface = Interface()
+        self.model_player = Player()
 
     def display_player_window(self):
         self.p_frame = Frame(self.root)
@@ -84,7 +84,7 @@ class PlayerView:
     def call_tournament_player_list(self, tournament_name):
         self.display_player_window()
         # Display datas
-        players_table = self.player_controller.set_db_players_env()
+        players_table = self.model_interface.set_db_players_env()
         players_table.update(
             {'score': 0.0}, where('tournament_name') == tournament_name)
         tournament_players_data = players_table.search(
@@ -112,15 +112,6 @@ class PlayerView:
         # Create new frame
         self.p_frame = Frame(self.root)
         self.p_frame.pack()
-        """
-        def clear_entries():
-            f_name_box.delete(0, END)
-            l_name_box.delete(0, END)
-            date_box.delete(0, 'end')
-            gender_var.set(None)  # gender.deselect() don't work
-            class_spin_box.delete(0, END)
-        """
-
         # Row number
         y = 0
         input_list = list()
@@ -209,14 +200,12 @@ class PlayerView:
 
         delete_player_button = Button(
             self.p_frame, text="Supprimer un joueur",
-            command=lambda: self.player_controller.delete_one_player_button(
-                self.tree_frame))
+            command=lambda: self.model_player.delete_one_player_button(self.tree_frame))
         delete_player_button.grid(row=3, column=1, padx=10, pady=10)
 
         delete_all_players_button = Button(
             self.p_frame, text="Supprimer tous les joueurs",
-            command=lambda: self.player_controller.delete_all_players_button(
-                self.tree_frame))
+            command=lambda: self.model_player.delete_all_players_button(self.tree_frame))
         delete_all_players_button.grid(row=3, column=2, padx=10, pady=10)
 
         quit_button = Button(
@@ -225,17 +214,6 @@ class PlayerView:
         quit_button.grid(row=3, column=5, padx=10, pady=20)
 
         gen_rounds = Button(
-            self.p_frame, text="Création Rondes",
-            # command=lambda: PlayerController.display_tournament_round_window(
-            # self, tournament_name))
-            command=lambda: self.round_view.round_data_set(
-                tournament_name))
+            self.p_frame, text="Création Rondes", command=lambda: self.round_view.round_data_set(tournament_name))
 
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
-
-        # Bind the treeview
-        # self.tree_frame.bind(
-        # "<ButtonRelease-1>",
-        # lambda event: self.player_controller.select_one_record(
-        # self.tree_frame, f_name_box, l_name_box, date_box, radiobutton1,
-        # radiobutton2, class_spin_box, event))

@@ -1,5 +1,6 @@
 from model.tournament import Tournament
-# from tkinter import ttk
+from model.dbInterface import Interface
+from control.menuController import MenuController
 
 
 class TournamentController:
@@ -7,9 +8,11 @@ class TournamentController:
     def __init__(self, root):
         self.root = root
         self.tournament_name = ""
+        self.model_interface = Interface()
+        self.menu_controller = MenuController(self.root)
 
     def read_data(self):
-        all_tournament_data = Tournament.read_data()
+        all_tournament_data = self.model_interface.set_db_tournaments_all()
         tournament_instance_list = []
         players_list = []
         rounds_list = []
@@ -77,9 +80,7 @@ class TournamentController:
 
     def refresh_tournament_frame(self):
         """Clean root window and display menu"""
-        from view.mainMenu import MainMenu
-        main_menu = MainMenu(self.root)
-        main_menu.display_tournament_window()
+        self.menu_controller.display_tournament_window()
 
     def quit_tournament_window(self):
         self.t_frame.destroy()

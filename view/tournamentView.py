@@ -8,16 +8,8 @@ from tkinter import Spinbox
 from tkinter import Scrollbar
 from tkinter import Label
 from tkinter import Radiobutton
-
-# from tinydb import TinyDB, Query, where
-# from tkinter import messagebox
-# from tkinter.messagebox import *
-
 from control.tournamentController import TournamentController
 from control.menuController import MenuController
-
-# from view.playerView import PlayerView
-# from model.tournament import Tournament
 
 
 class TournamentView:

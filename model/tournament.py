@@ -1,4 +1,4 @@
-from tinydb import TinyDB
+from model.dbInterface import Interface
 
 
 class Tournament:
@@ -15,8 +15,8 @@ class Tournament:
             self.players_list = element[7]
             self.rounds_lists = element[8]
 
-        self.tournament_table = self.set_tournaments_table()
         self.serialized_tournaments = {}
+        self.model_interface = Interface()
 
     def serialize_tournaments(self):
         self.serialized_tournaments = {
@@ -30,18 +30,15 @@ class Tournament:
             'rounds_lists': self.rounds_lists
         }
 
-    def set_tournaments_table(self):
-        db = TinyDB('data/db_tournaments.json')
-        return db.table('tournaments')
-
     def write_data(self):
-        """Write tournament data in DB"""
-        db = TinyDB('data/db_tournaments.json')
-        tournament_table = db.table('tournaments')
+        #Write tournament data in DB
+        tournament_table = self.model_interface.set_db_tournaments_env()
         tournament_table.insert(self.serialized_tournaments)
 
+    """
     @staticmethod
     def read_data():
         db = TinyDB('data/db_tournaments.json')
         tournament_table = db.table('tournaments')
         return tournament_table.all()
+    """

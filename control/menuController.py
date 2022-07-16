@@ -7,7 +7,8 @@ from tkinter.messagebox import showerror
 from tkinter.messagebox import showwarning
 from tkinter.messagebox import askquestion
 from tkinter.messagebox import askyesno
-from tinydb import TinyDB, where
+from tinydb import where
+from model.dbInterface import Interface
 
 
 class MenuController:
@@ -19,6 +20,7 @@ class MenuController:
         self.rounds_tournament_list = list()
         self.round_report = list()
         self.match_report = list()
+        self.model_interface = Interface()
 
     def show_about(self):
         about_window = Toplevel(self.root)
@@ -70,10 +72,7 @@ class MenuController:
     # ================== reports ====================
     # 1.
     def alpha_display_all_players(self):
-
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
-        serialized_players = players_table.all()
+        serialized_players = self.model_interface.set_db_players_all()
         alpha_list =  list()
         for elt in serialized_players:
             alpha_list.append(elt['first_name'] + ' ' + elt['last_name'])
@@ -82,9 +81,7 @@ class MenuController:
 
     # 2.
     def num_display_all_players(self):
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
-        serialized_players = players_table.all()
+        serialized_players = self.model_interface.set_db_players_all()
         num_list =  list()
         for elt in serialized_players:
             num_list.append([elt['first_name'] + ' ' + elt['last_name'], elt['rank']])
@@ -110,9 +107,7 @@ class MenuController:
         self.display_matchs_tournament(selected)
 
     def alpha_display_one_tournament_players(self, alpha_selected):
-
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
+        players_table = self.model_interface.set_db_players_env()
         tournament_name = alpha_selected
         serialized_tournament_players = players_table.search(where('tournament_name') == tournament_name)
         i = 0
@@ -125,8 +120,7 @@ class MenuController:
         self.alpha_name.clear()
 
     def num_display_one_tournament_players(self, num_selected):
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
+        players_table = self.model_interface.set_db_players_env()
         tournament_name = num_selected
         serialized_tournament_players = players_table.search(where('tournament_name') == tournament_name)
         i = 0
@@ -147,17 +141,14 @@ class MenuController:
         self.sort_num_list.clear()
 
     def display_all_tournaments(self):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
-        serialized_tournaments = tournaments_table.all()
+        serialized_tournaments = self.model_interface.set_db_tournaments_all()
         tournament_list = list()
         for elt in serialized_tournaments:
             tournament_list.append(elt['tournament_name'])
         return tournament_list
 
     def display_rounds_tournament(self, selected):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
+        tournaments_table = self.model_interface.set_db_tournaments_env()
         tournament_name = selected
         Toplevel.update(self.root)
         serialized_tournaments = tournaments_table.search(where('tournament_name') == tournament_name)
@@ -166,8 +157,7 @@ class MenuController:
         self.round_report.clear()
 
     def display_matchs_tournament(self, selected):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
+        tournaments_table = self.model_interface.set_db_tournaments_env()
         tournament_name = selected
         Toplevel.update(self.root)
         serialized_tournaments = tournaments_table.search(where('tournament_name') == tournament_name)  # list ??
@@ -195,6 +185,7 @@ class MenuController:
         report_window = Toplevel(self.root)
         report_window.geometry("300x400")
         report_window.title("Rapport")
+        self.match_report = list()
         for elt in data:
             self.match_report.append(elt[2])
             self.match_report.append('\n')

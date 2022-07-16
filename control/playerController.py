@@ -1,7 +1,7 @@
 from datetime import datetime
 from model.player import Player
+from tinydb import where
 from model.dbInterface import Interface
-from tinydb import TinyDB, where
 import tkinter as tk
 
 
@@ -11,27 +11,16 @@ class PlayerController:
         self.model_interface = Interface()
         self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    def set_db_tournaments_env(self):
-        db = TinyDB('data/db_tournaments.json')
-        tournaments_table = db.table('tournaments')
-        return tournaments_table
-
-    def set_db_players_env(self):
-        db = TinyDB('data/db_tournaments.json')
-        players_table = db.table('players')
-        return players_table
-
     def add_player_tree_frame(self, input_list, frame, tree_frame,
                               y, tournament_name, add_player_button,
                               data_fields):
         data = list()
         data.append(tournament_name)
         data_check = True
-        count = len(tree_frame.get_children())  # Don't move from here
+        count = len(tree_frame.get_children())
 
         for element in input_list:
             data.append(element.get())
-            print("data0:", data)
             if not element.get():
                 data_check = False
         if data_check:
@@ -110,40 +99,12 @@ class PlayerController:
             radiobutton2.invoke()
         class_spin_box.insert(0, values[5])
 
-    def delete_one_player_button(self, tree_frame):
-        player_selected = tree_frame.focus()
-        # tournament_selected = n° ligne, value = valeurs colonnes
-        temp = tree_frame.item(player_selected, 'values')
-
-        for element in tree_frame.selection():
-            tree_frame.delete(player_selected)
-            Player.delete_player_data(temp[1])  # nom du joueur
-
-    def delete_all_players_button(self, tree_frame):
-        tournament_name = tree_frame.item('I002', 'values')[0]
-
-        for values in tree_frame.get_children():
-            tree_frame.delete(values)
-
-        players_table = self.model_interface.set_db_players_env()
-        players_table.remove(where('tournament_name') == tournament_name)
-
     def quit_player_window(self):
         self.p_frame.destroy()
         from view.mainMenu import MainMenu  # Outside déclaration
         main_menu = MainMenu(self.root)
         main_menu.clean_menu_window(self.root)
         main_menu.display_menu_window()
-    """
-    def display_tournament_round_window(self, tournament_name):
-        # ========== Nouvelle fenêtre============================
-        from view.mainMenu import MainMenu   # Outside déclaration
-        main_menu = MainMenu(self.root)
-        main_menu.clean_menu_window(self.root)
-
-        from view.roundView import RoundView
-        self.round_window = RoundView(self.root)
-    """
 
     def quitPlayerWindow(self):
         self.frame.destroy()
