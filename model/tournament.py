@@ -31,7 +31,7 @@ class Tournament:
         }
 
     def write_data(self):
-        #Write tournament data in DB
+        # Write tournament data in DB
         tournament_table = self.model_interface.set_db_tournaments_env()
         tournament_table.insert(self.serialized_tournaments)
 
