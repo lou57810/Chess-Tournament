@@ -1,5 +1,5 @@
 import tkinter as tk
-import tkinter as Tk
+
 from view.mainMenu import MainMenu
 
 
@@ -8,7 +8,7 @@ class Window:
         pass
 
     def init_window(self):
-        root = Tk()
+        root = tk.Tk()
         root.title('Gestion Tournoi d\'echecs')
         root.geometry("1280x860")
         root.config(background='#9a031e')
