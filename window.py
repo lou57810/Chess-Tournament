@@ -1,5 +1,4 @@
-import tkinter as tk
-
+from tkinter import Tk
 from view.mainMenu import MainMenu
 
 
@@ -8,12 +7,12 @@ class Window:
         pass
 
     def init_window(self):
-        root = tk.Tk()
+        root = Tk()
         root.title('Gestion Tournoi d\'echecs')
         root.geometry("1280x860")
         root.config(background='#9a031e')
         root.iconbitmap("./img/logo.ico")
-        root.option_add('*tearOff', tk.FALSE)  # Supprime le séparateur
+        root.option_add('*tearOff', False)  # Supprime le séparateur
 
         # menu view creation
         menu = MainMenu(root)

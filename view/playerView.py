@@ -205,7 +205,7 @@ class PlayerView:
 
         delete_all_players_button = Button(
             self.p_frame, text="Supprimer tous les joueurs",
-            command=lambda: self.model_player.delete_all_players_button(self.tree_frame))
+            command=lambda: self.player_controller.delete_all_players_button(self.tree_frame))
         delete_all_players_button.grid(row=3, column=2, padx=10, pady=10)
 
         quit_button = Button(

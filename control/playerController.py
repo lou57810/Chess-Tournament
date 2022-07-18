@@ -108,3 +108,12 @@ class PlayerController:
 
     def quitPlayerWindow(self):
         self.frame.destroy()
+
+    def delete_one_player_button(self, tree_frame):
+        player_selected = tree_frame.focus()
+        # tournament_selected = n° ligne, value = valeurs colonnes
+        temp = tree_frame.item(player_selected, 'values')
+
+        for element in tree_frame.selection():
+            tree_frame.delete(player_selected)
+            self.delete_player_data(temp[1])  # nom du joueur

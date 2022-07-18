@@ -73,7 +73,7 @@ class MenuController:
     # 1.
     def alpha_display_all_players(self):
         serialized_players = self.model_interface.set_db_players_all()
-        alpha_list =  list()
+        alpha_list = list()
         for elt in serialized_players:
             alpha_list.append(elt['first_name'] + ' ' + elt['last_name'])
         print("\n")
@@ -82,7 +82,7 @@ class MenuController:
     # 2.
     def num_display_all_players(self):
         serialized_players = self.model_interface.set_db_players_all()
-        num_list =  list()
+        num_list = list()
         for elt in serialized_players:
             num_list.append([elt['first_name'] + ' ' + elt['last_name'], elt['rank']])
         num_list.sort(key=lambda x: x[1])

@@ -36,9 +36,28 @@ class RoundController:
         self.tree_frame = tree_frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
+        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.set_start_date(self.start_date)
+
+    def create_upper_and_lower_list(self, tournament_name):
+        # Read all players data
+        tournaments_table = self.model_interface.set_db_players_env()
+        self.round_model.players_list = tournaments_table.search(where('first_name') == tournament_name)
+        print("rmpl:", self.round_model.players_list)
+        # Split players in two list
+        length = len(self.round_model.players_list)
+        i = 0
+        while i < length:
+            if i < length / 2:
+                self.round_model.upper_list.append(self.round_model.players_list[i])
+            else:
+                self.round_model.lower_list.append(self.round_model.players_list[i])
+            i += 1
+        print("up & Low:", self.round_model.upper_list, self.round_model.lower_list)
     """
 
     def gen_rounds(self, tournament_name, tree_frame):
+        # self.create_upper_and_lower_list(tournament_name)
         self.tree_frame = tree_frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -239,7 +258,7 @@ class RoundController:
                     elt['score'],
                     elt['id']
                 ]
-        print("init_player:", init_player)
+        # print("init_player:", init_player)
         return init_player
 
     # Initialisation rounds
@@ -247,6 +266,7 @@ class RoundController:
         pair_players_id_list = list()
         compare_list = list()
         pair_players_id_list = self.round_model.init_sorted_round_players_id_list(tournament_name, round_number)
+        print("Liste courante:", pair_players_id_list)
 
         # liste de compréhension: convert tuples in list because tuples are immuables:
         pair_players_id_list = [list(i) for i in pair_players_id_list]
@@ -263,9 +283,11 @@ class RoundController:
             i += 1
         # ========================== Occurrences ============================
         full_compare_list = self.reverse_compare_id_list(compare_list)
+        print("Liste de tous les derniers Matchs:", full_compare_list)
         # compare er echange les joueurs
-        self.switch_id_list(full_compare_list, pair_players_id_list)
-
+        pair_players_id_list = self.switch_id_list(full_compare_list, pair_players_id_list)
+        print("Liste après tri doublons:", pair_players_id_list)
+        # Liste des joueurs après comparaison des doublons
         final_round_list = self.final_init_list(
             tournament_name, pair_players_id_list)
         return final_round_list
@@ -278,7 +300,7 @@ class RoundController:
             while i < len(full_compare_list):
                 for elt in pair_players_id_list:
                     if elt == full_compare_list[i]:
-                        print("doublon:", elt)
+                        print("doublon1:", elt)
                         pair_players_id_list = self.pairs_id_translate(
                             elt, pair_players_id_list)
                         data_check = True
