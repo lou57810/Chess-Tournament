@@ -167,15 +167,33 @@ class MenuController:
 
     def display_round_report(self, data):
         report_window = Toplevel(self.root)
-        report_window.geometry("300x400")
-        report_window.title("Rapport")
-        for elt in data:
-            self.round_report.append(elt[0])
-            self.round_report.append(' ')
-            self.round_report.append(elt[1])
-            self.round_report.append(' ')
-            self.round_report.append(elt[6])
-            self.round_report.append('\n')
+        report_window.geometry("600x400")
+        report_window.title("Rapport rondes par tournois")
+        print("data:", data)
+        i = 0
+        while i < len(data):
+            j = 2
+            self.round_report.append(data[i][0])
+            self.round_report.append(" : ")
+            self.round_report.append(data[i][1])
+            self.round_report.append(" : ")
+            self.round_report.append("\n")
+
+            while j < 6:
+                self.round_report.append(data[i][j][0][0])
+                self.round_report.append(" ")
+                self.round_report.append(data[i][j][0][1])
+                self.round_report.append(" :: ")
+                self.round_report.append(data[i][j][1][0])
+                self.round_report.append(" ")
+                self.round_report.append(data[i][j][1][1])
+                self.round_report.append("\n")
+                j += 1
+
+            self.round_report.append(data[i][6])
+            self.round_report.append("\n")
+            i += 1
+
         data_text = Text(report_window)
         for string in self.round_report:
             data_text.insert(tk.END, string)
@@ -183,19 +201,27 @@ class MenuController:
 
     def display_matchs_report(self, data):
         report_window = Toplevel(self.root)
-        report_window.geometry("300x400")
-        report_window.title("Rapport")
+        report_window.geometry("600x400")
+        report_window.title("Rapport Matchs par tournois")
+
         self.match_report = list()
         for elt in data:
-            self.match_report.append(elt[2])
-            self.match_report.append('\n')
-            self.match_report.append(elt[3])
-            self.match_report.append('\n')
-            self.match_report.append(elt[4])
-            self.match_report.append('\n')
-            self.match_report.append(elt[5])
-            self.match_report.append('\n')
+            i = 2
+            while i < 6:
+                self.match_report.insert(0, elt[i][0][0])
+                self.match_report.insert(1, " ")
+                self.match_report.insert(2, elt[i][0][1])
+                self.match_report.insert(3, " :: ")
+                self.match_report.insert(4, elt[i][1][0])
+                self.match_report.insert(5, " ")
+                self.match_report.insert(6, elt[i][1][1])
+                self.match_report.insert(7, "\n")
+                i += 1
+
         data_text = Text(report_window)
-        for string in self.match_report:
-            data_text.insert(tk.END, string)
+        for elt in self.match_report:
+            data_text.insert(tk.END, elt)
         data_text.pack()
+
+
+
