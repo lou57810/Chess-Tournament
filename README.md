@@ -1,21 +1,51 @@
 # Chess-Tournament
-WINDOW:
-python -m venv env
-Power Shell: commande = env/Scripts/Activate.ps1 (However, you might run into the following error when you try to run the script
-otherwise Git Bash (MINGW64):
-commande = source env/Scripts/activate
-pip install -r requirements.txt
+
+Chess-Tournament est un logiciel de gestion de tournoi.
+Il vous permet de créer des tournois, d'y ajouter les
+joueurs, créer des rondes de matchs, et sauvergarder les
+les résultats pour les visualiser.
+
+## Installation:
+ Créez un fork depuis le dépot github.
+ Installer la dernière version de Python.
+ Installer git bash.
+ Créer un environnement virtuel:
+
+ commande: python -m venv env
+
+ 1. Activer cet environnemnt:
+    - Windows 10:
+        Power Shell: commande = env/Scripts/Activate.ps1
+        ou de préférence si vous avez installé Git: (Git Bash MINGW64):
+        commande: source env/Scripts/activate
+    - Linux Debian 10:
+        commande: source env/bin/activate
+
+ 2. Installer pip (installation python packages):
+    Chess-Tournament requiert certains packages spécifiques.
+    Vous devez les installer depuis le fichier requirement.txt.
+        commande: pip install -r requirements.txt
+
+ 3. Rendez vous dans le dossie racine de l'appli.
+    Windows:
+            - commande: python main.py
+    Linux:
+            - commande: python3 main.py
+
+ 4. Utilisation:
+    - Menu créer un tournoi.
+    - Double click sur le tournoi créé.
+    - Enregistrer les challengers.
+    - Créér une ronde.
+    - Ajout des scores à chaques rondes.
+    - Visualiser les résultats depuis le menu.
 
 
-python3 -m venv env
-
-LINUX DEBIAN:
-source env/bin/activate
-pip install -r requirements.txt    
 
 
-otherwise Git Bash (MINGW64):
-commande = source env/Scripts/activate
+
+
+
 
 For view flake8 report:
 pip install flake8-html
