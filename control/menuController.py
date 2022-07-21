@@ -169,7 +169,6 @@ class MenuController:
         report_window = Toplevel(self.root)
         report_window.geometry("600x400")
         report_window.title("Rapport rondes par tournois")
-        print("data:", data)
         i = 0
         while i < len(data):
             j = 2
@@ -222,6 +221,3 @@ class MenuController:
         for elt in self.match_report:
             data_text.insert(tk.END, elt)
         data_text.pack()
-
-
-

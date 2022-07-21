@@ -36,24 +36,6 @@ class Player:
         players_table.insert(self.serialized_player)
         return self.serialized_player
 
-    def delete_one_player_button(self, tree_frame):
-        player_selected = tree_frame.focus()
-        # tournament_selected = n° ligne, value = valeurs colonnes
-        temp = tree_frame.item(player_selected, 'values')
-
-        for element in tree_frame.selection():
-            tree_frame.delete(player_selected)
-            self.delete_player_data(temp[1])  # nom du joueur
-
     def delete_player_data(self, data):
         players_table = self.model_interface.set_db_players_env()
         players_table.remove(where('first_name') == data)
-
-    def delete_all_players_button(self, tree_frame):
-        tournament_name = tree_frame.item('I002', 'values')[0]
-
-        for values in tree_frame.get_children():
-            tree_frame.delete(values)
-
-        players_table = self.model_interface.set_db_players_env()
-        players_table.remove(where('tournament_name') == tournament_name)
