@@ -1,13 +1,8 @@
-from tkinter import *
-from tkinter.messagebox import *
+from tkinter import Menu
 from view.tournamentView import TournamentView
 from view.playerView import PlayerView
 from view.roundView import RoundView
-
 from control.menuController import MenuController
-from control.tournamentController import TournamentController
-
-from tinydb import TinyDB, where
 
 
 class MainMenu:
@@ -17,8 +12,7 @@ class MainMenu:
         self.player_window = PlayerView(self.root)
         self.tournament_window = TournamentView(self.root)
         self.round_window = RoundView(self.root)
-
-        #self.tournament_controller = TournamentController(self.root)
+        self.menu_controller = MenuController(self.root)
 
     def display_menu_window(self):
         menuBar = Menu(self.root)
@@ -32,22 +26,64 @@ class MainMenu:
         menuBar.add_cascade(label="Outils", menu=menuOutils)
         menuBar.add_cascade(label="?", menu=menuHelp)
 
-        # Commands
+        # =================================== Menu Files ======================================
         menuFile.add_command(label="Gestion Tournoi", command=lambda: MenuController.display_tournament_window(self))
-        # menuFile.add_command(label="Gestion joueurs", command=lambda: MenuController.display_player_window(self))
-        menuFile.add_command(label="Afficher les resultats")
-        menuFile.add_command(label="Enregistrer les résultats")
-        menuFile.add_command(label="Modifier les resultats")
+        menuFile.add_command(label="Enregistrer les résultats", command=lambda: MenuController.param_fct(self))
+        menuFile.add_command(label="Impression des rapports", command=lambda: MenuController.fct_warning(self))
         menuFile.add_separator()
         menuFile.add_command(label="Quitter", command=lambda: MenuController.fct_quit(self))
 
-        menuEdition.add_command(label="Edition du rapport")
-        menuEdition.add_command(label="Impression du rapport", command=lambda: MenuController.fct_warning(self))
+        # ================================== Menu Edition ======================================
+
+        menuEdition.add_command(label="Tous les acteurs alpha", command=lambda:
+                                self.menu_controller.display_reports(self.menu_controller.alpha_display_all_players()))
+        menuEdition.add_command(label="Tous les acteurs num", command=lambda:
+                                self.menu_controller.display_reports(self.menu_controller.num_display_all_players()))
+
         menuEdition.add_separator()
+
+        # ===============================Getting sub_menus items ================================
+        tournament_list = self.menu_controller.display_all_tournaments()
+
+        menu_alpha_tournoi = Menu(menuEdition)
+        menuEdition.add_cascade(menu=menu_alpha_tournoi, label="Tous les joueurs d'un tournoi alpha")
+        for i in range(len(tournament_list)):
+            menu_alpha_tournoi.add_command(label=tournament_list[i],
+                                           command=lambda alpha_selected=tournament_list[i]:
+                                           self.menu_controller.switch_alpha_item(alpha_selected))
+
+        menu_num_tournoi = Menu(menuEdition)
+        menuEdition.add_cascade(menu=menu_num_tournoi, label="Tous les joueurs d'un tournoi num")
+        for i in range(len(tournament_list)):
+            menu_num_tournoi.add_command(label=tournament_list[i],
+                                         command=lambda num_selected=tournament_list[i]:
+                                         self.menu_controller.switch_num_item(num_selected))
+
+        # ==========================================================================================
+        menuEdition.add_separator()
+
+        menuEdition.add_command(label=" Tous les Tournois", command=lambda: self.menu_controller.display_reports(
+            self.menu_controller.display_all_tournaments()))
+
+        # ===========================================================================================
+        menu_rounds_tournament = Menu(menuEdition)
+        menuEdition.add_cascade(menu=menu_rounds_tournament, label="Toutes les rondes d'un tournoi")
+        for i in range(len(tournament_list)):
+            menu_rounds_tournament.add_command(label=tournament_list[i],
+                                               command=lambda selected=tournament_list[i]:
+                                               self.menu_controller.switch_tournament_round(selected))
+
+        menu_matchs_tournament = Menu(menuEdition)
+        menuEdition.add_cascade(menu=menu_matchs_tournament, label="Tous les matchs d'un tournoi")
+        for i in range(len(tournament_list)):
+            menu_matchs_tournament.add_command(label=tournament_list[i],
+                                               command=lambda selected=tournament_list[i]:
+                                               self.menu_controller.switch_tournament_match(selected))
+
         menuEdition.add_command(label="Rechercher", command=lambda: MenuController.fct_yes_no(self))
 
-        menuOutils.add_command(label="Parametres")
-
+        # =================== Menu Outils =======================
+        menuOutils.add_command(label="Parametres", command=lambda: MenuController.param_fct(self))
         menuHelp.add_command(label="Obtenir de l'aide", command=lambda: MenuController.fct_error(self))
         menuHelp.add_command(label="Mise à jour", command=lambda: MenuController.maj_fct(self))
         menuHelp.add_separator()
@@ -59,23 +95,3 @@ class MainMenu:
         for widget in root.winfo_children():
             widget.destroy()
         self.display_menu_window()
-
-    def display_player_window(self):
-        self.clean_menu_window(self.root)
-        self.display_menu_window()
-        self.player_window.call_tournament_player_list(tournament_name)
-
-    def display_tournament_window(self):
-        self.clean_menu_window(self.root)
-        self.display_menu_window()
-        self.tournament_window.display_tournament_window()
-        self.tournament_window.tournament_data_set()
-
-    def display_round_window(self):
-        self.clean_menu_window(self.root)
-        self.display_menu_window()
-        
-
-
-
-

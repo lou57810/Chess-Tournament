@@ -1,5 +1,6 @@
 from window import Window
 
+
 def main():
     app = Window()
     app.init_window()
