@@ -13,7 +13,7 @@ LINUX DEBIAN:
 source env/bin/activate
 pip install -r requirements.txt    
 
-<<<<<<< HEAD
+
 otherwise Git Bash (MINGW64):
 commande = source env/Scripts/activate
 
@@ -24,7 +24,7 @@ flake8 --format=html --htmldir=flake-report
 markdown git.ovea/doc/assistance
 
 
-=======
+
 
 
 Demarrage de l'appli: Fichier
@@ -36,4 +36,4 @@ Demarrage de l'appli: Fichier
                                                                                                                             click Match et entrer score (x4)
 
                                                                                                                      
->>>>>>> 965571086e465a4eec4d9032c9e52355da4c5010
+
