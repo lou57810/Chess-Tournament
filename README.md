@@ -40,30 +40,11 @@ les résultats pour les visualiser.
     - Ajout des scores à chaques rondes.
     - Visualiser les résultats depuis le menu.
 
-
-
-
-
-
-
-
 For view flake8 report:
 pip install flake8-html
 flake8 --format=html --htmldir=flake-report
 
-markdown git.ovea/doc/assistance
 
-
-
-
-
-Demarrage de l'appli: Fichier
-                      Gestion tournoi
-                                     Bouton Ajouter un tournoi
-                                            Double click sur tournoi ajouté
-                                                                           Bouton Ajouter joueur (<=8)
-                                                                                                      Bouton Création rondes
-                                                                                                                            click Match et entrer score (x4)
 
                                                                                                                      
 
