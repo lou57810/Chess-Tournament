@@ -40,9 +40,10 @@ les résultats pour les visualiser.
     - Ajout des scores à chaques rondes.
     - Visualiser les résultats depuis le menu.
 
-For view flake8 report:
-pip install flake8-html
-flake8 --format=html --htmldir=flake-report
+5. Annexe:
+    - For view flake8 report:
+    - pip install flake8-html
+    - flake8 --format=html --htmldir=flake-report
 
 
 

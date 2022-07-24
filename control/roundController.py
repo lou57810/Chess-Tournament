@@ -1,5 +1,5 @@
 import time
-from tkinter import Frame
+# from tkinter import Frame
 from tinydb import where
 from model.round import Round
 from model.dbInterface import Interface
@@ -32,13 +32,19 @@ class RoundController:
         main_menu = MainMenu(self.root)
         main_menu.clean_menu_window(self.root)
     """
-    def gen_round(self):
+    def gen_round(self, tournament_name, tree_frame):
         self.tree_frame = tree_frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
         self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.set_start_date(self.start_date)
-
+        if len(self.tree_frame.get_children()) == 0:
+            round_number = 1
+        else:
+            # Get next n° of round_number
+            last_in_tree_frame = len(self.tree_frame.get_children()) - 1
+            round_name = str(self.tree_frame.set(last_in_tree_frame, '#2'))
+            round_number = int(round_name[5]) + 1
     def create_upper_and_lower_list(self, tournament_name):
         # Read all players data
         tournaments_table = self.model_interface.set_db_players_env()
@@ -55,73 +61,6 @@ class RoundController:
             i += 1
         print("up & Low:", self.round_model.upper_list, self.round_model.lower_list)
     """
-
-    def gen_rounds(self, tournament_name, tree_frame):
-        # self.create_upper_and_lower_list(tournament_name)
-        self.tree_frame = tree_frame
-        self.rd_frame = Frame(self.root)
-        self.rd_frame.pack()
-
-        self.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.set_start_date(self.start_date)
-
-        if len(self.tree_frame.get_children()) == 0:
-            round_number = 1
-
-        else:
-            # Get next n° of round_number
-            last_in_tree_frame = len(self.tree_frame.get_children()) - 1
-            round_name = str(self.tree_frame.set(last_in_tree_frame, '#2'))
-            round_number = int(round_name[5]) + 1
-
-        tree_round_list = self.init_rounds(tournament_name, round_number)
-
-        global count
-        count = len(self.tree_frame.get_children())
-        j = 0
-        i = 0
-
-        while j < len(tree_round_list) / 2:  # 2 iterations
-            if count % 2 == 0:
-                self.tree_frame.insert(
-                    parent="", index="end", iid=count, text="", values=(
-                        tree_round_list[i][0],  # tournament_name
-                        "Round" + str(round_number),
-                        "Match " + str(count + 1),
-                        tree_round_list[i][1],  # nom1
-                        tree_round_list[i][2],  # prenom1
-                        tree_round_list[i][3],  # rang
-                        tree_round_list[i][4],  # score
-                        tree_round_list[i][5],  # total
-                        tree_round_list[i + 1][1],  # nom2
-                        tree_round_list[i + 1][2],  # prenom2...
-                        tree_round_list[i + 1][3],
-                        tree_round_list[i + 1][4],
-                        tree_round_list[i + 1][5],
-                    ),
-                    tags=('evenrow',))
-            else:
-                self.tree_frame.insert(
-                    parent="", index="end", iid=count, text="", values=(
-                        tree_round_list[i][0],  # tournament_name
-                        "Round" + str(round_number),
-                        "Match " + str(count + 1),
-                        tree_round_list[i][1],
-                        tree_round_list[i][2],
-                        tree_round_list[i][3],
-                        tree_round_list[i][4],
-                        tree_round_list[i][5],
-                        tree_round_list[i + 1][1],
-                        tree_round_list[i + 1][2],
-                        tree_round_list[i + 1][3],
-                        tree_round_list[i + 1][4],
-                        tree_round_list[i + 1][5],
-                    ),
-                    tags=('oddrow',))
-            count += 1
-            i += 2
-            j += 1
-
     # ========== Reg players datas in db ============
     def reg_players_values(self, tree_frame, selected):
         players_table = self.model_interface.set_db_players_env()
@@ -329,58 +268,6 @@ class RoundController:
         for elt2 in sum:
             compare_list.append(elt2)
         return compare_list
-
-        # =========================== Button fct ================================
-
-    def get_score1(self, input_list, tree_frame):
-        selected = tree_frame.focus()
-        round_number = self.get_round_number(tree_frame, selected)
-        row = (int(round_number) * 4) - 1
-        if int(selected) < row:
-            self.select_row(
-                tree_frame, int(selected) + 1)  # Auto pass to following row
-        # Display new scores
-        score1 = 1.0
-        score2 = 0.0
-        tree_frame.set(selected, '#7', score1)  # score match
-        tree_frame.set(selected, '#12', score2)  # score match
-
-    def get_score_equal(self, input_list, tree_frame):
-        selected = tree_frame.focus()
-        round_number = self.get_round_number(tree_frame, selected)
-        row = (int(round_number) * 4) - 1
-        if int(selected) < row:
-            self.select_row(
-                tree_frame, int(selected) + 1)  # Auto pass to following row
-        # Display new scores
-        score1 = 0.5
-        score2 = 0.5
-
-        tree_frame.set(selected, '#7', score1)  # score match
-        tree_frame.set(selected, '#12', score2)  # score match
-
-    def get_score2(self, input_list, tree_frame):
-        selected = tree_frame.focus()
-        round_number = self.get_round_number(tree_frame, selected)
-        row = (int(round_number) * 4) - 1
-        if int(selected) < row:
-            self.select_row(
-                tree_frame, int(selected) + 1)  # Auto pass to following row
-        # Display new scores
-        score1 = 0.0
-        score2 = 1.0
-
-        tree_frame.set(selected, '#7', score1)  # score match
-        tree_frame.set(selected, '#12', score2)  # score match
-
-    def select_row(self, tree_frame, row):
-        tree_frame.focus(row)
-        tree_frame.selection_set(row)
-
-    def get_round_number(self, tree_frame, selected):
-        round_name = tree_frame.set(int(selected), '#2')
-        round_number = int(round_name[5])
-        return round_number
 
     def set_start_date(self, start_date):
         # print("s_d:", start_date)
