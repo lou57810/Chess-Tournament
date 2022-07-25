@@ -173,18 +173,18 @@ class PlayerView:
         # Buttons for management player
         add_player_button = Button(
             self.p_frame, text="Ajouter joueur", command=lambda:
-            [self.player_controller.add_player_tree_frame(
+            [self.add_player_tree_frame(
                 input_list, self.p_frame, self.tree_frame,
                 y, tournament_name, add_player_button,
                 self.DATA_FIELDS),
-                self.player_controller.clear_entries(
+                self.clear_entries(
                 f_name_box, l_name_box, date_box, gender_var, radiobutton1,
                 radiobutton2, class_spin_box)])
         add_player_button.grid(row=3, column=0, padx=10, pady=10)
 
         select_player_button = Button(
             self.p_frame, text="Selectionner un joueur",
-            command=lambda: self.player_controller.select_one_record(
+            command=lambda: self.select_one_record(
                 self.tree_frame, f_name_box, l_name_box,
                 date_box, gender_var, radiobutton1,
                 radiobutton2, class_spin_box))
@@ -192,7 +192,7 @@ class PlayerView:
 
         modify_player_button = Button(
             self.p_frame, text="Modifier",
-            command=lambda: self.player_controller.modify_one_record(
+            command=lambda: self.modify_one_record(
                 self.tree_frame, f_name_box, l_name_box,
                 date_box, gender_var, radiobutton1,
                 radiobutton2, class_spin_box, tournament_name))
@@ -200,7 +200,7 @@ class PlayerView:
 
         delete_player_button = Button(
             self.p_frame, text="Supprimer un joueur",
-            command=lambda: self.player_controller.delete_one_player_button(self.tree_frame))
+            command=lambda: self.delete_one_player_button(self.tree_frame))
         delete_player_button.grid(row=3, column=1, padx=10, pady=10)
 
         delete_all_players_button = Button(
@@ -217,3 +217,83 @@ class PlayerView:
             self.p_frame, text="Création Rondes", command=lambda: self.round_view.round_data_set(tournament_name))
 
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
+
+    def modify_one_record(self, tree_frame, f_name_box, l_name_box, date_box, gender_var,
+                              radiobutton1, radiobutton2, class_spin_box, tournament_name):
+
+        players_table = self.model_interface.set_db_players_env()
+        selected = tree_frame.focus()
+        value = tree_frame.item(selected, 'values')
+        if radiobutton1.invoke == "Homme":
+            gender_var = "Homme"
+        elif radiobutton2.invoke == "Femme":
+            gender_var = "Femme"
+        # Updating treeview
+        tree_frame.item(selected, text="", values=(
+                tournament_name,
+                f_name_box.get(),
+                l_name_box.get(),
+                date_box.get(),
+                gender_var.get(),
+                class_spin_box.get(),
+                value[6]))
+
+        name = f_name_box.get()
+        players_table.update({'first_name': f_name_box.get()}, where('first_name') == name)
+        players_table.update({'last_name': l_name_box.get()}, where('first_name') == name)
+        players_table.update({'birth_date': date_box.get()}, where('first_name') == name)
+        players_table.update({'gender': gender_var.get()}, where('first_name') == name)
+        players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
+        players_table.update({'score': 0}, where('first_name') == name)
+
+    def select_one_record(self, tree_frame,
+                          f_name_box,
+                          l_name_box,
+                          date_box,
+                          gender_var,
+                          radiobutton1,
+                          radiobutton2,
+                          class_spin_box):
+        self.clear_entries(f_name_box, l_name_box, date_box, gender_var, radiobutton1, radiobutton2, class_spin_box)
+        selected = tree_frame.focus()
+        values = tree_frame.item(selected, 'values')
+
+        f_name_box.insert(0, values[1])
+        l_name_box.insert(0, values[2])
+        date_box.insert(0, values[3])
+        if values[4] == "Homme":
+            radiobutton1.invoke()
+        else:
+            radiobutton2.invoke()
+        class_spin_box.insert(0, values[5])
+
+    def clear_entries(self, f_name_box, l_name_box, date_box, gender_var, radiobutton1, radiobutton2, class_spin_box):
+
+        f_name_box.delete(0, tk.END)
+        l_name_box.delete(0, tk.END)
+        date_box.delete(0, tk.END)
+        gender_var.set(None)
+        class_spin_box.delete(0, tk.END)
+
+    def delete_one_player_button(self, tree_frame):
+        player_selected = tree_frame.focus()
+        temp = tree_frame.item(player_selected, 'values')
+        self.model_player.delete_player_data(temp[1])  # nom du joueur
+
+        for element in tree_frame.selection():
+            tree_frame.delete(element)
+
+    def add_player_tree_frame(self, input_list, frame, tree_frame,
+                              y, tournament_name, add_player_button,
+                              data_fields):
+        count = len(tree_frame.get_children())
+        data = self.player_controller.reg_tournament_player(tournament_name, input_list, count)
+
+        tree_frame.tag_configure('oddrow', background="white")
+        tree_frame.tag_configure('evenrow', background="lightblue")
+
+        if count % 2 == 0:
+            tree_frame.insert('', 'end', text='', values=data, tags='evenrow')
+        else:
+            tree_frame.insert('', 'end', text='', values=data, tags='oddrow')
+        count += 1

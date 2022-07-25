@@ -34,7 +34,7 @@ class Round:
         return self.serialized_round_data
 
     """
-    def create_players_list(self):
+    def create_players_list(self, tournament_name):
         # Read all players data
         #all_players_data = Player.read_data()
         all_players_data = self.model_interface.set_db_players_all()
