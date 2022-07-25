@@ -1,8 +1,8 @@
 from datetime import datetime
 from model.player import Player
-from tinydb import where, Query
+from tinydb import where
 from model.dbInterface import Interface
-import tkinter as tk
+# import tkinter as tk
 
 
 class PlayerController:

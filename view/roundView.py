@@ -3,8 +3,11 @@ from tkinter import Button
 from tkinter import Frame
 from tkinter import Scrollbar
 from tkinter import ttk
+from tinydb import where
 from control.playerController import PlayerController
 from control.roundController import RoundController
+from model.round import Round
+from model.dbInterface import Interface
 from datetime import datetime
 
 
@@ -24,6 +27,8 @@ class RoundView:
                                      "Rang2", "Score2", "Total2")
         self.player_controller = PlayerController(self.root)
         self.round_controller = RoundController(self.root)
+        self.round_model = Round()
+        self.model_interface = Interface()
         self.start_date = None
 
     def display_round_window(self, tournament_name):
@@ -161,7 +166,7 @@ class RoundView:
 
         valid_button = Button(
             self.rd_frame, text="Validation ronde",
-            command=lambda: self.round_controller.valid_round(
+            command=lambda: self.valid_round(
                 self.tree_frame, tournament_name))
         valid_button.grid(row=2, column=6, padx=10, pady=10)
 
@@ -224,3 +229,96 @@ class RoundView:
         round_name = tree_frame.set(int(selected), '#2')
         round_number = int(round_name[5])
         return round_number
+
+    # ========== Reg players datas in db ============
+    def reg_players_values(self, tree_frame, selected):
+        players_table = self.model_interface.set_db_players_env()
+
+        # === Get row rank & score values converted from str to float ===
+        elt = int(selected) - 3
+
+        while elt <= int(selected):
+            previous_score1 = players_table.search(
+                where('first_name') == tree_frame.set(
+                    (int(elt)), '#4'))[0]["score"]
+            previous_score2 = players_table.search(
+                where('first_name') == tree_frame.set(
+                    (int(elt)), '#9'))[0]["score"]
+
+            score1 = float(tree_frame.set((int(elt)), '#7'))
+            score2 = float(tree_frame.set((int(elt)), '#12'))
+
+            sum1 = float(previous_score1) + score1
+            sum2 = float(previous_score2) + score2
+
+            tree_frame.set(elt, '#8', float(sum1))  # (#4 = 'scores_class1')
+            tree_frame.set(elt, '#13', float(sum2))
+
+            players_table.update(
+                {'score': float(sum1)},
+                where('first_name') == tree_frame.set(elt, '#4'))
+            players_table.update(
+                {'score': float(sum2)},
+                where('first_name') == tree_frame.set(elt, '#9'))  # Joueur2
+            elt += 1
+
+    def valid_round(self, tree_frame, tournament_name):
+        self.start_date = self.round_controller.get_start_date()
+
+        tournaments_table = self.model_interface.set_db_tournaments_env()
+        round_list = list()
+        selected = tree_frame.focus()
+        round_name = tree_frame.set(int(selected), '#2')
+
+        if round_name == 'Round1':
+            self.reg_players_values(tree_frame, selected)
+            round_list = self.reg_round_matches(
+                tree_frame, selected)
+
+            if int(selected) == 3:
+                self.round_controller.insert_round_datas(round_list, round_name, self.start_date)
+
+        elif round_name == 'Round2':
+            self.reg_players_values(tree_frame, selected)
+            round_list = self.reg_round_matches(
+                tree_frame, selected)
+
+            if int(selected) == 7:
+                self.round_controller.insert_round_datas(round_list, round_name, self.start_date)
+
+        elif round_name == 'Round3':
+            self.reg_players_values(tree_frame, selected)
+            round_list = self.reg_round_matches(
+                tree_frame, selected)
+            if int(selected) == 11:
+                self.round_controller.insert_round_datas(round_list, round_name, self.start_date)
+
+        elif round_name == 'Round4':
+            self.reg_players_values(tree_frame, selected)
+            round_list = self.reg_round_matches(
+                tree_frame, selected)
+            if int(selected) == 15:
+                self.round_controller.insert_round_datas(round_list, round_name, self.start_date)
+
+            tournaments_table.update(
+                {'rounds_lists': self.round_model.all_tournament_rounds_list},
+                where('tournament_name') == tournament_name)
+
+    def reg_round_matches(self, tree_frame, selected):
+        round_list = []
+        elt = int(selected) - 3
+        while elt <= int(selected):
+            match_list1 = list()
+            match_list2 = list()
+            # Nom Prénom
+            match_list1.append(tree_frame.set(elt, '#4') + ' ' + tree_frame.set(int(elt), '#5'))
+            match_list1.append(tree_frame.set(elt, '#7'))  # Score
+
+            match_list2.append(tree_frame.set(elt, '#9') + ' ' + tree_frame.set(int(elt), '#10'))
+            match_list2.append(tree_frame.set(elt, '#12'))
+
+            match = (match_list1, match_list2)
+            round_list.append(match)
+            elt += 1
+
+        return round_list

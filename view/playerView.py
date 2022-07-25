@@ -219,7 +219,7 @@ class PlayerView:
         gen_rounds.grid(row=3, column=3, padx=10, pady=20)
 
     def modify_one_record(self, tree_frame, f_name_box, l_name_box, date_box, gender_var,
-                              radiobutton1, radiobutton2, class_spin_box, tournament_name):
+                          radiobutton1, radiobutton2, class_spin_box, tournament_name):
 
         players_table = self.model_interface.set_db_players_env()
         selected = tree_frame.focus()
