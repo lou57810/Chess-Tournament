@@ -1,0 +1,5 @@
+__pycache__
+control/__pycache__
+model/__pycache__
+view/__pycache__
+data/tournaments.json
