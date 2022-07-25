@@ -5,6 +5,7 @@ from tkinter import Scrollbar
 from tkinter import ttk
 from control.playerController import PlayerController
 from control.roundController import RoundController
+from datetime import datetime
 
 
 class RoundView:
@@ -64,10 +65,76 @@ class RoundView:
             self.tree_frame.column(elt, anchor=tk.CENTER, width=95)
             self.tree_frame.heading(elt, text=elt, anchor=tk.CENTER)
 
+    def gen_rounds(self, tournament_name, tree_frame):
+        self.tree_frame = tree_frame
+        self.rd_frame = Frame(self.root)
+        self.rd_frame.pack()
+
+        self.round_controller.start_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.round_controller.set_start_date(self.start_date)
+
+        if len(self.tree_frame.get_children()) == 0:
+            round_number = 1
+
+        else:
+            # Get next n° of round_number
+            last_in_tree_frame = len(self.tree_frame.get_children()) - 1
+            round_name = str(self.tree_frame.set(last_in_tree_frame, '#2'))
+            round_number = int(round_name[5]) + 1
+
+        tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
+        print("tree_round_list", tree_round_list)
+
+        global count
+        count = len(self.tree_frame.get_children())
+        j = 0
+        i = 0
+
+        while j < len(tree_round_list) / 2:  # 2 iterations
+            if count % 2 == 0:
+                self.tree_frame.insert(
+                    parent="", index="end", iid=count, text="", values=(
+                        tree_round_list[i][0],  # tournament_name
+                        "Round" + str(round_number),
+                        "Match " + str(count + 1),
+                        tree_round_list[i][1],  # nom1
+                        tree_round_list[i][2],  # prenom1
+                        tree_round_list[i][3],  # rang
+                        tree_round_list[i][4],  # score
+                        tree_round_list[i][5],  # total
+                        tree_round_list[i + 1][1],  # nom2
+                        tree_round_list[i + 1][2],  # prenom2...
+                        tree_round_list[i + 1][3],
+                        tree_round_list[i + 1][4],
+                        tree_round_list[i + 1][5],
+                    ),
+                    tags=('evenrow',))
+            else:
+                self.tree_frame.insert(
+                    parent="", index="end", iid=count, text="", values=(
+                        tree_round_list[i][0],  # tournament_name
+                        "Round" + str(round_number),
+                        "Match " + str(count + 1),
+                        tree_round_list[i][1],
+                        tree_round_list[i][2],
+                        tree_round_list[i][3],
+                        tree_round_list[i][4],
+                        tree_round_list[i][5],
+                        tree_round_list[i + 1][1],
+                        tree_round_list[i + 1][2],
+                        tree_round_list[i + 1][3],
+                        tree_round_list[i + 1][4],
+                        tree_round_list[i + 1][5],
+                    ),
+                    tags=('oddrow',))
+            count += 1
+            i += 2
+            j += 1
+
     # ================Add Management Entries Boxes==========================
     def round_data_set(self, tournament_name):
         self.display_round_window(tournament_name)
-        self.round_controller.gen_rounds(tournament_name, self.tree_frame)
+        self.gen_rounds(tournament_name, self.tree_frame)
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
@@ -75,20 +142,20 @@ class RoundView:
 
         win_button1 = Button(
             self.rd_frame, text="Joueur1 gagne",
-            command=lambda: self.round_controller.get_score1(
+            command=lambda: self.get_score1(
                 input_list, self.tree_frame))
 
         win_button1.grid(row=2, column=3, padx=10, pady=20)
 
         win_button_equal = Button(
             self.rd_frame, text="Egalité",
-            command=lambda: self.round_controller.get_score_equal(
+            command=lambda: self.get_score_equal(
                 input_list, self.tree_frame))
         win_button_equal.grid(row=2, column=4, padx=10, pady=20)
 
         win_button2 = Button(
             self.rd_frame, text="Joueur2 gagne",
-            command=lambda: self.round_controller.get_score2(
+            command=lambda: self.get_score2(
                 input_list, self.tree_frame))
         win_button2.grid(row=2, column=5, padx=10, pady=20)
 
@@ -100,10 +167,60 @@ class RoundView:
 
         next_round_button = Button(
             self.rd_frame, text="Ronde suivante",
-            command=lambda: self.round_controller.gen_rounds(tournament_name, self.tree_frame))
+            command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
         next_round_button.grid(row=3, column=6, padx=10, pady=20)
 
         quit_button = Button(
             self.rd_frame, text="Quitter",
             command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
+
+    def get_score1(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        round_number = self.get_round_number(tree_frame, selected)
+        row = (int(round_number) * 4) - 1
+        if int(selected) < row:
+            self.select_row(
+                tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 1.0
+        score2 = 0.0
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def get_score_equal(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        round_number = self.get_round_number(tree_frame, selected)
+        row = (int(round_number) * 4) - 1
+        if int(selected) < row:
+            self.select_row(
+                tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 0.5
+        score2 = 0.5
+
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def get_score2(self, input_list, tree_frame):
+        selected = tree_frame.focus()
+        round_number = self.get_round_number(tree_frame, selected)
+        row = (int(round_number) * 4) - 1
+        if int(selected) < row:
+            self.select_row(
+                tree_frame, int(selected) + 1)  # Auto pass to following row
+        # Display new scores
+        score1 = 0.0
+        score2 = 1.0
+
+        tree_frame.set(selected, '#7', score1)  # score match
+        tree_frame.set(selected, '#12', score2)  # score match
+
+    def select_row(self, tree_frame, row):
+        tree_frame.focus(row)
+        tree_frame.selection_set(row)
+
+    def get_round_number(self, tree_frame, selected):
+        round_name = tree_frame.set(int(selected), '#2')
+        round_number = int(round_name[5])
+        return round_number

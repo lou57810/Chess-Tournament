@@ -1,6 +1,6 @@
 from tkinter import Tk
-from tkinter import *
-import tkinter as tk
+# from tkinter import *
+# import tkinter as tk
 import os
 from view.mainMenu import MainMenu
 
@@ -17,10 +17,9 @@ class Window:
 
         if "nt" == os.name:
             root.iconbitmap("./img/logo.ico")
-        else:        
-            root.wm_iconbitmap(bitmap = "@./img/logo.xbm")        
-        
-        root.option_add('*tearOff', FALSE)  # Supprime le séparateur
+        else:
+            root.wm_iconbitmap(bitmap="@./img/logo.xbm")
+        root.option_add('*tearOff', False)  # Supprime le séparateur
 
         # menu view creation
         menu = MainMenu(root)
