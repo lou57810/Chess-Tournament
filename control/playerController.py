@@ -15,7 +15,6 @@ class PlayerController:
         data = list()
         data.append(tournament_name)
         data_check = True
-        # count = len(tree_frame.get_children())
 
         for element in input_list:
             data.append(element.get())

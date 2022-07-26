@@ -88,7 +88,6 @@ class RoundView:
             round_number = int(round_name[5]) + 1
 
         tree_round_list = self.round_controller.init_rounds(tournament_name, round_number)
-        print("tree_round_list", tree_round_list)
 
         global count
         count = len(self.tree_frame.get_children())

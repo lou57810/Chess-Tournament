@@ -168,7 +168,7 @@ class TournamentView:
             self.t_frame, text="Ajouter un tournoi",
             command=lambda: self.tournament_controller.
             add_tournament_button_action(
-                input_list, self.t_frame, y, add_tournament_button))
+                input_list, add_tournament_button))
         add_tournament_button.grid(row=4, column=0, padx=20, pady=20)
 
         quit_button = Button(

@@ -28,7 +28,7 @@ class TournamentController:
         return tournament_instance_list
 
     def add_tournament_button_action(
-            self, input_list, frame, y, add_tournament_button):
+            self, input_list, add_tournament_button):
         data = list()
         data_check = True
 
@@ -49,17 +49,7 @@ class TournamentController:
             tournament.serialize_tournaments()
             tournament.write_data()
 
-            self.refresh_tournament_frame()
-
-    def display_player_window(self):
-        from view.mainMenu import MainMenu  # Outside déclaration
-        self.main_menu = MainMenu(self.root)
-        self.main_menu.display_menu_window()
-
-        from view.playerView import PlayerView      # Outside déclaration
-        self.player_window = PlayerView(self.root)
-        self.player_window.display_player_window()  # rattache a id
-        self.player_window.player_data_set()
+            # self.refresh_tournament_frame()
 
     def display_add_player_window(self, t):
         # Appelé depuis tournamentView: def tour_db_click(self)

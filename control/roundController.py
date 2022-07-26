@@ -49,35 +49,6 @@ class RoundController:
         new_pair = pair[::-1]
         return new_pair
 
-    def final_init_list(self, tournament_name, pair_players_id_list):
-        players_list = list()
-        for elt in pair_players_id_list:
-            players_list.append(
-                self.display_id_values(elt[0], tournament_name))
-            players_list.append(
-                self.display_id_values(elt[1], tournament_name))
-        return players_list
-
-    def display_id_values(self, player_id, tournament_name):
-        players_table = self.model_interface.set_db_players_env()
-        tournament_players_table = players_table.search(where(
-            'tournament_name') == tournament_name)
-        init_player = list()
-        for elt in tournament_players_table:
-            if elt['id'] == player_id:
-                # i --> 4 (matches)
-                init_player = [
-                    elt['tournament_name'],
-                    elt['first_name'],
-                    elt['last_name'],
-                    elt['rank'],
-                    0.0,  # score début de match
-                    elt['score'],
-                    elt['id']
-                ]
-        # print("init_player:", init_player)
-        return init_player
-
     # Initialisation rounds
     def init_rounds(self, tournament_name, round_number):
         pair_players_id_list = list()
@@ -108,6 +79,35 @@ class RoundController:
         final_round_list = self.final_init_list(
             tournament_name, pair_players_id_list)
         return final_round_list
+
+    def final_init_list(self, tournament_name, pair_players_id_list):
+        players_list = list()
+        for elt in pair_players_id_list:
+            players_list.append(
+                self.display_id_values(elt[0], tournament_name))
+            players_list.append(
+                self.display_id_values(elt[1], tournament_name))
+        return players_list
+
+    def display_id_values(self, player_id, tournament_name):
+        players_table = self.model_interface.set_db_players_env()
+        tournament_players_table = players_table.search(where(
+            'tournament_name') == tournament_name)
+        init_player = list()
+        for elt in tournament_players_table:
+            if elt['id'] == player_id:
+                # i --> 4 (matches)
+                init_player = [
+                    elt['tournament_name'],
+                    elt['first_name'],
+                    elt['last_name'],
+                    elt['rank'],
+                    0.0,  # score début de match
+                    elt['score'],
+                    elt['id']
+                ]
+        # print("init_player:", init_player)
+        return init_player
 
     # Translation x till no doubles
     def switch_id_list(self, full_compare_list, pair_players_id_list):

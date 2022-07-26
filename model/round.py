@@ -33,28 +33,6 @@ class Round:
                                       }
         return self.serialized_round_data
 
-    """
-    def create_players_list(self, tournament_name):
-        # Read all players data
-        #all_players_data = Player.read_data()
-        all_players_data = self.model_interface.set_db_players_all()
-        # print("all_players_data:", all_players_data)
-        # Get dictionary values for each players
-        for element in all_players_data:
-            player_data = []
-            i = 0
-            for key in self.DATA_FIELDS:
-                player_data.append(element.get(key))
-                i += 1
-
-            player_data.append(element.get('score'))
-
-            # Create instance for each player
-            player = Player(player_data)
-            self.players_list.append(player)
-        return self.players_list
-    """
-
     def sort_matches(self, one_round_players_list):
         one_round_players_list.sort(
             key=lambda x: (x[5], x[3]), reverse=True)  # Tri score et rang
@@ -106,5 +84,4 @@ class Round:
         self.sort_matches(one_round_players_list)
         # ========================== Create pairs ==========================
         pair_players_id_list = self.create_pairs(one_round_players_list)
-        # print("pairs:", pair_players_id_list)
         return pair_players_id_list
