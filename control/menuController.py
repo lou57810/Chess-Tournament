@@ -149,9 +149,8 @@ class MenuController:
 
     def display_rounds_tournament(self, selected):
         tournaments_table = self.model_interface.set_db_tournaments_env()
-        tournament_name = selected
         Toplevel.update(self.root)
-        serialized_tournaments = tournaments_table.search(where('tournament_name') == tournament_name)
+        serialized_tournaments = tournaments_table.search(where('tournament_name') == selected)
         round_list = serialized_tournaments[0]['rounds_lists']
         self.display_round_report(round_list)
         self.round_report.clear()

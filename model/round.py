@@ -11,7 +11,7 @@ class Round:
         self.upper_list = []
         self.lower_list = []
         self.round_list = list()
-        self.all_tournament_rounds_list = []
+        # self.all_tournament_rounds_list = []
         self.serialized_round_data = {}
         self.model_interface = Interface()
         self.DATA_FIELDS = (

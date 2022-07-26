@@ -19,6 +19,7 @@ class RoundController:
         self.match_list = list()
         self.match = tuple()
         self.round_model = Round()
+        self.all_tournament_rounds_list = []
         self.model_interface = Interface()
         self.final_round = list()
         self.start_date = None
@@ -36,7 +37,7 @@ class RoundController:
         round_list.insert(0, round_number)
         round_list.insert(1, start_date)
         round_list.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        self.round_model.all_tournament_rounds_list.append(round_list)
+        self.all_tournament_rounds_list.append(round_list)
 
     def quit_round_window(self):
         self.rd_frame.destroy()

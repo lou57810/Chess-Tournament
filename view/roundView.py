@@ -268,6 +268,7 @@ class RoundView:
         round_list = list()
         selected = tree_frame.focus()
         round_name = tree_frame.set(int(selected), '#2')
+        print("selected", selected)
 
         if round_name == 'Round1':
             self.reg_players_values(tree_frame, selected)
@@ -298,9 +299,9 @@ class RoundView:
                 tree_frame, selected)
             if int(selected) == 15:
                 self.round_controller.insert_round_datas(round_list, round_name, self.start_date)
-
+            print("self:", len(self.round_controller.all_tournament_rounds_list))
             tournaments_table.update(
-                {'rounds_lists': self.round_model.all_tournament_rounds_list},
+                {'rounds_lists': self.round_controller.all_tournament_rounds_list},
                 where('tournament_name') == tournament_name)
 
     def reg_round_matches(self, tree_frame, selected):
