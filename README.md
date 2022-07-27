@@ -36,25 +36,13 @@ les résultats pour les visualiser.
  		```
  		source env/bin/activate
  		```
-
-        Power Shell:
- ``` 
- env/Scripts/Activate.ps1
- ```
-        ou de préférence si vous avez installé Git: (Git Bash MINGW64):
- ```
- source env/Scripts/activate
- ```
-    - Linux Debian 10:
- ```
- source env/bin/activate
- ```
-
-
+       
  2. Installer pip (installation python packages):
     Chess-Tournament requiert certains packages spécifiques.
-    Vous devez les installer depuis le fichier requirement.txt.
-        commande: pip install -r requirements.txt
+    Vous devez les installer depuis le fichier requirement.txt:
+	```
+        pip install -r requirements.txt
+	```
 
  3. Rendez vous dans le dossie racine de l'appli.
 
@@ -64,18 +52,7 @@ les résultats pour les visualiser.
     	```
     - Linux:
     	```
-    	python3 main.py
-    	```
-
-    Windows:
-    ```
-    python main.py
-    ```
-    Linux:
-    ```
-    python3 main.py
-    ```
-
+    	python3 main.py   
 
  4. Utilisation:
     - Menu créer un tournoi.
@@ -95,14 +72,6 @@ les résultats pour les visualiser.
     	```
     	flake8 --format=html --htmldir=flake-report
     	```
-
-    ```
-    pip install flake8-html
-    ```
-    - Then command:
-    ```
-    flake8 --format=html --htmldir=flake-report
-    ```
 
 
 
