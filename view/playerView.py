@@ -222,6 +222,8 @@ class PlayerView:
                           radiobutton1, radiobutton2, class_spin_box, tournament_name):
 
         players_table = self.model_interface.set_db_players_env()
+        for elt in players_table:
+            print("players_table:", elt)
         selected = tree_frame.focus()
         value = tree_frame.item(selected, 'values')
         if radiobutton1.invoke == "Homme":
@@ -239,13 +241,14 @@ class PlayerView:
                 value[6]))
 
         name = f_name_box.get()
+        print("name:", name)
         players_table.update({'first_name': f_name_box.get()}, where('first_name') == name)
         players_table.update({'last_name': l_name_box.get()}, where('first_name') == name)
         players_table.update({'birth_date': date_box.get()}, where('first_name') == name)
         players_table.update({'gender': gender_var.get()}, where('first_name') == name)
         players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
         players_table.update({'score': 0}, where('first_name') == name)
-
+        
     def select_one_record(self, tree_frame,
                           f_name_box,
                           l_name_box,

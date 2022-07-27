@@ -73,7 +73,7 @@ class RoundController:
         # ========================== Occurrences ============================
         full_compare_list = self.reverse_compare_id_list(compare_list)
         print("Liste de tous les derniers Matchs:", full_compare_list)
-        # compare er echange les joueurs
+        # compare et échange les joueurs
         pair_players_id_list = self.switch_id_list(full_compare_list, pair_players_id_list)
         print("Liste après tri doublons:", pair_players_id_list)
         # Liste des joueurs après comparaison des doublons
@@ -118,7 +118,7 @@ class RoundController:
             while i < len(full_compare_list):
                 for elt in pair_players_id_list:
                     if elt == full_compare_list[i]:
-                        print("doublon1:", elt)
+                        print("doublon:", elt)
                         pair_players_id_list = self.pairs_id_translate(
                             elt, pair_players_id_list)
                         data_check = True
@@ -131,12 +131,13 @@ class RoundController:
             return pair_players_id_list
 
     def pairs_id_translate(self, elt, pair_players_id_list):
-        temp = pair_players_id_list[0][0]  # pair_id[0]
-        j = 0
-        while j < len(pair_players_id_list) - 1:
-            pair_players_id_list[j][0] = pair_players_id_list[j + 1][0]
-            j += 1
-            pair_players_id_list[j][0] = temp
+        # temp1 = pair_players_id_list[0][0]  # pair_id[0]
+        temp2 = pair_players_id_list[0][1]
+        print("temp2:", temp2)
+        pair_players_id_list[0][1] = pair_players_id_list[1][0]     # player2 = player3
+        pair_players_id_list[1][0] = pair_players_id_list[2][0]     # player3 = player5
+        pair_players_id_list[2][0] = pair_players_id_list[3][0]     # player4 = player6
+        pair_players_id_list[3][0] = temp2                          # player7 = temp(playerorigin 2)
         return pair_players_id_list
 
     # Add list & reverse list

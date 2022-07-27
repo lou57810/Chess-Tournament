@@ -3,7 +3,7 @@ from tkinter import Button
 from tkinter import Frame
 from tkinter import Scrollbar
 from tkinter import ttk
-from tinydb import where
+from tinydb import where, Query
 from control.playerController import PlayerController
 from control.roundController import RoundController
 from model.round import Round
@@ -144,55 +144,42 @@ class RoundView:
         self.rd_frame.pack()
         input_list = list()
 
-        win_button1 = Button(
-            self.rd_frame, text="Joueur1 gagne",
-            command=lambda: self.get_score1(
-                input_list, self.tree_frame))
+        win_button1 = Button(self.rd_frame, text="Joueur1 gagne", command=lambda: self.get_score1(self.tree_frame))
 
         win_button1.grid(row=2, column=3, padx=10, pady=20)
 
-        win_button_equal = Button(
-            self.rd_frame, text="Egalité",
-            command=lambda: self.get_score_equal(
-                input_list, self.tree_frame))
+        win_button_equal = Button(self.rd_frame, text="Egalité", command=lambda: self.get_score_equal(self.tree_frame))
         win_button_equal.grid(row=2, column=4, padx=10, pady=20)
 
-        win_button2 = Button(
-            self.rd_frame, text="Joueur2 gagne",
-            command=lambda: self.get_score2(
-                input_list, self.tree_frame))
+        win_button2 = Button(self.rd_frame, text="Joueur2 gagne", command=lambda: self.get_score2(self.tree_frame))
         win_button2.grid(row=2, column=5, padx=10, pady=20)
 
-        valid_button = Button(
-            self.rd_frame, text="Validation ronde",
-            command=lambda: self.valid_round(
-                self.tree_frame, tournament_name))
+        valid_button = Button(self.rd_frame, text="Validation ronde", command=lambda: self.valid_round(
+                              self.tree_frame, tournament_name))
         valid_button.grid(row=2, column=6, padx=10, pady=10)
 
-        next_round_button = Button(
-            self.rd_frame, text="Ronde suivante",
-            command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
+        next_round_button = Button(self.rd_frame, text="Ronde suivante",
+                                   command=lambda: self.gen_rounds(tournament_name, self.tree_frame))
         next_round_button.grid(row=3, column=6, padx=10, pady=20)
 
-        quit_button = Button(
-            self.rd_frame, text="Quitter",
-            command=lambda: RoundController.quit_round_window(self))
+        quit_button = Button(self.rd_frame, text="Quitter", command=lambda: RoundController.quit_round_window(self))
         quit_button.grid(row=3, column=7, padx=20, pady=20)
 
-    def get_score1(self, input_list, tree_frame):
+    # =========== Display scores from buttons in the treeview ==============
+
+    def get_score1(self, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)
         row = (int(round_number) * 4) - 1
         if int(selected) < row:
-            self.select_row(
-                tree_frame, int(selected) + 1)  # Auto pass to following row
+            self.select_row(tree_frame, int(selected) + 1)  # Auto pass to following row
         # Display new scores
         score1 = 1.0
         score2 = 0.0
         tree_frame.set(selected, '#7', score1)  # score match
         tree_frame.set(selected, '#12', score2)  # score match
 
-    def get_score_equal(self, input_list, tree_frame):
+    def get_score_equal(self, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)
         row = (int(round_number) * 4) - 1
@@ -206,19 +193,20 @@ class RoundView:
         tree_frame.set(selected, '#7', score1)  # score match
         tree_frame.set(selected, '#12', score2)  # score match
 
-    def get_score2(self, input_list, tree_frame):
+    def get_score2(self, tree_frame):
         selected = tree_frame.focus()
         round_number = self.get_round_number(tree_frame, selected)
         row = (int(round_number) * 4) - 1
         if int(selected) < row:
-            self.select_row(
-                tree_frame, int(selected) + 1)  # Auto pass to following row
+            self.select_row(tree_frame, int(selected) + 1)  # Auto pass to following row
         # Display new scores
         score1 = 0.0
         score2 = 1.0
 
         tree_frame.set(selected, '#7', score1)  # score match
         tree_frame.set(selected, '#12', score2)  # score match
+
+    # =======================================================================
 
     def select_row(self, tree_frame, row):
         tree_frame.focus(row)
@@ -236,13 +224,11 @@ class RoundView:
         # === Get row rank & score values converted from str to float ===
         elt = int(selected) - 3
 
+        User = Query()
+
         while elt <= int(selected):
-            previous_score1 = players_table.search(
-                where('first_name') == tree_frame.set(
-                    (int(elt)), '#4'))[0]["score"]
-            previous_score2 = players_table.search(
-                where('first_name') == tree_frame.set(
-                    (int(elt)), '#9'))[0]["score"]
+            previous_score1 = players_table.search(where('first_name') == tree_frame.set((int(elt)), '#4'))[0]["score"]
+            previous_score2 = players_table.search(where('first_name') == tree_frame.set((int(elt)), '#9'))[0]["score"]
 
             score1 = float(tree_frame.set((int(elt)), '#7'))
             score2 = float(tree_frame.set((int(elt)), '#12'))
@@ -253,12 +239,8 @@ class RoundView:
             tree_frame.set(elt, '#8', float(sum1))  # (#4 = 'scores_class1')
             tree_frame.set(elt, '#13', float(sum2))
 
-            players_table.update(
-                {'score': float(sum1)},
-                where('first_name') == tree_frame.set(elt, '#4'))
-            players_table.update(
-                {'score': float(sum2)},
-                where('first_name') == tree_frame.set(elt, '#9'))  # Joueur2
+            players_table.update({'score': float(sum1)}, where('first_name') == tree_frame.set(elt, '#4'))
+            players_table.update({'score': float(sum2)}, where('first_name') == tree_frame.set(elt, '#9'))  # Joueur2
             elt += 1
 
     def valid_round(self, tree_frame, tournament_name):
