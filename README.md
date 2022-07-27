@@ -20,7 +20,7 @@ les résultats pour les visualiser.
  ``` 
  env/Scripts/Activate.ps1
  ```
-    - ou de préférence si vous avez installé Git: (Git Bash MINGW64):
+    	- Ou de préférence si vous avez installé Git: (Git Bash MINGW64):
  ```
  source env/Scripts/activate
  ```
