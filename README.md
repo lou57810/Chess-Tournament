@@ -17,17 +17,17 @@ les résultats pour les visualiser.
  1. Activer cet environnemnt:
     - Windows 10:
         - Power Shell:
- ``` 
- env/Scripts/Activate.ps1
- ```
-    	- Ou de préférence si vous avez installé Git: (Git Bash MINGW64):
- ```
- source env/Scripts/activate
- ```
+ 		``` 
+ 		env/Scripts/Activate.ps1
+ 		```
+    	- Ou de préférence si vous avez installé Git(Git Bash MINGW64):
+ 		```
+ 		source env/Scripts/activate
+ 		```
     - Linux Debian 10:
- ```
- source env/bin/activate
- ```
+ 		```
+ 		source env/bin/activate
+ 		```
 
  2. Installer pip (installation python packages):
     Chess-Tournament requiert certains packages spécifiques.
@@ -36,13 +36,13 @@ les résultats pour les visualiser.
 
  3. Rendez vous dans le dossie racine de l'appli.
     - Windows:
-    ```
-    python main.py
-    ```
+    	```
+    	python main.py
+    	```
     - Linux:
-    ```
-    python3 main.py
-    ```
+    	```
+    	python3 main.py
+    	```
 
  4. Utilisation:
     - Menu créer un tournoi.
@@ -54,13 +54,13 @@ les résultats pour les visualiser.
 
 5. Annexe:
     - For view flake8 report:
-    ```
-    pip install flake8-html
-    ```
+    	```
+    	pip install flake8-html
+    	```
     - Then command:
-    ```
-    flake8 --format=html --htmldir=flake-report
-    ```
+    	```
+    	flake8 --format=html --htmldir=flake-report
+    	```
 
 
 
