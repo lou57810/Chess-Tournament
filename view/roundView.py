@@ -3,7 +3,7 @@ from tkinter import Button
 from tkinter import Frame
 from tkinter import Scrollbar
 from tkinter import ttk
-from tinydb import where, Query
+from tinydb import where
 from control.playerController import PlayerController
 from control.roundController import RoundController
 from model.round import Round
@@ -142,7 +142,6 @@ class RoundView:
         # Create new frame
         self.rd_frame = Frame(self.root)
         self.rd_frame.pack()
-        input_list = list()
 
         win_button1 = Button(self.rd_frame, text="Joueur1 gagne", command=lambda: self.get_score1(self.tree_frame))
 
@@ -223,8 +222,6 @@ class RoundView:
 
         # === Get row rank & score values converted from str to float ===
         elt = int(selected) - 3
-
-        User = Query()
 
         while elt <= int(selected):
             previous_score1 = players_table.search(where('first_name') == tree_frame.set((int(elt)), '#4'))[0]["score"]

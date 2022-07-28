@@ -248,7 +248,7 @@ class PlayerView:
         players_table.update({'gender': gender_var.get()}, where('first_name') == name)
         players_table.update({'rank': class_spin_box.get()}, where('first_name') == name)
         players_table.update({'score': 0}, where('first_name') == name)
-        
+
     def select_one_record(self, tree_frame,
                           f_name_box,
                           l_name_box,
