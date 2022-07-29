@@ -27,7 +27,7 @@ class MainMenu:
         menuBar.add_cascade(label="?", menu=menuHelp)
 
         # =================================== Menu Files ======================================
-        menuFile.add_command(label="Gestion Tournoi", command=lambda: MenuController.display_tournament_window(self))
+        menuFile.add_command(label="Gestion Tournoi", command=lambda: self.display_tournament_window())
         menuFile.add_command(label="Enregistrer les résultats", command=lambda: MenuController.param_fct(self))
         menuFile.add_command(label="Impression des rapports", command=lambda: MenuController.fct_warning(self))
         menuFile.add_separator()
@@ -90,6 +90,16 @@ class MainMenu:
         menuHelp.add_command(label="A propos", command=lambda: MenuController.show_about(self))
 
         self.root.config(menu=menuBar)
+
+    def display_tournament_window(self):
+        self.clean_menu_window(self.root)
+        self.display_menu_window()
+        self.tournament_window.display_tournament_window()
+        self.tournament_window.tournament_data_set()
+
+    def refresh_tournament_frame(self):
+        """Clean root window and display menu"""
+        self.display_tournament_window()
 
     def clean_menu_window(self, root):
         for widget in root.winfo_children():

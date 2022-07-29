@@ -27,8 +27,7 @@ class TournamentController:
             tournament_instance_list.append(tournament)
         return tournament_instance_list
 
-    def add_tournament_button_action(
-            self, input_list, add_tournament_button):
+    def add_tournament_button_action(self, input_list, add_tournament_button):
         data = list()
         data_check = True
 
@@ -48,8 +47,7 @@ class TournamentController:
             tournament = Tournament(data)
             tournament.serialize_tournaments()
             tournament.write_data()
-
-            # self.refresh_tournament_frame()
+            self.refresh_tournament_frame()
 
     def display_add_player_window(self, t):
         # Appelé depuis tournamentView: def tour_db_click(self)
@@ -70,7 +68,9 @@ class TournamentController:
 
     def refresh_tournament_frame(self):
         """Clean root window and display menu"""
-        self.menu_controller.display_tournament_window()
+        from view.mainMenu import MainMenu
+        main_menu = MainMenu(self.root)
+        main_menu.display_tournament_window()
 
     def quit_tournament_window(self):
         self.t_frame.destroy()

@@ -76,13 +76,11 @@ class TournamentView:
 
             if count % 2 == 0:
                 self.tree_frame.insert(
-                    '', 'end', tournament_attributes[6],
-                    text='', values=tournament_attributes, tags='evenrow')
+                    '', 'end', tournament_attributes[6], text='', values=tournament_attributes, tags='evenrow')
 
             else:
                 self.tree_frame.insert(
-                    '', 'end', tournament_attributes[6],
-                    text='', values=tournament_attributes, tags='oddrow')
+                    '', 'end', tournament_attributes[6], text='', values=tournament_attributes, tags='oddrow')
             count += 1
         self.tree_frame.pack()
 
@@ -164,11 +162,9 @@ class TournamentView:
             y += 1
 
         # Button for send input to wrapper
-        add_tournament_button = Button(
-            self.t_frame, text="Ajouter un tournoi",
-            command=lambda: self.tournament_controller.
-            add_tournament_button_action(
-                input_list, add_tournament_button))
+        add_tournament_button = Button(self.t_frame, text="Ajouter un tournoi",
+                                       command=lambda: self.tournament_controller.add_tournament_button_action(
+                                           input_list, add_tournament_button))
         add_tournament_button.grid(row=4, column=0, padx=20, pady=20)
 
         quit_button = Button(

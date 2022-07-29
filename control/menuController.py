@@ -220,3 +220,8 @@ class MenuController:
         for elt in self.match_report:
             data_text.insert(tk.END, elt)
         data_text.pack()
+
+    def clean_menu_window(self, root):
+        for widget in root.winfo_children():
+            widget.destroy()
+        self.display_menu_window()

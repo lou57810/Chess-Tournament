@@ -35,10 +35,7 @@ class Tournament:
         tournament_table = self.model_interface.set_db_tournaments_env()
         tournament_table.insert(self.serialized_tournaments)
 
-    """
-    @staticmethod
-    def read_data():
-        db = TinyDB('data/db_tournaments.json')
-        tournament_table = db.table('tournaments')
+    # @staticmethod
+    def read_data(self):
+        tournament_table = self.model_interface.set_db_tournaments_env()
         return tournament_table.all()
-    """
