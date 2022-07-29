@@ -27,6 +27,34 @@ class TournamentController:
             tournament_instance_list.append(tournament)
         return tournament_instance_list
 
+    def check_new_tournament_data(self, input_list):
+        tournament_data = list()
+        for element in input_list:
+            tournament_data.append(element.get())
+        # self.refresh_tournament_frame()
+        return tournament_data
+
+    def reg_tournament_data(self, input_list):
+        data = list()
+        data_check = True
+        for element in input_list:
+            # Get all input
+            data.append(element.get())
+            # Check if field is empty or not
+            if not element.get():
+                data_check = False
+
+        if data_check:
+            players_list = {}
+            rounds_list = []
+            data.append(players_list)
+            data.append(rounds_list)
+
+            tournament = Tournament(data)
+            tournament.serialize_tournaments()
+            tournament.write_data()
+        self.refresh_tournament_frame()
+
     def add_tournament_button_action(self, input_list, add_tournament_button):
         data = list()
         data_check = True
@@ -47,7 +75,7 @@ class TournamentController:
             tournament = Tournament(data)
             tournament.serialize_tournaments()
             tournament.write_data()
-            self.refresh_tournament_frame()
+            #self.refresh_tournament_frame()
 
     def display_add_player_window(self, t):
         # Appelé depuis tournamentView: def tour_db_click(self)

@@ -25,6 +25,7 @@ class TournamentView:
         self.tournament_controller = TournamentController(self.root)
         self.menu_controller = MenuController
 
+
     def display_tournament_window(self):
         # Create a Treeview Frame
         self.t_frame = Frame(self.root)
@@ -62,26 +63,28 @@ class TournamentView:
             self.tree_frame.column(element, anchor=tk.CENTER, width=120)
             self.tree_frame.heading(element, text=element, anchor=tk.CENTER)
 
-        count = 0
+
         # Alternative rows
         self.tree_frame.tag_configure('oddrow', background="white")
         self.tree_frame.tag_configure('evenrow', background="lightblue")
 
         # Display datas
-        self.all_tournaments_data = self.tournament_controller.read_data()
-        for tournament in self.all_tournaments_data:
+        all_tournaments_data = self.tournament_controller.read_data()
+        i = 0
+        count = 0
+        index = 0
+        for tournament in all_tournaments_data:
             tournament_attributes = []
             for values in vars(tournament).values():
                 tournament_attributes.append(values)
+                del tournament_attributes[7:]   # Suppression des valeurs inutiles
 
             if count % 2 == 0:
-                self.tree_frame.insert(
-                    '', 'end', tournament_attributes[6], text='', values=tournament_attributes, tags='evenrow')
-
+                self.tree_frame.insert('', 'end', text='', values=tournament_attributes, tags='evenrow')
             else:
-                self.tree_frame.insert(
-                    '', 'end', tournament_attributes[6], text='', values=tournament_attributes, tags='oddrow')
+                self.tree_frame.insert('', 'end', text='', values=tournament_attributes, tags='oddrow')
             count += 1
+
         self.tree_frame.pack()
 
         # ================Add Management Entries Boxes=================
@@ -162,9 +165,15 @@ class TournamentView:
             y += 1
 
         # Button for send input to wrapper
+        """
         add_tournament_button = Button(self.t_frame, text="Ajouter un tournoi",
-                                       command=lambda: self.tournament_controller.add_tournament_button_action(
-                                           input_list, add_tournament_button))
+                                       command=lambda: [self.tournament_controller.add_tournament_button_action(
+                                           input_list, add_tournament_button), self.display_new_tournament()])
+        """
+
+        add_tournament_button = Button(self.t_frame, text="Ajouter un tournoi",
+                                       command=lambda: [self.display_new_tournament(input_list),
+                                                        self.tournament_controller.reg_tournament_data(input_list)])
         add_tournament_button.grid(row=4, column=0, padx=20, pady=20)
 
         quit_button = Button(
@@ -174,11 +183,23 @@ class TournamentView:
         quit_button.grid(row=4, column=6, padx=10, pady=20)
 
         # Bind the players Set
-        self.tree_frame.bind(
-            '<Double-Button-1>', lambda event: self.tour_db_click())
+        self.tree_frame.bind('<Double-Button-1>', lambda event: self.tour_db_click())
+
+    def display_new_tournament(self, input_list):
+        data = self.tournament_controller.check_new_tournament_data(input_list)
+
+        count = 0
+        if count % 2 == 0:
+            self.tree_frame.insert('', index='end', iid=0, text='', values=data, tags='evenrow')
+        else:
+            self.tree_frame.insert('', index='end', iid=0, text='', values=data, tags='evenrow')
+        count += 1
+
 
     def tour_db_click(self):
         tournament_selected = self.tree_frame.focus()
         temp = self.tree_frame.item(tournament_selected, 'values')
         # TournamentController récupère le nom du tournoi
         TournamentController.display_add_player_window(self, temp[0])
+
+

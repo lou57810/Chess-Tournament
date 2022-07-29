@@ -97,13 +97,9 @@ class PlayerView:
             for element in self.ALL_PLAYER_FIELDS:
                 attributes_player.append(player.get(element))
             if count % 2 == 0:
-                self.tree_frame.insert(
-                    '', 'end', text='', values=attributes_player,
-                    tags='evenrow')
+                self.tree_frame.insert('', 'end', text='', values=attributes_player, tags='evenrow')
             else:
-                self.tree_frame.insert(
-                    '', 'end', text='', values=attributes_player,
-                    tags='oddrow')
+                self.tree_frame.insert('', 'end', text='', values=attributes_player, tags='oddrow')
             count += 1
         self.tree_frame.pack(padx=20, pady=20)
 
@@ -271,7 +267,6 @@ class PlayerView:
         class_spin_box.insert(0, values[5])
 
     def clear_entries(self, f_name_box, l_name_box, date_box, gender_var, radiobutton1, radiobutton2, class_spin_box):
-
         f_name_box.delete(0, tk.END)
         l_name_box.delete(0, tk.END)
         date_box.delete(0, tk.END)
